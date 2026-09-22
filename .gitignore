@@ -1,0 +1,24 @@
+#xmake
+.xmake/*
+
+# Qt
+*.user
+*.user.*
+
+# Compiled files
+*.o
+*.obj
+*.so
+*.dll
+*.dylib
+*.a
+*.exe
+
+# Generated Qt files
+moc_*
+qrc_*
+ui_*
+
+# IDE
+.vscode/
+.idea/
