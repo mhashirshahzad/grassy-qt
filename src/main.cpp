@@ -2,6 +2,8 @@
 #include <QQmlContext>
 #include <QQmlApplicationEngine>
 
+#include "qqml.h"
+#include "servermodel.hpp"
 #include "utils.hpp"
 
 int main(int argc, char *argv[])
@@ -13,8 +15,12 @@ int main(int argc, char *argv[])
     app.setApplicationName("grassy");
 
     QQmlApplicationEngine engine;
+
     Utils utils;
+    ServerModel serverModel;
+
     engine.rootContext()->setContextProperty(QStringLiteral("utils"), &utils);
+    engine.rootContext()->setContextProperty(QStringLiteral("serverModel"), &serverModel);
     engine.load(QUrl(QStringLiteral("qrc:/Main.qml")));
     if (engine.rootObjects().isEmpty())
         return -1;

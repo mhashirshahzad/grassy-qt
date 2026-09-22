@@ -1,5 +1,5 @@
 #include "utils.hpp"
-#include "qlogging.h"
+#include "logging.hpp"
 
 #include <csignal> // actually SIGKILL IS DEFINED HERE, CLANG JUST GONE BONKERS!
 
@@ -14,15 +14,24 @@
 #include <QTextStream>
 #include <QDebug>
 
-Utils::Utils(QObject *parent) : QObject(parent) {}
+Utils::Utils(QObject *parent) : QObject(parent), m_javaInstalled(::isJavaInstalled()) {}
 
-bool Utils::isJavaInstalled() const { return ::isJavaInstalled(); }
+bool Utils::javaInstalled() const { return m_javaInstalled; }
+
+static QString settingsFilePath()
+{
+    const QString configDir =
+        QDir(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation)).filePath("grassy");
+
+    if (!QDir().mkpath(configDir))
+        GRASSY_WARNING() << "Unable to create config directory:" << configDir;
+
+    return QDir(configDir).filePath("settings.txt");
+}
 
 QString getServersDir()
 {
-    const QString configDir = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
-
-    const QString settingsFile = QDir(configDir).filePath("settings.txt");
+    const QString settingsFile = settingsFilePath();
 
     const QString dataDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
 
@@ -37,14 +46,14 @@ QString getServersDir()
         const QString saved = in.readAll().trimmed();
 
         if (!saved.isEmpty())
+        {
+            GRASSY_INFO() << "Using configured servers directory:" << saved;
             return saved;
+        }
     }
 
-    // No valid saved directory — create the default
+    GRASSY_INFO() << "Using default servers directory:" << defaultDir;
     QDir().mkpath(defaultDir);
-
-    // Save the default path
-
     saveServersDir(defaultDir);
 
     return defaultDir;
@@ -52,21 +61,20 @@ QString getServersDir()
 
 bool saveServersDir(const QString &path)
 {
-    const QString configDir = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
-
-    if (!QDir().mkpath(configDir))
-        return false;
-
-    const QString settingsFile = QDir(configDir).filePath("settings.txt");
-
+    const QString settingsFile = settingsFilePath();
     QFile file(settingsFile);
 
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        GRASSY_WARNING() << "Unable to write settings file:" << settingsFile
+                         << file.errorString();
         return false;
+    }
 
     QTextStream out(&file);
     out << path;
 
+    GRASSY_INFO() << "Saved servers directory:" << path;
     return true;
 }
 
@@ -137,6 +145,6 @@ int killProcessOnPort(int port)
 
 bool isJavaInstalled()
 {
-    qInfo() << "[utils.cpp] Searching for java...";
+    GRASSY_INFO() << "Searching for java...";
     return !QStandardPaths::findExecutable("java").isEmpty();
 }

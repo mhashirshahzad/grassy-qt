@@ -6,7 +6,29 @@ Rectangle {
 
     height: 32
     color: Theme.surface
-    property bool javaInstalled: utils.isJavaInstalled()
+    property bool javaInstalled: utils.javaInstalled
+
+     // Top separator
+    Rectangle {
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+        height: 1
+        color: Theme.overlay
+        z: 1
+    }
+    // Subtle shadow above the footer
+    Rectangle {
+        anchors.bottom: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+        height: 4
+        gradient: Gradient {
+            GradientStop { position: 0.0; color: Qt.rgba(0, 0, 0, 0.16) }
+            GradientStop { position: 1.0; color: Qt.rgba(0, 0, 0, 0.0) }
+        }
+        z: -1
+    }
 
     Row {
         anchors.centerIn: parent
@@ -21,11 +43,13 @@ Rectangle {
             color: root.javaInstalled ? Theme.success : Theme.failure
         }
 
+
         Text {
             text: root.javaInstalled ? "Java detected" : "Java not found"
 
             color: Theme.text
-            font.pixelSize: 13
+            font.pixelSize: 12
+            font.bold: true
         }
     }
 }

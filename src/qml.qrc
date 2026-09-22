@@ -12,6 +12,7 @@
         <file alias="qml/icons/refresh.svg">../qml/icons/refresh.svg</file>
         <file alias="qml/icons/search.svg">../qml/icons/search.svg</file>
         <file alias="qml/icons/settings.svg">../qml/icons/settings.svg</file>
+        <file alias="ServerCard.qml">../qml/ServerCard.qml</file>
         <file alias="Theme.qml">../qml/Theme.qml</file>
     </qresource>
 </RCC>

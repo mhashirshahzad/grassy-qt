@@ -6,11 +6,15 @@
 class Utils final : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(bool javaInstalled READ javaInstalled CONSTANT)
 
 public:
     explicit Utils(QObject *parent = nullptr);
 
-    Q_INVOKABLE bool isJavaInstalled() const;
+    bool javaInstalled() const;
+
+private:
+    bool m_javaInstalled;
 };
 
 bool isJavaInstalled();

@@ -7,7 +7,7 @@ Rectangle {
 
     required property Window window
 
-    height: 32
+    height: 40
     color: Theme.surface
 
     signal settingsClicked()
@@ -38,11 +38,14 @@ Rectangle {
         anchors.verticalCenter: parent.verticalCenter
         anchors.leftMargin: 8
         anchors.rightMargin: 8
-        height: parent.height
+        anchors.topMargin: 2
+        anchors.bottomMargin: 2
+        height: 32
 
         CustomTextField {
             anchors.fill: parent
             placeholderText: "Search for servers..."
+            font.pixelSize: 12
         }
     }
 
@@ -63,4 +66,15 @@ Rectangle {
             onClicked: root.addServerClicked()
         }
     }
+    
+    // seperator
+    Rectangle {
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+        height: 1
+        color: Theme.overlay
+        z: 1
+    }
+    
 }
