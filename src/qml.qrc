@@ -1,5 +1,17 @@
 <RCC>
     <qresource prefix="/">
+        <file alias="qmldir">../qml/qmldir</file>
+        <file alias="CustomTextField.qml">../qml/CustomTextField.qml</file>
+        <file alias="CustomTitleBar.qml">../qml/CustomTitleBar.qml</file>
+        <file alias="IconButton.qml">../qml/IconButton.qml</file>
+        <file alias="JavaStatusBar.qml">../qml/JavaStatusBar.qml</file>
         <file alias="Main.qml">../qml/Main.qml</file>
+        <file alias="qml/icons/cog.svg">../qml/icons/cog.svg</file>
+        <file alias="qml/icons/magnify.svg">../qml/icons/magnify.svg</file>
+        <file alias="qml/icons/plus.svg">../qml/icons/plus.svg</file>
+        <file alias="qml/icons/refresh.svg">../qml/icons/refresh.svg</file>
+        <file alias="qml/icons/search.svg">../qml/icons/search.svg</file>
+        <file alias="qml/icons/settings.svg">../qml/icons/settings.svg</file>
+        <file alias="Theme.qml">../qml/Theme.qml</file>
     </qresource>
 </RCC>

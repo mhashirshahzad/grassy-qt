@@ -8,3 +8,8 @@ args = ["--no-cmake-calls"]
 
 [language.formatter]
 command = "./.helix/qmlformat-stdin"
+
+[[language]]
+name = "cpp"
+language-servers = ["clangd"]
+auto-format = true

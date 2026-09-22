@@ -1,6 +1,7 @@
 # xmake
 .xmake/
 build/
+compile_commands.json
 
 # Qt
 *.user
