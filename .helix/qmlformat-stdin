@@ -1,0 +1,8 @@
+#!/bin/sh
+
+set -eu
+
+file="$(mktemp "${TMPDIR:-/tmp}/qmlformat.XXXXXX.qml")"
+trap 'rm -f "$file"' EXIT
+cat > "$file"
+qmlformat "$file"

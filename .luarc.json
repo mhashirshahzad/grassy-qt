@@ -1,0 +1,45 @@
+{
+  "$schema": "https://raw.githubusercontent.com/LuaLS/vscode-lua/master/setting/schema.json",
+  "runtime.version": "LuaJIT",
+  "workspace.checkThirdParty": false,
+  "workspace.ignoreDir": [
+    "${workspaceFolder}/.xmake",
+    "${workspaceFolder}/build"
+  ],
+  "workspace.library": [
+    "/usr/share/xmake/core",
+    "/usr/share/xmake/includes",
+    "/usr/share/xmake/languages",
+    "/usr/share/xmake/modules",
+    "/usr/share/xmake/platforms",
+    "/usr/share/xmake/rules"
+  ],
+  "diagnostics.globals": [
+    "add_configfiles",
+    "add_defines",
+    "add_deps",
+    "add_files",
+    "add_headerfiles",
+    "add_includedirs",
+    "add_installfiles",
+    "add_linkdirs",
+    "add_links",
+    "add_packages",
+    "add_requires",
+    "add_rules",
+    "add_syslinks",
+    "includes",
+    "option",
+    "package",
+    "rule",
+    "set_config",
+    "set_configvar",
+    "set_kind",
+    "set_languages",
+    "set_policy",
+    "set_project",
+    "set_version",
+    "target",
+    "task"
+  ]
+}

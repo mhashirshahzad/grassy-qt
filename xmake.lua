@@ -6,5 +6,6 @@ set_version("0.1.0")
 set_languages("c++20")
 
 target("grassy")
-    set_kind("binary")
+    add_rules("qt.quickapp")
     add_files("src/**.cpp")
+    add_files("src/qml.qrc")

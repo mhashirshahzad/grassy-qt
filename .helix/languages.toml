@@ -1,0 +1,10 @@
+[[language]]
+name = "qml"
+language-servers = ["qmlls"]
+
+[language-server.qmlls]
+command = "qmlls6"
+args = ["--no-cmake-calls"]
+
+[language.formatter]
+command = "./.helix/qmlformat-stdin"
