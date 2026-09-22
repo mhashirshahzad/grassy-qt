@@ -6,6 +6,7 @@ QtObject {
     readonly property color surface: "#313244"
     readonly property color text: "#cdd6f4"
     readonly property color subtext: "#a6adc6"
+    readonly property color accent: "#89b4fa"
 
     
     readonly property color success: "#a6e3a1"

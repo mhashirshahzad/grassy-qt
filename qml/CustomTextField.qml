@@ -8,10 +8,13 @@ TextField {
     property color borderColor: Theme.subtext
     property color focusBorderColor: Theme.accent
 
-    implicitWidth: 240
-    implicitHeight: 24
+    implicitWidth: 280
+    implicitHeight: 30
+    hoverEnabled: true
+    selectByMouse: true
+    verticalAlignment: TextInput.AlignVCenter
 
-    leftPadding: 12
+    leftPadding: 38
     rightPadding: 12
 
     color: Theme.text
@@ -20,6 +23,8 @@ TextField {
     selectedTextColor: Theme.background
 
     background: Rectangle {
+        anchors.fill: parent
+
         radius: 8
 
         color: Qt.rgba(
@@ -29,15 +34,42 @@ TextField {
             0.8
         )
 
-        border.width: control.activeFocus ? 2 : 1
+        border.width: control.activeFocus ? 2 : control.hovered ? 1 : 0
         border.color: control.activeFocus
             ? control.focusBorderColor
-            : control.borderColor
+            : Qt.rgba(
+                  control.borderColor.r,
+                  control.borderColor.g,
+                  control.borderColor.b,
+                  0.35
+              )
+
+        Behavior on color {
+            ColorAnimation { duration: 120 }
+        }
 
         Behavior on border.color {
-            ColorAnimation {
-                duration: 120
-            }
+            ColorAnimation { duration: 120 }
+        }
+
+        Behavior on border.width {
+            NumberAnimation { duration: 120 }
+        }
+    }
+
+    Image {
+        anchors.left: parent.left
+        anchors.leftMargin: 10
+        anchors.verticalCenter: parent.verticalCenter
+
+        width: 16
+        height: 16
+
+        source: "qrc:/qml/icons/magnify.svg"
+        opacity: control.enabled ? (control.activeFocus ? 1 : 0.7) : 0.4
+
+        Behavior on opacity {
+            NumberAnimation { duration: 120 }
         }
     }
 }

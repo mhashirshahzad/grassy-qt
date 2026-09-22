@@ -28,18 +28,20 @@ Rectangle {
             onClicked: root.settingsClicked()
         }
 
-        IconButton {
-            iconSource: "qrc:/qml/icons/magnify.svg"
-            onClicked: root.searchClicked()
-        }
     }
 
 
-    Row {
+    Item {
         id: center
-        anchors.centerIn: parent
+        anchors.left: left.right
+        anchors.right: right.left
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.leftMargin: 8
+        anchors.rightMargin: 8
+        height: parent.height
 
         CustomTextField {
+            anchors.fill: parent
             placeholderText: "Search for servers..."
         }
     }
