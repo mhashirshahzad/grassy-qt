@@ -22,7 +22,7 @@ Rectangle {
     border.color: Theme.surface
     border.width: 1
 
-    width: parent.width
+    width: ListView.view ? ListView.view.width: 0
     
     ColumnLayout {
         anchors.fill: parent
@@ -81,7 +81,7 @@ Rectangle {
             spacing: 12
 
             Label {
-                text: card.motd
+                text: card.serverMotd
                 opacity: 0.7
                 elide: Text.ElideRight
 

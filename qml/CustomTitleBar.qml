@@ -43,9 +43,12 @@ Rectangle {
         height: 32
 
         CustomTextField {
+            id: searchField
+            
             anchors.fill: parent
             placeholderText: "Search for servers..."
             font.pixelSize: 12
+            onTextChanged: serverModel.setSearchText(text)
         }
     }
 

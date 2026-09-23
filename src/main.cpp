@@ -3,6 +3,7 @@
 #include <QQmlApplicationEngine>
 
 #include "qqml.h"
+#include "serverfiltermodel.hpp"
 #include "servermodel.hpp"
 #include "utils.hpp"
 
@@ -18,9 +19,11 @@ int main(int argc, char *argv[])
 
     Utils utils;
     ServerModel serverModel;
+    ServerFilterModel filteredServerModel;
+    filteredServerModel.setSourceModel(&serverModel);
 
     engine.rootContext()->setContextProperty(QStringLiteral("utils"), &utils);
-    engine.rootContext()->setContextProperty(QStringLiteral("serverModel"), &serverModel);
+    engine.rootContext()->setContextProperty(QStringLiteral("serverModel"), &filteredServerModel);
     engine.load(QUrl(QStringLiteral("qrc:/Main.qml")));
     if (engine.rootObjects().isEmpty())
         return -1;

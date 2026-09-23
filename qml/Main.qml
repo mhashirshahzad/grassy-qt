@@ -1,6 +1,6 @@
 import QtQuick 2.15
 import QtQuick.Window 2.15
-import QtQuick.Controls 2.15
+// import QtQuick.Controls 2.15
 
 import "." 1.0
 
@@ -44,9 +44,9 @@ Window {
             serverFolder: folder
         }
 
-        ScrollBar.vertical: ScrollBar {
-            policy: ScrollBar.AlwaysOn
-        }
+        // ScrollBar.vertical: ScrollBar {
+        //     policy: ScrollBar.AlwaysOn
+        // }
     }
     JavaStatusBar {
         id: javaStatusBar
