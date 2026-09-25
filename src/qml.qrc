@@ -1,18 +1,25 @@
 <RCC>
     <qresource prefix="/">
-        <file alias="qmldir">../qml/qmldir</file>
-        <file alias="CustomTextField.qml">../qml/CustomTextField.qml</file>
-        <file alias="CustomTitleBar.qml">../qml/CustomTitleBar.qml</file>
-        <file alias="IconButton.qml">../qml/IconButton.qml</file>
-        <file alias="JavaStatusBar.qml">../qml/JavaStatusBar.qml</file>
+        <file alias="qmldir">../qml/theme/qmldir</file>
+        <file alias="CustomTextField.qml">../qml/components/CustomTextField.qml</file>
+        <file alias="CustomTitleBar.qml">../qml/components/CustomTitleBar.qml</file>
+        <file alias="IconButton.qml">../qml/components/IconButton.qml</file>
+        <file alias="JavaStatusBar.qml">../qml/components/JavaStatusBar.qml</file>
         <file alias="Main.qml">../qml/Main.qml</file>
+        <file alias="qml/icons/close.svg">../qml/icons/close.svg</file>
         <file alias="qml/icons/cog.svg">../qml/icons/cog.svg</file>
+        <file alias="qml/icons/delete.svg">../qml/icons/delete.svg</file>
+        <file alias="qml/icons/edit.svg">../qml/icons/edit.svg</file>
+        <file alias="qml/icons/folder.svg">../qml/icons/folder.svg</file>
         <file alias="qml/icons/magnify.svg">../qml/icons/magnify.svg</file>
         <file alias="qml/icons/plus.svg">../qml/icons/plus.svg</file>
         <file alias="qml/icons/refresh.svg">../qml/icons/refresh.svg</file>
         <file alias="qml/icons/search.svg">../qml/icons/search.svg</file>
         <file alias="qml/icons/settings.svg">../qml/icons/settings.svg</file>
-        <file alias="ServerCard.qml">../qml/ServerCard.qml</file>
-        <file alias="Theme.qml">../qml/Theme.qml</file>
+        <file alias="ServerCard.qml">../qml/components/ServerCard.qml</file>
+        <file alias="ServerTerminal.qml">../qml/terminal/ServerTerminal.qml</file>
+        <file alias="ServerWindow.qml">../qml/windows/ServerWindow.qml</file>
+        <file alias="ThemedButton.qml">../qml/components/ThemedButton.qml</file>
+        <file alias="Theme.qml">../qml/theme/Theme.qml</file>
     </qresource>
 </RCC>

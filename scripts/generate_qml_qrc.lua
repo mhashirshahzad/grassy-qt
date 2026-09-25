@@ -12,7 +12,7 @@ end
 
 local entries = {}
 for _, qml_file in ipairs(os.files(path.join(qml_root, "**.qml"))) do
-    local alias = path.relative(qml_file, qml_root):gsub("\\", "/")
+    local alias = path.filename(qml_file)
     local source = path.relative(qml_file, path.join(root, "src")):gsub("\\", "/")
     table.insert(entries, string.format(
         '        <file alias="%s">%s</file>',
@@ -30,7 +30,7 @@ for _, icon_file in ipairs(os.files(path.join(qml_root, "**.svg"))) do
     ))
 end
 table.sort(entries)
-table.insert(entries, 1, '        <file alias="qmldir">../qml/qmldir</file>')
+table.insert(entries, 1, '        <file alias="qmldir">../qml/theme/qmldir</file>')
 
 io.writefile(qrc_file, table.concat({
     "<RCC>",

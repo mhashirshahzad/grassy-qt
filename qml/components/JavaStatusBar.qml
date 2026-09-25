@@ -6,7 +6,9 @@ Rectangle {
 
     height: 32
     color: Theme.surface
-    property bool javaInstalled: utils ?  utils.javaInstalled : false
+    property bool javaInstalled: typeof utils !== "undefined" && utils
+        ? utils.javaInstalled
+        : false
 
      // Top separator
     Rectangle {

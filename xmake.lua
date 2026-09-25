@@ -2,6 +2,7 @@ add_rules("mode.debug", "mode.release")
 
 set_project("grassy")
 set_version("0.1.0")
+set_defaultmode("debug")
 
 set_languages("c++20")
 set_config("qt", "/usr/lib/qt6")
@@ -20,3 +21,14 @@ target("grassy")
     add_files("src/**.hpp", {rules = "qt.moc"})
     add_files("src/**.cpp")
     add_files("src/qml.qrc")
+    add_defines("QT_QML_DEBUG", {mode = "debug"})
+
+task("live-reload")
+    set_menu {
+        usage = "xmake live-reload",
+        description = "Rebuild and restart when project files change",
+    }
+
+    on_run(function()
+        os.exec("xmake watch --run")
+    end)

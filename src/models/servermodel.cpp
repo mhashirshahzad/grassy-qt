@@ -1,8 +1,8 @@
 #include "servermodel.hpp"
-#include "logging.hpp"
+#include "../core/logging.hpp"
 #include "qdir.h"
 #include "qhashfunctions.h"
-#include "utils.hpp"
+#include "../core/utils.hpp"
 
 #include <QDir>
 #include <QFile>

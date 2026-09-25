@@ -6,6 +6,8 @@ import "." 1.0
 
 Window {
     id: root
+    property var modelObject: typeof serverModel !== "undefined" ? serverModel : null
+    property var runnerObject: typeof serverRunner !== "undefined" ? serverRunner : null
     title: "Grassy Qt"
 
     visible: true
@@ -22,7 +24,17 @@ Window {
         window: root
 
         z: 10
-        onReloadClicked: serverModel.refresh()
+        onReloadClicked: {
+            if (root.modelObject)
+                root.modelObject.refresh()
+            else
+                console.warn("error: serverModel is null")
+        }
+    }
+
+    ServerWindow {
+        id: serverWindow
+        runner: root.runnerObject
     }
 
     ListView {
@@ -33,7 +45,7 @@ Window {
         anchors.bottom: javaStatusBar.top
         anchors.margins: 12
         spacing: 12
-        model: serverModel
+        model: root.modelObject
 
         delegate: ServerCard {
             required property string name
@@ -42,6 +54,10 @@ Window {
             serverName: name
             serverMotd: motd
             serverFolder: folder
+            serverRunning: root.runnerObject !== null
+                && root.runnerObject.running
+                && root.runnerObject.serverFolder === folder
+            onStartClicked: serverWindow.openForServer(folder, name)
         }
 
         // ScrollBar.vertical: ScrollBar {

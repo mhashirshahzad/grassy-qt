@@ -9,6 +9,7 @@ Rectangle {
     required property string serverName
     required property string serverMotd
     required property string serverFolder
+    property bool serverRunning: false
 
     signal startClicked()
     signal editClicked()
@@ -42,32 +43,32 @@ Rectangle {
                 Layout.fillWidth: true
             }
 
-            ToolButton {
-                icon.name: "user-trash-symbolic"
+            IconButton {
+                iconSource: "qrc:/qml/icons/delete.svg"
                 ToolTip.text: "Delete Server"
                 ToolTip.visible: hovered
 
                 onClicked: card.deleteClicked()
             }
 
-            ToolButton {
-                icon.name: "document-edit-symbolic"
+            IconButton {
+                iconSource: "qrc:/qml/icons/edit.svg"
                 ToolTip.text: "Edit Server"
                 ToolTip.visible: hovered
 
                 onClicked: card.editClicked()
             }
 
-            ToolButton {
-                icon.name: "folder-open-symbolic"
+            IconButton {
+                iconSource: "qrc:/qml/icons/folder.svg"
                 ToolTip.text: "Open Server Folder"
                 ToolTip.visible: hovered
 
                 onClicked: card.folderClicked()
             }
 
-            ToolButton {
-                icon.name: "emblem-system-symbolic"
+            IconButton {
+                iconSource: "qrc:/qml/icons/settings.svg"
                 ToolTip.text: "Server Settings"
                 ToolTip.visible: hovered
 
@@ -88,10 +89,18 @@ Rectangle {
                 Layout.fillWidth: true
             }
 
-            Button {
-                text: "Start Server"
-                highlighted: true
+            Rectangle {
+                width: 8
+                height: 8
+                radius: 4
+                color: card.serverRunning ? Theme.success : Theme.subtext2
+            }
 
+            ThemedButton {
+                text: card.serverRunning ? "Running" : "Start Server"
+                buttonColor: card.serverRunning ? Theme.success : Theme.accent
+                buttonHoverColor: card.serverRunning ? Theme.successHover : Theme.accentHover
+                buttonPressedColor: card.serverRunning ? Theme.successMuted : Theme.accentPressed
                 onClicked: card.startClicked()
             }
         }

@@ -48,7 +48,12 @@ Rectangle {
             anchors.fill: parent
             placeholderText: "Search for servers..."
             font.pixelSize: 12
-            onTextChanged: serverModel.setSearchText(text)
+            onTextChanged: {
+                if (typeof serverModel !== "undefined" && serverModel)
+                    serverModel.setSearchText(text)
+                else
+                    console.warn("error: serverModel is null")
+            }
         }
     }
 
