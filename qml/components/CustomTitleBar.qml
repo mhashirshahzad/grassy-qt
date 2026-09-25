@@ -1,6 +1,6 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
-import "." 1.0
+import "../theme" 1.0
 
 Rectangle {
     id: root
@@ -24,7 +24,7 @@ Rectangle {
         spacing: 4
 
         IconButton {
-            iconSource: "qrc:/qml/icons/cog.svg"
+            iconSource: "qrc:/icons/cog.svg"
             onClicked: root.settingsClicked()
         }
 
@@ -65,12 +65,12 @@ Rectangle {
         spacing: 4
 
         IconButton {
-            iconSource: "qrc:/qml/icons/refresh.svg"
+            iconSource: "qrc:/icons/refresh.svg"
             onClicked: root.reloadClicked()
         }
 
         IconButton {
-            iconSource: "qrc:/qml/icons/plus.svg"
+            iconSource: "qrc:/icons/plus.svg"
             onClicked: root.addServerClicked()
         }
     }

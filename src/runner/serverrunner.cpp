@@ -1,11 +1,14 @@
 #include "serverrunner.hpp"
 
 #include <QDir>
+#include <QFile>
 #include <QFileInfo>
+#include <QHash>
 #include <QRegularExpression>
 
 #ifdef Q_OS_LINUX
 #include <signal.h>
+#include <QFile>
 #include <sys/prctl.h>
 #include <unistd.h>
 #endif
@@ -119,7 +122,7 @@ QString ansiToHtml(const QString &text)
         highlightLogKeywords(text.mid(start).toHtmlEscaped()).replace('\n', QStringLiteral("<br>"));
     static const QRegularExpression commandLine(
         QStringLiteral(R"(^Running:.*?(?:<br>|$))"));
-    html.replace(commandLine, QStringLiteral("<font color=\"#b48ead\"><b>\\0</b></font>"));
+    html.replace(commandLine, QStringLiteral("<font color=\"#b48ead\"><b>\\1</b></font>"));
 
     return QStringLiteral("<font color=\"%1\">%2</font>").arg(color, html);
 }
@@ -138,6 +141,8 @@ ServerRunner::ServerRunner(QObject *parent) : QObject(parent), m_process(new QPr
     connect(m_process, qOverload<int, QProcess::ExitStatus>(&QProcess::finished), this,
             &ServerRunner::processFinished);
     connect(m_process, &QProcess::errorOccurred, this, &ServerRunner::processError);
+    m_usageTimer.setInterval(1000);
+    connect(&m_usageTimer, &QTimer::timeout, this, &ServerRunner::updateUsage);
 }
 
 ServerRunner::~ServerRunner() { shutdown(); }
@@ -151,6 +156,10 @@ QString ServerRunner::consoleText() const { return m_consoleText; }
 QString ServerRunner::consoleHtml() const { return m_consoleHtml; }
 
 bool ServerRunner::running() const { return m_process->state() != QProcess::NotRunning; }
+
+double ServerRunner::cpuUsage() const { return m_cpuUsage; }
+
+qint64 ServerRunner::memoryUsageKb() const { return m_memoryUsageKb; }
 
 void ServerRunner::setServerFolder(const QString &serverFolder)
 {
@@ -167,10 +176,16 @@ void ServerRunner::start()
     if (running())
         return;
 
+    m_sessionHeader.clear();
     m_consoleText.clear();
     m_consoleHtml.clear();
+    m_previousProcessTicks = 0;
+    m_previousSystemTicks = 0;
+    m_cpuUsage = 0.0;
+    m_memoryUsageKb = 0;
     emit consoleTextChanged();
     emit consoleHtmlChanged();
+    emit usageChanged();
 
     if (m_serverFolder.isEmpty())
     {
@@ -190,16 +205,32 @@ void ServerRunner::start()
     const QString startScript = QDir(m_serverFolder).filePath("start.sh");
     if (QFileInfo::exists(startScript))
     {
-        appendConsole("Running: " + startScript + "\n");
+        QString command = startScript;
+        QFile script(startScript);
+        if (script.open(QIODevice::ReadOnly | QIODevice::Text))
+        {
+            const QString scriptText = QString::fromUtf8(script.readAll());
+            static const QRegularExpression javaCommand(
+                QStringLiteral(R"(^\s*(java\b.*)$)"),
+                QRegularExpression::MultilineOption);
+            const auto match = javaCommand.match(scriptText);
+            if (match.hasMatch())
+                command = match.captured(1).trimmed();
+        }
+
+        m_sessionHeader = "Running: " + command + "\n";
+        appendConsole(m_sessionHeader);
         m_process->start("/bin/sh", {startScript});
     }
     else
     {
         const QStringList args{"-Xms2G", "-Xmx4G", "-jar", jar, "nogui"};
-        appendConsole("Running: java " + args.join(' ') + "\n");
+        m_sessionHeader = "Running: java " + args.join(' ') + "\n";
+        appendConsole(m_sessionHeader);
         m_process->start("java", args);
     }
     emit runningChanged();
+        m_usageTimer.start();
 }
 
 void ServerRunner::stop()
@@ -243,6 +274,10 @@ void ServerRunner::shutdown()
         m_process->kill();
 #endif
     }
+    m_usageTimer.stop();
+    m_cpuUsage = 0.0;
+    m_memoryUsageKb = 0;
+    emit usageChanged();
 }
 
 void ServerRunner::interrupt()
@@ -290,8 +325,8 @@ void ServerRunner::appendConsole(const QString &text)
         m_consoleText += before;
         m_consoleHtml += ansiToHtml(before);
 
-        m_consoleText.clear();
-        m_consoleHtml.clear();
+        m_consoleText = m_sessionHeader;
+        m_consoleHtml = ansiToHtml(m_sessionHeader);
         matchOffset = match.capturedEnd();
     }
 
@@ -314,6 +349,10 @@ void ServerRunner::processFinished(int exitCode, QProcess::ExitStatus status)
         status == QProcess::CrashExit ? QStringLiteral("crashed") : QStringLiteral("stopped");
     appendConsole(QString("\nServer %1 (exit code %2)\n").arg(reason).arg(exitCode));
     emit runningChanged();
+    m_usageTimer.stop();
+    m_cpuUsage = 0.0;
+    m_memoryUsageKb = 0;
+    emit usageChanged();
 }
 
 void ServerRunner::processError(QProcess::ProcessError error)
@@ -321,4 +360,166 @@ void ServerRunner::processError(QProcess::ProcessError error)
     Q_UNUSED(error);
     appendConsole("\nProcess error: " + m_process->errorString() + "\n");
     emit runningChanged();
+}
+
+void ServerRunner::updateUsage()
+{
+#ifdef Q_OS_LINUX
+    if (!running())
+        return;
+
+    QFile systemStat(QStringLiteral("/proc/stat"));
+    if (!systemStat.open(QIODevice::ReadOnly))
+        return;
+
+    const QList<QByteArray> systemFields = systemStat.readLine().simplified().split(' ');
+    if (systemFields.size() <= 4)
+        return;
+
+    bool systemOk = false;
+    quint64 systemTicks = 0;
+    for (int i = 1; i < systemFields.size(); ++i)
+        systemTicks += systemFields[i].toULongLong(&systemOk);
+
+    const qint64 launcherPid = m_process->processId();
+    qint64 launcherProcessGroup = launcherPid;
+    QFile launcherStat(QStringLiteral("/proc/%1/stat").arg(launcherPid));
+    if (launcherStat.open(QIODevice::ReadOnly))
+    {
+        const QByteArray contents = launcherStat.readAll();
+        const qsizetype closeName = contents.lastIndexOf(')');
+        if (closeName >= 0)
+        {
+            const QList<QByteArray> fields =
+                contents.mid(closeName + 2).simplified().split(' ');
+            bool groupOk = false;
+            if (fields.size() > 2)
+            {
+                const qint64 processGroup = fields[2].toLongLong(&groupOk);
+                if (groupOk)
+                    launcherProcessGroup = processGroup;
+            }
+        }
+    }
+
+    quint64 processTicks = 0;
+    qint64 memoryUsageKb = 0;
+    struct ProcessInfo
+    {
+        qint64 pid;
+        qint64 parentPid;
+        qint64 processGroup;
+        quint64 ticks;
+        qint64 memoryKb;
+    };
+    QList<ProcessInfo> processInfo;
+    QHash<qint64, qint64> parentByPid;
+    QDir proc(QStringLiteral("/proc"));
+    const QFileInfoList processes =
+        proc.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name);
+
+    for (const QFileInfo &entry : processes)
+    {
+        bool pidOk = false;
+        const qint64 pid = entry.fileName().toLongLong(&pidOk);
+        if (!pidOk)
+            continue;
+
+        QFile stat(entry.filePath() + QStringLiteral("/stat"));
+        if (!stat.open(QIODevice::ReadOnly))
+            continue;
+
+        const QByteArray contents = stat.readAll();
+        const qsizetype closeName = contents.lastIndexOf(')');
+        if (closeName < 0)
+            continue;
+
+        const QList<QByteArray> fields =
+            contents.mid(closeName + 2).simplified().split(' ');
+        if (fields.size() <= 14)
+            continue;
+
+        bool parentOk = false;
+        const qint64 parentPid = fields[1].toLongLong(&parentOk);
+        bool groupOk = false;
+        const qint64 processGroup = fields[2].toLongLong(&groupOk);
+        if (!parentOk || !groupOk)
+            continue;
+
+        bool userTicksOk = false;
+        bool systemTicksOk = false;
+        const quint64 userTicks = fields[11].toULongLong(&userTicksOk);
+        const quint64 systemTicks = fields[12].toULongLong(&systemTicksOk);
+        if (!userTicksOk || !systemTicksOk)
+            continue;
+
+        qint64 processMemoryKb = 0;
+        QFile status(entry.filePath() + QStringLiteral("/status"));
+        if (status.open(QIODevice::ReadOnly))
+        {
+            while (!status.atEnd())
+            {
+                const QByteArray line = status.readLine();
+                if (!line.startsWith("VmRSS:"))
+                    continue;
+                const QList<QByteArray> memoryFields = line.simplified().split(' ');
+                if (memoryFields.size() > 1)
+                    processMemoryKb = memoryFields[1].toLongLong();
+                break;
+            }
+        }
+        if (processMemoryKb == 0)
+        {
+            QFile statm(entry.filePath() + QStringLiteral("/statm"));
+            if (statm.open(QIODevice::ReadOnly))
+            {
+                const QList<QByteArray> memoryFields = statm.readAll().simplified().split(' ');
+                bool residentOk = false;
+                const quint64 residentPages =
+                    memoryFields.size() > 1 ? memoryFields[1].toULongLong(&residentOk) : 0;
+                if (residentOk)
+                    processMemoryKb =
+                        static_cast<qint64>((residentPages * ::sysconf(_SC_PAGESIZE)) / 1024);
+            }
+        }
+
+        processInfo.append(
+            {pid, parentPid, processGroup, userTicks + systemTicks, processMemoryKb});
+        parentByPid.insert(pid, parentPid);
+    }
+
+    for (const ProcessInfo &process : processInfo)
+    {
+        bool belongsToLauncher = process.processGroup == launcherProcessGroup;
+        qint64 parentPid = process.parentPid;
+        for (int depth = 0; !belongsToLauncher && depth < 64; ++depth)
+        {
+            if (parentPid == launcherPid)
+            {
+                belongsToLauncher = true;
+                break;
+            }
+            if (!parentByPid.contains(parentPid) || parentPid == parentByPid.value(parentPid))
+                break;
+            parentPid = parentByPid.value(parentPid);
+        }
+
+        if (belongsToLauncher)
+        {
+            processTicks += process.ticks;
+            memoryUsageKb += process.memoryKb;
+        }
+    }
+
+    if (systemOk && m_previousSystemTicks > 0 && systemTicks > m_previousSystemTicks)
+    {
+        const double deltaProcess = processTicks - m_previousProcessTicks;
+        const double deltaSystem = systemTicks - m_previousSystemTicks;
+        m_cpuUsage = (deltaProcess / deltaSystem) * 100.0;
+    }
+    m_previousProcessTicks = processTicks;
+    m_previousSystemTicks = systemTicks;
+    m_memoryUsageKb = memoryUsageKb;
+    emit usageChanged();
+#endif
 }

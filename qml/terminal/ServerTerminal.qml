@@ -1,7 +1,8 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
-import "." 1.0
+import "../theme" 1.0
+import "../components" 1.0
 
 FocusScope {
     id: root
@@ -82,16 +83,16 @@ FocusScope {
                     }
                 }
 
-                ThemedButton {
-                    anchors.right : commandBar.right
-                    
-                    text: "Stop"
-                    enabled: root.runner !== null && root.runner.running
-                    buttonColor: Theme.failure
-                    buttonHoverColor: Theme.failureHover
-                    buttonPressedColor: Theme.failureMuted
-                    onClicked: if (root.runner) root.runner.stop()
-                }
+            }
+
+            ThemedButton {
+                text: "Stop"
+                enabled: root.runner !== null && root.runner.running
+                buttonColor: "#7f1d2d"
+                buttonHoverColor: "#a52a3d"
+                buttonPressedColor: "#5b1421"
+                buttonTextColor: "#000000"
+                onClicked: if (root.runner) root.runner.stop()
             }
         }
     }

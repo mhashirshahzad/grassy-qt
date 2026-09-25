@@ -2,7 +2,9 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Window 2.15
-import "." 1.0
+import "../theme" 1.0
+import "../components" 1.0
+import "../terminal" 1.0
 
 Window {
     id: root
@@ -17,7 +19,7 @@ Window {
     minimumHeight: 360
     color: Theme.background
     title: runner
-        ? (serverTitle.length > 0 ? serverTitle + " - Console" : "Server Console")
+        ? (serverTitle.length > 0 ? serverTitle : "Server")
         : "error: runner is null"
 
     ColumnLayout {
@@ -43,6 +45,17 @@ Window {
                 color: runner
                     ? (runner.running ? Theme.success : Theme.subtext)
                     : Theme.failure
+            }
+
+            Label {
+                text: runner
+                    ? (runner.running
+                        ? "CPU %1%  RAM %2 MB"
+                            .arg(runner.cpuUsage.toFixed(1))
+                            .arg((runner.memoryUsageKb / 1024).toFixed(1))
+                        : "CPU --  RAM --")
+                    : "error: runner is null"
+                color: Theme.subtext
             }
             
             Rectangle {

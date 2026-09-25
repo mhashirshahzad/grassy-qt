@@ -2,6 +2,7 @@
 
 #include <QObject>
 #include <QProcess>
+#include <QTimer>
 
 class ServerRunner : public QObject
 {
@@ -12,6 +13,8 @@ class ServerRunner : public QObject
     Q_PROPERTY(QString consoleText READ consoleText NOTIFY consoleTextChanged)
     Q_PROPERTY(QString consoleHtml READ consoleHtml NOTIFY consoleHtmlChanged)
     Q_PROPERTY(bool running READ running NOTIFY runningChanged)
+    Q_PROPERTY(double cpuUsage READ cpuUsage NOTIFY usageChanged)
+    Q_PROPERTY(qint64 memoryUsageKb READ memoryUsageKb NOTIFY usageChanged)
 
   public:
     explicit ServerRunner(QObject *parent = nullptr);
@@ -22,6 +25,8 @@ class ServerRunner : public QObject
     QString consoleText() const;
     QString consoleHtml() const;
     bool running() const;
+    double cpuUsage() const;
+    qint64 memoryUsageKb() const;
 
     Q_INVOKABLE void start();
     Q_INVOKABLE void stop();
@@ -35,12 +40,14 @@ class ServerRunner : public QObject
     void consoleTextChanged();
     void consoleHtmlChanged();
     void runningChanged();
+    void usageChanged();
     void outputReceived(const QString &text);
 
   private slots:
     void readOutput();
     void processFinished(int exitCode, QProcess::ExitStatus status);
     void processError(QProcess::ProcessError error);
+    void updateUsage();
 
   private:
     void setServerFolder(const QString &serverFolder);
@@ -51,6 +58,12 @@ class ServerRunner : public QObject
     QString m_serverName;
     QString m_consoleText;
     QString m_consoleHtml;
+    QString m_sessionHeader;
 
     QProcess *m_process = nullptr;
+    QTimer m_usageTimer;
+    double m_cpuUsage = 0.0;
+    qint64 m_memoryUsageKb = 0;
+    quint64 m_previousProcessTicks = 0;
+    quint64 m_previousSystemTicks = 0;
 };

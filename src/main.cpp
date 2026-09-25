@@ -1,4 +1,5 @@
 #include <QGuiApplication>
+#include <QDebug>
 #include <QQmlContext>
 #include <QQmlApplicationEngine>
 
@@ -16,7 +17,7 @@ int main(int argc, char *argv[])
     app.setApplicationName("grassy");
 
     QQmlApplicationEngine engine;
-
+    QList<QQmlError> loadErrors;
     Utils utils;
     ServerModel serverModel;
     ServerFilterModel filteredServerModel;
@@ -26,9 +27,27 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty(QStringLiteral("utils"), &utils);
     engine.rootContext()->setContextProperty(QStringLiteral("serverRunner"), &serverRunner);
     engine.rootContext()->setContextProperty(QStringLiteral("serverModel"), &filteredServerModel);
+    QObject::connect(
+        &engine, &QQmlApplicationEngine::warnings,
+        [&loadErrors](const QList<QQmlError> &warnings) {
+            loadErrors.append(warnings);
+            for (const QQmlError &warning : warnings)
+                qWarning().noquote() << warning.toString();
+        });
+    QObject::connect(
+        &engine, &QQmlApplicationEngine::objectCreated,
+        [](QObject *object, const QUrl &url) {
+            if (!object)
+                qWarning() << "Failed to create QML object:" << url;
+        });
     engine.load(QUrl(QStringLiteral("qrc:/Main.qml")));
     if (engine.rootObjects().isEmpty())
+    {
+        qCritical() << "QML root object was not created";
+        for (const QQmlError &error : loadErrors)
+            qCritical().noquote() << error.toString();
         return -1;
+    }
 
     return app.exec();
 }

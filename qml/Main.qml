@@ -2,7 +2,9 @@ import QtQuick 2.15
 import QtQuick.Window 2.15
 // import QtQuick.Controls 2.15
 
-import "." 1.0
+import "theme" 1.0
+import "components" 1.0
+import "windows" 1.0
 
 Window {
     id: root

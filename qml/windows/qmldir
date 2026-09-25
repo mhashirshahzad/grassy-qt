@@ -1,0 +1,3 @@
+module Grassy.Windows
+
+ServerWindow 1.0 ServerWindow.qml

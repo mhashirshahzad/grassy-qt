@@ -1,7 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 2.15
-import "." 1.0
+import "../theme" 1.0
 
 Rectangle {
     id: card
@@ -44,7 +44,7 @@ Rectangle {
             }
 
             IconButton {
-                iconSource: "qrc:/qml/icons/delete.svg"
+                iconSource: "qrc:/icons/delete.svg"
                 ToolTip.text: "Delete Server"
                 ToolTip.visible: hovered
 
@@ -52,7 +52,7 @@ Rectangle {
             }
 
             IconButton {
-                iconSource: "qrc:/qml/icons/edit.svg"
+                iconSource: "qrc:/icons/edit.svg"
                 ToolTip.text: "Edit Server"
                 ToolTip.visible: hovered
 
@@ -60,7 +60,7 @@ Rectangle {
             }
 
             IconButton {
-                iconSource: "qrc:/qml/icons/folder.svg"
+                iconSource: "qrc:/icons/folder.svg"
                 ToolTip.text: "Open Server Folder"
                 ToolTip.visible: hovered
 
@@ -68,7 +68,7 @@ Rectangle {
             }
 
             IconButton {
-                iconSource: "qrc:/qml/icons/settings.svg"
+                iconSource: "qrc:/icons/settings.svg"
                 ToolTip.text: "Server Settings"
                 ToolTip.visible: hovered
 

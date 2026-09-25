@@ -12,7 +12,7 @@ end
 
 local entries = {}
 for _, qml_file in ipairs(os.files(path.join(qml_root, "**.qml"))) do
-    local alias = path.filename(qml_file)
+    local alias = path.relative(qml_file, qml_root):gsub("\\", "/")
     local source = path.relative(qml_file, path.join(root, "src")):gsub("\\", "/")
     table.insert(entries, string.format(
         '        <file alias="%s">%s</file>',
@@ -21,7 +21,7 @@ for _, qml_file in ipairs(os.files(path.join(qml_root, "**.qml"))) do
     ))
 end
 for _, icon_file in ipairs(os.files(path.join(qml_root, "**.svg"))) do
-    local alias = path.relative(icon_file, root):gsub("\\", "/")
+    local alias = path.relative(icon_file, qml_root):gsub("\\", "/")
     local source = path.relative(icon_file, path.join(root, "src")):gsub("\\", "/")
     table.insert(entries, string.format(
         '        <file alias="%s">%s</file>',
@@ -30,7 +30,15 @@ for _, icon_file in ipairs(os.files(path.join(qml_root, "**.svg"))) do
     ))
 end
 table.sort(entries)
-table.insert(entries, 1, '        <file alias="qmldir">../qml/theme/qmldir</file>')
+for _, module_file in ipairs(os.files(path.join(qml_root, "**/qmldir"))) do
+    local alias = path.relative(module_file, qml_root):gsub("\\", "/")
+    local source = path.relative(module_file, path.join(root, "src")):gsub("\\", "/")
+    table.insert(entries, 1, string.format(
+        '        <file alias="%s">%s</file>',
+        xml_escape(alias),
+        xml_escape(source)
+    ))
+end
 
 io.writefile(qrc_file, table.concat({
     "<RCC>",
