@@ -148,9 +148,6 @@ Rectangle {
 
     function openSettingsDialog() {
         settingsDialog.serverFolder = card.serverFolder
-        settingsDialog.propertiesText = card.modelObject
-            ? card.modelObject.serverProperties(card.serverFolder)
-            : ""
         settingsDialog.errorMessage = ""
         settingsDialog.open()
     }

@@ -53,7 +53,7 @@ CustomPopup {
             text: "Server storage"
             font.pixelSize: 20
             font.bold: true
-            Layout.rightMargin: closeButton.width + 12
+            Layout.rightMargin: closeButtonSize + closeButtonRightMargin + 12
         }
 
         Label {
@@ -66,7 +66,8 @@ CustomPopup {
             Layout.fillWidth: true
             spacing: 8
 
-            TextField {
+            CustomTextField {
+                showSearchIcon: false
                 id: directoryField
                 Layout.fillWidth: true
                 selectByMouse: true

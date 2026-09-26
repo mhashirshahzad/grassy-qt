@@ -1,12 +1,25 @@
 <RCC>
     <qresource prefix="/">
         <file alias="Main.qml">../qml/Main.qml</file>
+        <file alias="components/BasicServerSettings.qml">../qml/components/BasicServerSettings.qml</file>
         <file alias="components/CustomTextField.qml">../qml/components/CustomTextField.qml</file>
         <file alias="components/CustomTitleBar.qml">../qml/components/CustomTitleBar.qml</file>
+        <file alias="components/GameplayServerSettings.qml">../qml/components/GameplayServerSettings.qml</file>
         <file alias="components/IconButton.qml">../qml/components/IconButton.qml</file>
         <file alias="components/JavaStatusBar.qml">../qml/components/JavaStatusBar.qml</file>
+        <file alias="components/NetworkServerSettings.qml">../qml/components/NetworkServerSettings.qml</file>
+        <file alias="components/PerformanceServerSettings.qml">../qml/components/PerformanceServerSettings.qml</file>
+        <file alias="components/PlayerServerSettings.qml">../qml/components/PlayerServerSettings.qml</file>
+        <file alias="components/SecurityServerSettings.qml">../qml/components/SecurityServerSettings.qml</file>
         <file alias="components/ServerCard.qml">../qml/components/ServerCard.qml</file>
+        <file alias="components/ServerChoiceSetting.qml">../qml/components/ServerChoiceSetting.qml</file>
+        <file alias="components/ServerNumberSetting.qml">../qml/components/ServerNumberSetting.qml</file>
+        <file alias="components/ServerSettingCard.qml">../qml/components/ServerSettingCard.qml</file>
+        <file alias="components/ServerSettingsSection.qml">../qml/components/ServerSettingsSection.qml</file>
+        <file alias="components/ServerTextSetting.qml">../qml/components/ServerTextSetting.qml</file>
+        <file alias="components/ServerToggleSetting.qml">../qml/components/ServerToggleSetting.qml</file>
         <file alias="components/ThemedButton.qml">../qml/components/ThemedButton.qml</file>
+        <file alias="components/WorldServerSettings.qml">../qml/components/WorldServerSettings.qml</file>
         <file alias="components/qmldir">../qml/components/qmldir</file>
         <file alias="dialogs/qmldir">../qml/dialogs/qmldir</file>
         <file alias="fonts/Ubuntu/Ubuntu-Bold.ttf">../qml/fonts/Ubuntu/Ubuntu-Bold.ttf</file>
@@ -36,9 +49,9 @@
         <file alias="icons/warning.svg">../qml/icons/warning.svg</file>
         <file alias="popups/CustomPopup.qml">../qml/popups/CustomPopup.qml</file>
         <file alias="popups/DeleteServerPopup.qml">../qml/popups/DeleteServerPopup.qml</file>
+        <file alias="popups/GrassySettingsPopup.qml">../qml/popups/GrassySettingsPopup.qml</file>
         <file alias="popups/RenameServerPopup.qml">../qml/popups/RenameServerPopup.qml</file>
         <file alias="popups/ServerSettingsPopup.qml">../qml/popups/ServerSettingsPopup.qml</file>
-        <file alias="popups/SettingsPopup.qml">../qml/popups/SettingsPopup.qml</file>
         <file alias="popups/qmldir">../qml/popups/qmldir</file>
         <file alias="terminal/ServerTerminal.qml">../qml/terminal/ServerTerminal.qml</file>
         <file alias="terminal/qmldir">../qml/terminal/qmldir</file>

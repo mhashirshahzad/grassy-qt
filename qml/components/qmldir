@@ -2,7 +2,20 @@ module Grassy.Components
 
 CustomTextField 1.0 CustomTextField.qml
 CustomTitleBar 1.0 CustomTitleBar.qml
+BasicServerSettings 1.0 BasicServerSettings.qml
+GameplayServerSettings 1.0 GameplayServerSettings.qml
 IconButton 1.0 IconButton.qml
 JavaStatusBar 1.0 JavaStatusBar.qml
+NetworkServerSettings 1.0 NetworkServerSettings.qml
+PerformanceServerSettings 1.0 PerformanceServerSettings.qml
+PlayerServerSettings 1.0 PlayerServerSettings.qml
 ServerCard 1.0 ServerCard.qml
+SecurityServerSettings 1.0 SecurityServerSettings.qml
+ServerChoiceSetting 1.0 ServerChoiceSetting.qml
+ServerNumberSetting 1.0 ServerNumberSetting.qml
+ServerSettingCard 1.0 ServerSettingCard.qml
+ServerSettingsSection 1.0 ServerSettingsSection.qml
+ServerTextSetting 1.0 ServerTextSetting.qml
+ServerToggleSetting 1.0 ServerToggleSetting.qml
 ThemedButton 1.0 ThemedButton.qml
+WorldServerSettings 1.0 WorldServerSettings.qml

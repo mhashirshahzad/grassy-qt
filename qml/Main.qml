@@ -113,7 +113,7 @@ ApplicationWindow {
 
     }
 
-    SettingsPopup {
+    GrassySettingsPopup {
         id: appSettings
         utilsObject: typeof utils !== "undefined" ? utils : null
         onDirectorySaved: {
