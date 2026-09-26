@@ -98,7 +98,7 @@ QtObject {
 
 
     readonly property FontLoader ubuntu : FontLoader {
-        source: "qrc:fonts/Ubuntu/Ubuntu-Regular.ttf"
+        source: "qrc:/fonts/Ubuntu/Ubuntu-Regular.ttf"
     }
     readonly property FontLoader monoFont: FontLoader {
         source: "qrc:/fonts/Ubuntu/UbuntuMono-Regular.ttf"
@@ -107,4 +107,3 @@ QtObject {
     readonly property string monoFamily: monoFont.name
     readonly property string fontFamily: ubuntu.name
 }
-

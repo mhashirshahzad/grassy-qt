@@ -1,0 +1,5 @@
+module Grassy.Dialogs
+
+DeleteServerDialog 1.0 DeleteServerDialog.qml
+RenameServerDialog 1.0 RenameServerDialog.qml
+ServerPropertiesDialog 1.0 ServerPropertiesDialog.qml
