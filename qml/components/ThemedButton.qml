@@ -8,7 +8,7 @@ Button {
     property color buttonColor: Theme.accent
     property color buttonHoverColor: Theme.accentHover
     property color buttonPressedColor: Theme.accentPressed
-    property color buttonTextColor: "#000000"
+    property color buttonTextColor: Theme.background
 
     hoverEnabled: true
     padding: 10

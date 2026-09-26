@@ -6,16 +6,16 @@ QtObject {
     // Base
     // ─────────────────────────────────────────────
 
-    readonly property color background: "#0d0b14"
+    readonly property color background: "#1a1b26"
 
     // ─────────────────────────────────────────────
     // Surfaces
     // ─────────────────────────────────────────────
 
-    readonly property color surface0: "#12101a"
-    readonly property color surface1: "#181522"
-    readonly property color surface2: "#211d2d"
-    readonly property color surface3: "#2a2538"
+    readonly property color surface0: "#16161e"
+    readonly property color surface1: "#24283b"
+    readonly property color surface2: "#292e42"
+    readonly property color surface3: "#3b4261"
 
     // Main UI surface
     readonly property color surface: surface1
@@ -24,10 +24,10 @@ QtObject {
     // Overlays
     // ─────────────────────────────────────────────
 
-    readonly property color overlay0: "#383247"
-    readonly property color overlay1: "#443d55"
-    readonly property color overlay2: "#514963"
-    readonly property color overlay3: "#605772"
+    readonly property color overlay0: "#565f89"
+    readonly property color overlay1: "#737aa2"
+    readonly property color overlay2: "#7982a9"
+    readonly property color overlay3: "#a9b1d6"
 
     readonly property color overlay: overlay0
 
@@ -35,12 +35,12 @@ QtObject {
     // Text
     // ─────────────────────────────────────────────
 
-    readonly property color text: "#eeeaf7"
-    readonly property color textBright: "#ffffff"
+    readonly property color text: "#c0caf5"
+    readonly property color textBright: "#e6eaff"
 
-    readonly property color subtext0: "#b8b1c9"
-    readonly property color subtext1: "#968da9"
-    readonly property color subtext2: "#746b86"
+    readonly property color subtext0: "#a9b1d6"
+    readonly property color subtext1: "#7982a9"
+    readonly property color subtext2: "#565f89"
 
     readonly property color subtext: subtext0
 
@@ -48,51 +48,51 @@ QtObject {
     // Accent
     // ─────────────────────────────────────────────
 
-    readonly property color accent: "#9d7cff"
-    readonly property color accentHover: "#b095ff"
-    readonly property color accentPressed: "#805fe0"
-    readonly property color accentMuted: "#493b72"
+    readonly property color accent: "#7aa2f7"
+    readonly property color accentHover: "#89b4fa"
+    readonly property color accentPressed: "#6183bb"
+    readonly property color accentMuted: "#3b4261"
 
     // ─────────────────────────────────────────────
     // Semantic
     // ─────────────────────────────────────────────
 
-    readonly property color success: "#7ee787"
-    readonly property color successHover: "#9af29f"
-    readonly property color successMuted: "#294a32"
+    readonly property color success: "#9ece6a"
+    readonly property color successHover: "#b9f27c"
+    readonly property color successMuted: "#3b4261"
 
-    readonly property color warning: "#f2c86b"
-    readonly property color warningHover: "#f8d98b"
-    readonly property color warningMuted: "#4b3d20"
+    readonly property color warning: "#e0af68"
+    readonly property color warningHover: "#ffcb6b"
+    readonly property color warningMuted: "#3b4261"
 
-    readonly property color failure: "#ff6b8a"
-    readonly property color failureHover: "#ff8fa5"
-    readonly property color failureMuted: "#4d2632"
+    readonly property color failure: "#f7768e"
+    readonly property color failureHover: "#ff899d"
+    readonly property color failureMuted: "#3b4261"
 
-    readonly property color info: "#6cb6ff"
-    readonly property color infoHover: "#8bc5ff"
-    readonly property color infoMuted: "#263e56"
+    readonly property color info: "#7dcfff"
+    readonly property color infoHover: "#a4e8ff"
+    readonly property color infoMuted: "#3b4261"
 
     // ─────────────────────────────────────────────
     // UI States
     // ─────────────────────────────────────────────
 
-    readonly property color border: "#302a3e"
-    readonly property color borderHover: "#514760"
+    readonly property color border: "#3b4261"
+    readonly property color borderHover: "#565f89"
     readonly property color borderFocus: accent
 
-    readonly property color selection: "#352b55"
-    readonly property color selectionHover: "#423567"
+    readonly property color selection: "#33467c"
+    readonly property color selectionHover: "#3b4261"
 
-    readonly property color disabled: "#4b4557"
-    readonly property color disabledText: "#625b6e"
+    readonly property color disabled: "#3b4261"
+    readonly property color disabledText: "#565f89"
 
     // ─────────────────────────────────────────────
     // Special
     // ─────────────────────────────────────────────
 
-    readonly property color shadow: "#000000"
-    readonly property color scrim: "#000000"
+    readonly property color shadow: "#16161e"
+    readonly property color scrim: "#16161ecc"
 
     readonly property color transparent: "#00000000"
 

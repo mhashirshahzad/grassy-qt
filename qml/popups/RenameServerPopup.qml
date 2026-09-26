@@ -2,8 +2,10 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import "../theme" 1.0
+import "../components" 1.0
+import "." 1.0
 
-Dialog {
+CustomPopup {
     id: root
 
     property var modelObject
@@ -11,31 +13,33 @@ Dialog {
     property string serverName
     property string errorMessage
 
-    title: "Rename server folder"
-    modal: true
-    standardButtons: Dialog.Ok | Dialog.Cancel
-    anchors.centerIn: parent
+    width: 420
+    height: 160
 
-    onAccepted: {
+    function accept() {
         if (!root.modelObject
                 || !root.modelObject.renameServer(
                     root.serverFolder, root.serverName)) {
             root.errorMessage = "Could not rename the server folder."
-            open()
+            return
         }
+        root.close()
     }
 
     ColumnLayout {
-        width: 360
+        anchors.fill: parent
         spacing: 10
 
         Label {
-            text: "New folder name"
+            text: "Rename server folder ?"
+            font.pixelSize: 20
+            font.bold: true
         }
 
-        TextField {
+        CustomTextField {
             id: renameField
             Layout.fillWidth: true
+            showSearchIcon: false
             text: root.serverName
             onTextChanged: root.serverName = text
             Component.onCompleted: selectAll()
@@ -45,6 +49,22 @@ Dialog {
             text: root.errorMessage
             color: Theme.failure
             visible: text.length > 0
+        }
+
+        Item { Layout.fillHeight: true }
+
+        RowLayout {
+            Layout.alignment: Qt.AlignRight
+            spacing: 8
+
+
+            Layout.fillWidth : true
+
+            ThemedButton {
+                Layout.fillWidth : true
+                text: "Rename"
+                onClicked: root.accept()
+            }
         }
     }
 }

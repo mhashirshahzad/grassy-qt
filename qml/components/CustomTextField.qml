@@ -7,6 +7,7 @@ TextField {
 
     property color borderColor: Theme.subtext
     property color focusBorderColor: Theme.accent
+    property bool showSearchIcon: true
 
     implicitWidth: 280
     implicitHeight: 30
@@ -14,7 +15,7 @@ TextField {
     selectByMouse: true
     verticalAlignment: TextInput.AlignVCenter
 
-    leftPadding: 38
+    leftPadding: showSearchIcon ? 38 : 12
     rightPadding: 12
 
     color: Theme.text
@@ -66,6 +67,7 @@ TextField {
         height: 16
 
         source: "qrc:/icons/magnify.svg"
+        visible: control.showSearchIcon
         opacity: control.enabled ? (control.activeFocus ? 1 : 0.7) : 0.4
 
         Behavior on opacity {

@@ -90,10 +90,10 @@ FocusScope {
             ThemedButton {
                 text: "Stop"
                 enabled: root.runner !== null && root.runner.running
-                buttonColor: "#7f1d2d"
-                buttonHoverColor: "#a52a3d"
-                buttonPressedColor: "#5b1421"
-                buttonTextColor: "#000000"
+                buttonColor: Theme.failureMuted
+                buttonHoverColor: Theme.failure
+                buttonPressedColor: Theme.failureMuted
+                buttonTextColor: Theme.textBright
                 onClicked: if (root.runner) root.runner.stop()
             }
         }

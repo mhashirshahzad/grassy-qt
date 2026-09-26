@@ -6,7 +6,7 @@ import QtQuick.Window 2.15
 
 import "theme" 1.0
 import "components" 1.0
-import "dialogs" 1.0
+import "popups" 1.0
 import "windows" 1.0
 
 ApplicationWindow {
@@ -95,29 +95,10 @@ ApplicationWindow {
             serverName: name
             serverMotd: motd
             serverFolder: folder
+            modelObject: root.modelObject
             serverRunning: root.runningRevision >= 0 && root.isServerRunning(folder)
             onStartClicked: root.openServer(folder, name)
-            onEditClicked: {
-                renameDialog.serverFolder = folder
-                renameDialog.serverName = name
-                renameDialog.errorMessage = ""
-                renameDialog.open()
-            }
-            onSettingsClicked: {
-                settingsDialog.serverFolder = folder
-                settingsDialog.propertiesText = root.modelObject
-                    ? root.modelObject.serverProperties(folder)
-                    : ""
-                settingsDialog.errorMessage = ""
-                settingsDialog.open()
-            }
             onFolderClicked: Qt.openUrlExternally("file://" + folder)
-            onDeleteClicked: {
-                deleteDialog.serverFolder = folder
-                deleteDialog.serverName = name
-                deleteDialog.errorMessage = ""
-                deleteDialog.open()
-            }
         }
 
         // ScrollBar.vertical: ScrollBar {
@@ -132,22 +113,7 @@ ApplicationWindow {
 
     }
 
-    RenameServerDialog {
-        id: renameDialog
-        modelObject: root.modelObject
-    }
-
-    ServerPropertiesDialog {
-        id: settingsDialog
-        modelObject: root.modelObject
-    }
-
-    DeleteServerDialog {
-        id: deleteDialog
-        modelObject: root.modelObject
-    }
-
-    SettingsWindow {
+    SettingsPopup {
         id: appSettings
         utilsObject: typeof utils !== "undefined" ? utils : null
         onDirectorySaved: {

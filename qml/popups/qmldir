@@ -1,0 +1,7 @@
+module Grassy.Popups
+
+CustomPopup 1.0 CustomPopup.qml
+DeleteServerPopup 1.0 DeleteServerPopup.qml
+RenameServerPopup 1.0 RenameServerPopup.qml
+ServerSettingsPopup 1.0 ServerSettingsPopup.qml
+SettingsPopup 1.0 SettingsPopup.qml

@@ -3,8 +3,9 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import "../theme" 1.0
 import "../components" 1.0
+import "." 1.0
 
-Popup {
+CustomPopup {
     id: root
 
     property var utilsObject: null
@@ -14,73 +15,6 @@ Popup {
 
     width: Math.min(parent ? parent.width - 40 : 620, 620)
     height: Math.min(parent ? parent.height - 40 : 360, 360)
-    anchors.centerIn: Overlay.overlay
-    modal: true
-    dim: true
-    closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
-    padding: 0
-
-    background: Rectangle {
-        color: Theme.background
-        border.color: Theme.border
-        border.width: 1
-        radius: 12
-    }
-
-    IconButton {
-        id: closeButton
-        anchors.top: parent.top
-        anchors.right: parent.right
-        anchors.topMargin: 14
-        anchors.rightMargin: 14
-        iconSource: "qrc:/icons/close.svg"
-        destructive: true
-        ToolTip.text: "Close"
-        ToolTip.visible: hovered
-        z: 2
-        onClicked: root.close()
-    }
-
-    Overlay.modal: Rectangle {
-        color: "#99000000"
-    }
-
-    enter: Transition {
-        ParallelAnimation {
-            NumberAnimation {
-                property: "scale"
-                from: 0.92
-                to: 1
-                duration: 180
-                easing.type: Easing.OutCubic
-            }
-            NumberAnimation {
-                property: "opacity"
-                from: 0
-                to: 1
-                duration: 140
-            }
-        }
-    }
-
-    exit: Transition {
-        ParallelAnimation {
-            NumberAnimation {
-                property: "scale"
-                from: 1
-                to: 0.96
-                duration: 120
-                easing.type: Easing.InCubic
-            }
-            NumberAnimation {
-                property: "opacity"
-                from: 1
-                to: 0
-                duration: 100
-            }
-        }
-    }
-
     function saveDirectory() {
         const path = directoryField.text.trim()
         if (!utilsObject || path.length === 0 || !utilsObject.saveServersDirectory(path)) {
@@ -258,8 +192,10 @@ Popup {
             spacing: 8
 
 
+            Layout.fillWidth : true
             ThemedButton {
                 text: "Save"
+                Layout.fillWidth : true
                 onClicked: root.saveDirectory()
             }
         }

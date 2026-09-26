@@ -2,6 +2,7 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 2.15
 import "../theme" 1.0
+import "../popups" 1.0
 
 Rectangle {
     id: card
@@ -9,6 +10,7 @@ Rectangle {
     required property string serverName
     required property string serverMotd
     required property string serverFolder
+    required property var modelObject
     property bool serverRunning: false
 
     signal startClicked()
@@ -50,7 +52,7 @@ Rectangle {
                 ToolTip.visible: hovered
                 enabled: !card.serverRunning
 
-                onClicked: card.deleteClicked()
+                onClicked: card.openDeleteDialog()
             }
 
             IconButton {
@@ -59,7 +61,7 @@ Rectangle {
                 ToolTip.visible: hovered
                 enabled: !card.serverRunning
 
-                onClicked: card.editClicked()
+                onClicked: card.openRenameDialog()
             }
 
             IconButton {
@@ -75,8 +77,9 @@ Rectangle {
                 ToolTip.text: "Server Settings"
                 ToolTip.visible: hovered
 
-                onClicked: card.settingsClicked()
+                onClicked: card.openSettingsDialog()
             }
+
         }
 
         // Bottom row
@@ -107,5 +110,55 @@ Rectangle {
                 onClicked: card.startClicked()
             }
         }
+
+    }
+
+    RenameServerPopup {
+        id: renameDialog
+        parent: Overlay.overlay
+        modelObject: card.modelObject
+        serverFolder: card.serverFolder
+        serverName: card.serverName
+        anchors.centerIn: parent
+    }
+
+    ServerSettingsPopup {
+        id: settingsDialog
+        parent: Overlay.overlay
+        modelObject: card.modelObject
+        serverFolder: card.serverFolder
+        anchors.centerIn: parent
+    }
+
+    DeleteServerPopup {
+        id: deleteDialog
+        parent: Overlay.overlay
+        modelObject: card.modelObject
+        serverFolder: card.serverFolder
+        serverName: card.serverName
+        anchors.centerIn: parent
+    }
+
+    function openRenameDialog() {
+        renameDialog.serverFolder = card.serverFolder
+        renameDialog.serverName = card.serverName
+        renameDialog.errorMessage = ""
+        renameDialog.open()
+    }
+
+    function openSettingsDialog() {
+        settingsDialog.serverFolder = card.serverFolder
+        settingsDialog.propertiesText = card.modelObject
+            ? card.modelObject.serverProperties(card.serverFolder)
+            : ""
+        settingsDialog.errorMessage = ""
+        settingsDialog.open()
+    }
+
+    function openDeleteDialog() {
+        deleteDialog.serverFolder = card.serverFolder
+        deleteDialog.serverName = card.serverName
+        deleteDialog.errorMessage = ""
+        deleteDialog.open()
     }
 }
