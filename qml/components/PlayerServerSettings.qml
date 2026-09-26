@@ -3,7 +3,8 @@ import QtQuick 2.15
 ServerSettingsSection {
     property var hostPopup
     title: "Players"
-    visible: hostPopup.matches("player idle online log pause")
+    searchHost: hostPopup
+    searchBlob: "player idle online log pause hide"
 
     ServerNumberSetting {
         settingsPopup: hostPopup

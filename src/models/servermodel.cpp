@@ -9,6 +9,7 @@
 #include <QFileInfo>
 #include <QSettings>
 #include <QTextStream>
+#include <QRegularExpression>
 
 namespace
 {
@@ -224,4 +225,37 @@ bool ServerModel::setServerProperty(const QString &folder, const QString &key,
         return false;
 
     return saveServerProperties(folder, contents);
+}
+
+bool ServerModel::createStartScript(const QString &folder, const QString &minimumMemory,
+                                    const QString &maximumMemory)
+{
+    static const QRegularExpression memoryPattern(QStringLiteral(R"(^\d+[kKmMgGtT]?$)"));
+    if (!memoryPattern.match(minimumMemory.trimmed()).hasMatch() ||
+        !memoryPattern.match(maximumMemory.trimmed()).hasMatch())
+        return false;
+
+    bool minOk = false;
+    bool maxOk = false;
+    const qint64 minimumBytes = minimumMemory.trimmed().toLongLong(&minOk);
+    const qint64 maximumBytes = maximumMemory.trimmed().toLongLong(&maxOk);
+    if (minOk && maxOk && minimumBytes > maximumBytes)
+        return false;
+
+    const QString scriptPath = QDir(folder).filePath(QStringLiteral("start.sh"));
+    QFile script(scriptPath);
+    if (!script.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate))
+        return false;
+
+    const QByteArray contents =
+        "#!/bin/sh\n"
+        "exec java -Xms" + minimumMemory.trimmed().toUtf8() +
+        " -Xmx" + maximumMemory.trimmed().toUtf8() +
+        " -jar server.jar nogui\n";
+    if (script.write(contents) != contents.size())
+        return false;
+    script.close();
+
+    return script.setPermissions(script.permissions() | QFileDevice::ExeOwner |
+                                 QFileDevice::ExeGroup | QFileDevice::ExeOther);
 }

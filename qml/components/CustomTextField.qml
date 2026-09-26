@@ -7,6 +7,7 @@ TextField {
 
     property color borderColor: Theme.subtext
     property color focusBorderColor: Theme.accent
+    property color backgroundColor: Theme.surface2
     property bool showSearchIcon: true
 
     implicitWidth: 280
@@ -28,34 +29,11 @@ TextField {
 
         radius: 8
 
-        color: Qt.rgba(
-            Theme.surface.r,
-            Theme.surface.g,
-            Theme.surface.b,
-            0.8
-        )
+        color: control.backgroundColor
 
-        border.width: control.activeFocus ? 2 : control.hovered ? 1 : 0
+        border.width: control.activeFocus ? 2 : 1
         border.color: control.activeFocus
-            ? control.focusBorderColor
-            : Qt.rgba(
-                  control.borderColor.r,
-                  control.borderColor.g,
-                  control.borderColor.b,
-                  0.35
-              )
-
-        Behavior on color {
-            ColorAnimation { duration: 120 }
-        }
-
-        Behavior on border.color {
-            ColorAnimation { duration: 120 }
-        }
-
-        Behavior on border.width {
-            NumberAnimation { duration: 120 }
-        }
+            ? control.focusBorderColor : control.borderColor
     }
 
     Image {

@@ -8,28 +8,23 @@ Rectangle {
 
     property string label
     property string description: ""
-    property color accentColor: Theme.accent
+    property string settingKey
+    property var searchHost
     default property alias control: controlHost.data
 
     Layout.fillWidth: true
-    implicitHeight: cardLayout.implicitHeight + 20
-    radius: 8
-    color: Theme.surface1
-    border.color: Theme.border
-    border.width: 1
+    visible: !searchHost
+        || searchHost.matches(label + " " + description + " " + settingKey)
+    implicitHeight: cardLayout.implicitHeight + 16
+    radius: 0
+    color: Theme.transparent
+    border.width: 0
 
     RowLayout {
         id: cardLayout
         anchors.fill: parent
-        anchors.margins: 10
+        anchors.margins: 8
         spacing: 12
-
-        Rectangle {
-            Layout.preferredWidth: 4
-            Layout.fillHeight: true
-            radius: 2
-            color: root.accentColor
-        }
 
         ColumnLayout {
             Layout.fillWidth: true

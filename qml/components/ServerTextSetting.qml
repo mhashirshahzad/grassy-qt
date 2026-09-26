@@ -1,9 +1,8 @@
 import QtQuick 2.15
 ServerSettingCard {
     property var settingsPopup
-    property string settingKey
     property string fallback: ""
-
+    searchHost: settingsPopup
     CustomTextField {
         anchors.fill: parent
         showSearchIcon: false

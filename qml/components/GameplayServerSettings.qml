@@ -3,7 +3,8 @@ import QtQuick 2.15
 ServerSettingsSection {
     property var hostPopup
     title: "Gameplay"
-    visible: hostPopup.matches("gameplay game mode difficulty flight spawn protection")
+    searchHost: hostPopup
+    searchBlob: "gameplay game mode difficulty flight spawn protection"
 
     ServerChoiceSetting {
         settingsPopup: hostPopup

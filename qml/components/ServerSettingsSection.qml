@@ -7,26 +7,28 @@ Rectangle {
     id: root
 
     property string title
+    property var searchHost
+    property string searchBlob: title
     default property alias content: sectionLayout.data
 
     Layout.fillWidth: true
-    implicitHeight: sectionLayout.implicitHeight + 24
-    color: Theme.surface
+    visible: !searchHost || searchHost.matches(searchBlob)
+    implicitHeight: sectionLayout.implicitHeight + 20
+    color: Theme.surface1
     radius: 10
-    border.color: Theme.border
-    border.width: 1
+    border.width: 0
 
     ColumnLayout {
         id: sectionLayout
         anchors.fill: parent
-        anchors.margins: 14
-        spacing: 10
+        anchors.margins: 12
+        spacing: 8
 
         Label {
             text: root.title
-            font.pixelSize: 15
+            font.pixelSize: 14
             font.bold: true
-            color: Theme.accent
+            color: Theme.text
         }
     }
 }

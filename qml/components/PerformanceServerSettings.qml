@@ -3,7 +3,8 @@ import QtQuick 2.15
 ServerSettingsSection {
     property var hostPopup
     title: "Performance"
-    visible: hostPopup.matches("performance view simulation entity tick transport chunk compression")
+    searchHost: hostPopup
+    searchBlob: "performance view simulation entity tick transport entity broadcast transport chunk compression"
 
     ServerNumberSetting {
         settingsPopup: hostPopup

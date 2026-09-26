@@ -14,7 +14,6 @@
         <file alias="components/ServerCard.qml">../qml/components/ServerCard.qml</file>
         <file alias="components/ServerChoiceControl.qml">../qml/components/ServerChoiceControl.qml</file>
         <file alias="components/ServerChoiceSetting.qml">../qml/components/ServerChoiceSetting.qml</file>
-        <file alias="components/ServerNumberControl.qml">../qml/components/ServerNumberControl.qml</file>
         <file alias="components/ServerNumberSetting.qml">../qml/components/ServerNumberSetting.qml</file>
         <file alias="components/ServerSettingCard.qml">../qml/components/ServerSettingCard.qml</file>
         <file alias="components/ServerSettingsSection.qml">../qml/components/ServerSettingsSection.qml</file>

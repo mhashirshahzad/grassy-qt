@@ -13,13 +13,11 @@ CustomPopup {
     property string errorMessage
     property var values: ({})
     property string searchText: ""
+    property string minimumMemory: "2G"
+    property string maximumMemory: "4G"
 
     width: Math.min(parent ? parent.width - 32 : 980, 980)
     height: Math.min(parent ? parent.height - 32 : 760, 760)
-    closeButtonSize: 34
-    closeButtonTopMargin: 10
-    closeButtonRightMargin: 10
-
     function readProperties(contents) {
         const result = {}
         const lines = contents.split("\n")
@@ -49,7 +47,18 @@ CustomPopup {
 
     function matches(text) {
         const query = searchText.trim().toLowerCase()
-        return query.length === 0 || text.toLowerCase().indexOf(query) >= 0
+        if (query.length === 0)
+            return true
+
+        let queryIndex = 0
+        const candidate = text.toLowerCase()
+        for (let index = 0; index < candidate.length; ++index) {
+            if (candidate[index] === query[queryIndex])
+                ++queryIndex
+            if (queryIndex === query.length)
+                return true
+        }
+        return false
     }
 
     function save() {
@@ -65,6 +74,16 @@ CustomPopup {
         }
         errorMessage = ""
         serverSettingsPopup.close()
+    }
+
+    function createStartScript() {
+        if (!modelObject
+                || !modelObject.createStartScript(
+                    serverFolder, minimumMemory, maximumMemory)) {
+            errorMessage = "Enter valid memory values, such as 2G and 4G."
+            return
+        }
+        errorMessage = ""
     }
 
     function openEditor() {
@@ -104,6 +123,7 @@ CustomPopup {
             id: searchField
             Layout.fillWidth: true
             Layout.preferredHeight: 40
+            backgroundColor: Theme.surface2
             showSearchIcon: true
             placeholderText: "Search server settings..."
             onTextChanged: serverSettingsPopup.searchText = text
@@ -126,6 +146,52 @@ CustomPopup {
                 PerformanceServerSettings { hostPopup: serverSettingsPopup }
                 PlayerServerSettings { hostPopup: serverSettingsPopup }
                 SecurityServerSettings { hostPopup: serverSettingsPopup }
+
+                ServerSettingsSection {
+                    title: "Java memory"
+                    searchHost: serverSettingsPopup
+                    searchBlob: "java memory ram start script minimum maximum"
+
+                    ServerSettingCard {
+                        label: "Minimum memory"
+                        description: "Initial Java heap size, for example 2G."
+                        settingKey: "java-xms"
+                        searchHost: serverSettingsPopup
+
+                        CustomTextField {
+                            anchors.fill: parent
+                            showSearchIcon: false
+                            backgroundColor: Theme.surface2
+                            text: serverSettingsPopup.minimumMemory
+                            onTextChanged: serverSettingsPopup.minimumMemory = text
+                        }
+                    }
+
+                    ServerSettingCard {
+                        label: "Maximum memory"
+                        description: "Maximum Java heap size, for example 4G."
+                        settingKey: "java-xmx"
+                        searchHost: serverSettingsPopup
+
+                        CustomTextField {
+                            anchors.fill: parent
+                            showSearchIcon: false
+                            backgroundColor: Theme.surface2
+                            text: serverSettingsPopup.maximumMemory
+                            onTextChanged: serverSettingsPopup.maximumMemory = text
+                        }
+                    }
+
+                    RowLayout {
+                        Layout.fillWidth: true
+                        Layout.leftMargin: 8
+
+                        ThemedButton {
+                            text: "Create start.sh"
+                            onClicked: serverSettingsPopup.createStartScript()
+                        }
+                    }
+                }
             }
         }
 

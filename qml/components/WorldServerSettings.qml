@@ -3,7 +3,8 @@ import QtQuick 2.15
 ServerSettingsSection {
     property var hostPopup
     title: "World"
-    visible: hostPopup.matches("world name seed type generator structures hardcore size")
+    searchHost: hostPopup
+    searchBlob: "world name seed type generator structures hardcore size"
 
     ServerTextSetting {
         settingsPopup: hostPopup

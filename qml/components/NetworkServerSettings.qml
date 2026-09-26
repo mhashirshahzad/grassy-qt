@@ -3,7 +3,8 @@ import QtQuick 2.15
 ServerSettingsSection {
     property var hostPopup
     title: "Network"
-    visible: hostPopup.matches("network online secure proxy rate compression status transfers")
+    searchHost: hostPopup
+    searchBlob: "network online secure proxy rate compression status transfers"
 
     ServerToggleSetting {
         settingsPopup: hostPopup

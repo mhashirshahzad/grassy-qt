@@ -3,7 +3,8 @@ import QtQuick 2.15
 ServerSettingsSection {
     property var hostPopup
     title: "Security"
-    visible: hostPopup.matches("security whitelist permission op")
+    searchHost: hostPopup
+    searchBlob: "security whitelist permission op"
 
     ServerToggleSetting {
         settingsPopup: hostPopup

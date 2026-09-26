@@ -14,7 +14,7 @@ Item {
         anchors.fill: parent
         radius: height / 2
         color: control.checked ? Theme.accent : Theme.surface3
-        border.color: control.checked ? Theme.accentHover : Theme.borderHover
+        border.color: Theme.border
         border.width: 1
 
         Behavior on color { ColorAnimation { duration: 120 } }

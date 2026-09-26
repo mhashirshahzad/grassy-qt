@@ -13,7 +13,6 @@ ServerCard 1.0 ServerCard.qml
 SecurityServerSettings 1.0 SecurityServerSettings.qml
 ServerChoiceControl 1.0 ServerChoiceControl.qml
 ServerChoiceSetting 1.0 ServerChoiceSetting.qml
-ServerNumberControl 1.0 ServerNumberControl.qml
 ServerNumberSetting 1.0 ServerNumberSetting.qml
 ServerSettingCard 1.0 ServerSettingCard.qml
 ServerSettingsSection 1.0 ServerSettingsSection.qml

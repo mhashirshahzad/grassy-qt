@@ -3,7 +3,8 @@ import QtQuick 2.15
 ServerSettingsSection {
     property var hostPopup
     title: "Basic"
-    visible: hostPopup.matches("basic motd server port ip players bug report")
+    searchHost: hostPopup
+    searchBlob: "basic server name motd port ip players bug report"
 
     ServerTextSetting {
         settingsPopup: hostPopup
