@@ -30,13 +30,6 @@ Window {
         RowLayout {
             Layout.fillWidth: true
 
-            Label {
-                text: runner ? root.title : "error: runner is null"
-                color: Theme.text
-                font.bold: true
-                font.pixelSize: 18
-                Layout.fillWidth: true
-            }
 
             Label {
                 text: runner
@@ -58,14 +51,6 @@ Window {
                 color: Theme.subtext
             }
             
-            Rectangle {
-                width: 8
-                height: 8
-                radius: 4
-                color: runner
-                    ? (runner.running ? Theme.success : Theme.subtext2)
-                    : Theme.failure
-            }
         }
 
         ServerTerminal {
@@ -73,6 +58,10 @@ Window {
             runner: root.runner
             Layout.fillWidth: true
             Layout.fillHeight: true
+
+            borderColor: runner
+                ? (runner.running ? Theme.success : Theme.subtext2)
+                : Theme.failure
         }
     }
 

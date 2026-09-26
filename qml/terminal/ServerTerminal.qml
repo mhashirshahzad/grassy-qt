@@ -8,11 +8,13 @@ FocusScope {
     id: root
 
     property var runner: null
+    property color borderColor: Theme.border
 
     Rectangle {
+        id: terminalFrame
         anchors.fill: parent
         color: Theme.surface0
-        border.color: Theme.border
+        border.color: root.borderColor
         radius: 6
 
         Flickable {
