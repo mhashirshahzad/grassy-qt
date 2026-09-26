@@ -37,6 +37,9 @@ ApplicationWindow {
             else
                 console.warn("error: serverModel is null")
         }
+        onSettingsClicked: {
+            appSettings.open()
+        }
     }
 
     ServerWindow {
@@ -113,6 +116,15 @@ ApplicationWindow {
     DeleteServerDialog {
         id: deleteDialog
         modelObject: root.modelObject
+    }
+
+    SettingsWindow {
+        id: appSettings
+        utilsObject: typeof utils !== "undefined" ? utils : null
+        onDirectorySaved: {
+            if (root.modelObject)
+                root.modelObject.refresh()
+        }
     }
     
 }

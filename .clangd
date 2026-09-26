@@ -1,2 +1,10 @@
 CompileFlags:
   CompilationDatabase: .
+  Add:
+    - -I/usr/include/qt6
+    - -I/usr/include/qt6/QtCore
+    - -I/usr/include/qt6/QtGui
+    - -I/usr/include/qt6/QtQml
+    - -I/usr/include/qt6/QtQuick
+    - -I/usr/include/qt6/QtQuickControls2
+    - -I/usr/include/qt6/QtNetwork

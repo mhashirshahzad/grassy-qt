@@ -2,6 +2,7 @@
 #include <QDebug>
 #include <QQmlContext>
 #include <QQmlApplicationEngine>
+#include <QtQuickControls2/QQuickStyle>
 
 #include "models/serverfiltermodel.hpp"
 #include "models/servermodel.hpp"
@@ -11,6 +12,7 @@
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
+    QQuickStyle::setStyle(QStringLiteral("Basic"));
 
     // so that later we can get ~/.config/grassy/settings.txt via qt's buitlin ways :3
     app.setOrganizationName("grassy");
@@ -19,6 +21,7 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine;
     QList<QQmlError> loadErrors;
     Utils utils;
+    utils.refreshPublicIp();
     ServerModel serverModel;
     ServerFilterModel filteredServerModel;
     ServerRunner serverRunner;

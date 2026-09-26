@@ -25,9 +25,10 @@ Rectangle {
 
         IconButton {
             iconSource: "qrc:/icons/cog.svg"
+            ToolTip.text: "Grassy Settings"
+            ToolTip.visible: hovered
             onClicked: root.settingsClicked()
         }
-
     }
 
 
@@ -73,6 +74,7 @@ Rectangle {
             iconSource: "qrc:/icons/plus.svg"
             onClicked: root.addServerClicked()
         }
+
     }
     
     // seperator

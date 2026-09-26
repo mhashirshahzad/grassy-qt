@@ -8,6 +8,13 @@
 
 ServerFilterModel::ServerFilterModel(QObject *parent) : QSortFilterProxyModel(parent) {}
 
+void ServerFilterModel::refresh()
+{
+    auto *model = qobject_cast<ServerModel *>(sourceModel());
+    if (model)
+        model->refresh();
+}
+
 void ServerFilterModel::setSearchText(const QString &text)
 {
     m_searchText = text;

@@ -1,3 +1,4 @@
 module Grassy.Windows
 
 ServerWindow 1.0 ServerWindow.qml
+SettingsWindow 1.0 SettingsWindow.qml

@@ -35,21 +35,26 @@ Dialog {
             color: Theme.subtext
         }
 
-        TextArea {
+        Rectangle {
             id: propertiesEditor
             Layout.fillWidth: true
             Layout.fillHeight: true
-            text: root.propertiesText
-            wrapMode: TextEdit.NoWrap
-            font.family: Theme.monoFamily
-            color: Theme.text
-            selectByMouse: true
-            background: Rectangle {
-                color: Theme.surface0
-                border.color: Theme.border
-                radius: 6
+
+            color: Theme.surface0
+            border.color: Theme.border
+            radius: 6
+
+            TextEdit {
+                anchors.fill: parent
+                anchors.margins: 10
+                text: root.propertiesText
+                wrapMode: TextEdit.NoWrap
+                font.family: Theme.monoFamily
+                color: Theme.text
+                selectByMouse: true
+                selectByKeyboard: true
+                onTextChanged: root.propertiesText = text
             }
-            onTextChanged: root.propertiesText = text
         }
 
         Label {

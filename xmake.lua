@@ -16,6 +16,8 @@ rule("qml.qrc.generator")
 
 target("grassy")
     add_rules("qt.quickapp")
+    add_frameworks("QtNetwork")
+    add_frameworks("QtQuickControls2")
     add_files("qml/**.qml", {rule = "qml.qrc.generator"})
     add_files("qml/**.svg", {rule = "qml.qrc.generator"})
     add_files("src/**.hpp")

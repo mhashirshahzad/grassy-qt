@@ -40,6 +40,7 @@
         <file alias="theme/Theme.qml">../qml/theme/Theme.qml</file>
         <file alias="theme/qmldir">../qml/theme/qmldir</file>
         <file alias="windows/ServerWindow.qml">../qml/windows/ServerWindow.qml</file>
+        <file alias="windows/SettingsWindow.qml">../qml/windows/SettingsWindow.qml</file>
         <file alias="windows/qmldir">../qml/windows/qmldir</file>
     </qresource>
 </RCC>
