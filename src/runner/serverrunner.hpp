@@ -15,6 +15,8 @@ class ServerRunner : public QObject
     Q_PROPERTY(bool running READ running NOTIFY runningChanged)
     Q_PROPERTY(double cpuUsage READ cpuUsage NOTIFY usageChanged)
     Q_PROPERTY(qint64 memoryUsageKb READ memoryUsageKb NOTIFY usageChanged)
+    Q_PROPERTY(qint64 memoryLimitKb READ memoryLimitKb NOTIFY limitsChanged)
+    Q_PROPERTY(int cpuCoreCount READ cpuCoreCount CONSTANT)
 
   public:
     explicit ServerRunner(QObject *parent = nullptr);
@@ -27,6 +29,8 @@ class ServerRunner : public QObject
     bool running() const;
     double cpuUsage() const;
     qint64 memoryUsageKb() const;
+    qint64 memoryLimitKb() const;
+    int cpuCoreCount() const;
 
     Q_INVOKABLE void start();
     Q_INVOKABLE void stop();
@@ -41,6 +45,7 @@ class ServerRunner : public QObject
     void consoleHtmlChanged();
     void runningChanged();
     void usageChanged();
+    void limitsChanged();
     void outputReceived(const QString &text);
 
   private slots:
@@ -64,6 +69,7 @@ class ServerRunner : public QObject
     QTimer m_usageTimer;
     double m_cpuUsage = 0.0;
     qint64 m_memoryUsageKb = 0;
+    qint64 m_memoryLimitKb = 4 * 1024 * 1024;
     quint64 m_previousProcessTicks = 0;
     quint64 m_previousSystemTicks = 0;
 };

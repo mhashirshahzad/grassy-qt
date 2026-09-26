@@ -5,6 +5,7 @@
 #include <QFileInfo>
 #include <QHash>
 #include <QRegularExpression>
+#include <QThread>
 
 #ifdef Q_OS_LINUX
 #include <signal.h>
@@ -126,6 +127,33 @@ QString ansiToHtml(const QString &text)
 
     return QStringLiteral("<font color=\"%1\">%2</font>").arg(color, html);
 }
+
+qint64 javaMemoryLimitKb(const QString &command)
+{
+    static const QRegularExpression memoryOption(
+        QStringLiteral(R"(-Xmx(\d+)([kKmMgGtT]?))"));
+    const auto match = memoryOption.match(command);
+    if (!match.hasMatch())
+        return 4 * 1024 * 1024;
+
+    bool ok = false;
+    const qint64 amount = match.captured(1).toLongLong(&ok);
+    if (!ok || amount <= 0)
+        return 4 * 1024 * 1024;
+
+    const QString unit = match.captured(2).toLower();
+    if (unit == "t")
+        return amount * 1024 * 1024 * 1024;
+    if (unit == "g")
+        return amount * 1024 * 1024;
+    if (unit == "m")
+        return amount * 1024;
+    if (unit == "k")
+        return amount;
+
+    // A unitless -Xmx value is specified in bytes.
+    return qMax<qint64>(1, amount / 1024);
+}
 } // namespace
 
 ServerRunner::ServerRunner(QObject *parent) : QObject(parent), m_process(new QProcess(this))
@@ -160,6 +188,10 @@ bool ServerRunner::running() const { return m_process->state() != QProcess::NotR
 double ServerRunner::cpuUsage() const { return m_cpuUsage; }
 
 qint64 ServerRunner::memoryUsageKb() const { return m_memoryUsageKb; }
+
+qint64 ServerRunner::memoryLimitKb() const { return m_memoryLimitKb; }
+
+int ServerRunner::cpuCoreCount() const { return qMax(1, QThread::idealThreadCount()); }
 
 void ServerRunner::setServerFolder(const QString &serverFolder)
 {
@@ -218,6 +250,12 @@ void ServerRunner::start()
                 command = match.captured(1).trimmed();
         }
 
+        const qint64 memoryLimitKb = javaMemoryLimitKb(command);
+        if (m_memoryLimitKb != memoryLimitKb)
+        {
+            m_memoryLimitKb = memoryLimitKb;
+            emit limitsChanged();
+        }
         m_sessionHeader = "Running: " + command + "\n";
         appendConsole(m_sessionHeader);
         m_process->start("/bin/sh", {startScript});
@@ -225,6 +263,12 @@ void ServerRunner::start()
     else
     {
         const QStringList args{"-Xms2G", "-Xmx4G", "-jar", jar, "nogui"};
+        const qint64 memoryLimitKb = javaMemoryLimitKb(args.join(' '));
+        if (m_memoryLimitKb != memoryLimitKb)
+        {
+            m_memoryLimitKb = memoryLimitKb;
+            emit limitsChanged();
+        }
         m_sessionHeader = "Running: java " + args.join(' ') + "\n";
         appendConsole(m_sessionHeader);
         m_process->start("java", args);
