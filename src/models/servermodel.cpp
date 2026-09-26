@@ -98,3 +98,47 @@ void ServerModel::refresh()
 
     endResetModel();
 }
+
+bool ServerModel::renameServer(const QString &folder, const QString &name)
+{
+    const QString trimmedName = name.trimmed();
+    QFileInfo current(folder);
+    if (!current.exists() || trimmedName.isEmpty() ||
+        trimmedName == current.fileName() || trimmedName.contains('/') ||
+        trimmedName.contains('\\'))
+        return false;
+
+    QDir parent(current.absolutePath());
+    const QString destination = parent.filePath(trimmedName);
+    if (QFileInfo::exists(destination) || !parent.rename(current.fileName(), trimmedName))
+        return false;
+
+    refresh();
+    return true;
+}
+
+bool ServerModel::deleteServer(const QString &folder)
+{
+    QDir directory(folder);
+    if (!directory.exists() || !directory.removeRecursively())
+        return false;
+
+    refresh();
+    return true;
+}
+
+QString ServerModel::serverProperties(const QString &folder) const
+{
+    QFile file(QDir(folder).filePath(QStringLiteral("server.properties")));
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+        return {};
+    return QString::fromUtf8(file.readAll());
+}
+
+bool ServerModel::saveServerProperties(const QString &folder, const QString &contents)
+{
+    QFile file(QDir(folder).filePath(QStringLiteral("server.properties")));
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate))
+        return false;
+    return file.write(contents.toUtf8()) == contents.toUtf8().size();
+}

@@ -14,6 +14,30 @@ void ServerFilterModel::setSearchText(const QString &text)
     invalidate();
 }
 
+bool ServerFilterModel::renameServer(const QString &folder, const QString &name)
+{
+    auto *model = qobject_cast<ServerModel *>(sourceModel());
+    return model && model->renameServer(folder, name);
+}
+
+bool ServerFilterModel::deleteServer(const QString &folder)
+{
+    auto *model = qobject_cast<ServerModel *>(sourceModel());
+    return model && model->deleteServer(folder);
+}
+
+QString ServerFilterModel::serverProperties(const QString &folder) const
+{
+    auto *model = qobject_cast<ServerModel *>(sourceModel());
+    return model ? model->serverProperties(folder) : QString();
+}
+
+bool ServerFilterModel::saveServerProperties(const QString &folder, const QString &contents)
+{
+    auto *model = qobject_cast<ServerModel *>(sourceModel());
+    return model && model->saveServerProperties(folder, contents);
+}
+
 bool ServerFilterModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
 {
     if (m_searchText.isEmpty())

@@ -1,4 +1,6 @@
 import QtQuick 2.15
+import QtQuick.Controls 2.15
+import QtQuick.Layouts 1.15
 import QtQuick.Window 2.15
 // import QtQuick.Controls 2.15
 
@@ -60,6 +62,27 @@ Window {
                 && root.runnerObject.running
                 && root.runnerObject.serverFolder === folder
             onStartClicked: serverWindow.openForServer(folder, name)
+            onEditClicked: {
+                renameFolder = folder
+                renameName = name
+                renameError = ""
+                renameDialog.open()
+            }
+            onSettingsClicked: {
+                settingsFolder = folder
+                settingsText = root.modelObject
+                    ? root.modelObject.serverProperties(folder)
+                    : ""
+                settingsError = ""
+                settingsDialog.open()
+            }
+            onFolderClicked: Qt.openUrlExternally("file://" + folder)
+            onDeleteClicked: {
+                deleteFolder = folder
+                deleteName = name
+                deleteError = ""
+                deleteDialog.open()
+            }
         }
 
         // ScrollBar.vertical: ScrollBar {
@@ -72,6 +95,134 @@ Window {
         anchors.right: parent.right
         anchors.bottom : parent.bottom
 
+    }
+
+    property string renameFolder
+    property string renameName
+    property string renameError
+    property string settingsFolder
+    property string settingsText
+    property string settingsError
+    property string deleteFolder
+    property string deleteName
+    property string deleteError
+
+    Dialog {
+        id: renameDialog
+        title: "Rename server folder"
+        modal: true
+        standardButtons: Dialog.Ok | Dialog.Cancel
+        anchors.centerIn: parent
+        onAccepted: {
+            if (!root.modelObject || !root.modelObject.renameServer(
+                    root.renameFolder, root.renameName)) {
+                root.renameError = "Could not rename the server folder."
+                open()
+            }
+        }
+
+        ColumnLayout {
+            width: 360
+            spacing: 10
+
+            Label { text: "New folder name" }
+            TextField {
+                id: renameField
+                Layout.fillWidth: true
+                text: root.renameName
+                onTextChanged: root.renameName = text
+                Component.onCompleted: selectAll()
+            }
+            Label {
+                text: root.renameError
+                color: Theme.failure
+                visible: text.length > 0
+            }
+        }
+    }
+
+    Dialog {
+        id: settingsDialog
+        title: "Edit server.properties"
+        modal: true
+        standardButtons: Dialog.Save | Dialog.Cancel
+        anchors.centerIn: parent
+        onAccepted: {
+            if (!root.modelObject || !root.modelObject.saveServerProperties(
+                    root.settingsFolder, root.settingsText)) {
+                root.settingsError = "Could not save server.properties."
+                open()
+            }
+        }
+
+        ColumnLayout {
+            width: 620
+            height: 420
+            spacing: 8
+
+            Label {
+                text: "Changes apply the next time the server starts."
+                color: Theme.subtext
+            }
+            TextArea {
+                id: propertiesEditor
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                text: root.settingsText
+                wrapMode: TextEdit.NoWrap
+                font.family: "monospace"
+                color: Theme.text
+                selectByMouse: true
+                background: Rectangle {
+                    color: Theme.surface0
+                    border.color: Theme.border
+                    radius: 6
+                }
+                onTextChanged: root.settingsText = text
+            }
+            Label {
+                text: root.settingsError
+                color: Theme.failure
+                visible: text.length > 0
+            }
+        }
+    }
+
+    Dialog {
+        id: deleteDialog
+        title: "Delete server"
+        modal: true
+        standardButtons: Dialog.Ok | Dialog.Cancel
+        anchors.centerIn: parent
+        onAccepted: {
+            if (!root.modelObject || !root.modelObject.deleteServer(root.deleteFolder)) {
+                root.deleteError = "Could not delete the server folder."
+                open()
+            }
+        }
+
+        ColumnLayout {
+            width: 400
+            spacing: 12
+
+            Image {
+                Layout.alignment: Qt.AlignHCenter
+                source: "qrc:/icons/warning.svg"
+                sourceSize: Qt.size(48, 48)
+            }
+            Label {
+                Layout.fillWidth: true
+                text: "Delete \"%1\" and all of its files permanently?"
+                    .arg(root.deleteName)
+                wrapMode: Text.WordWrap
+                horizontalAlignment: Text.AlignHCenter
+            }
+            Label {
+                text: root.deleteError
+                color: Theme.failure
+                visible: text.length > 0
+            }
+        }
     }
     
 }

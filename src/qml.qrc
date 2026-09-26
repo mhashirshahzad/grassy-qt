@@ -20,6 +20,7 @@
         <file alias="icons/refresh.svg">../qml/icons/refresh.svg</file>
         <file alias="icons/search.svg">../qml/icons/search.svg</file>
         <file alias="icons/settings.svg">../qml/icons/settings.svg</file>
+        <file alias="icons/warning.svg">../qml/icons/warning.svg</file>
         <file alias="Main.qml">../qml/Main.qml</file>
         <file alias="terminal/ServerTerminal.qml">../qml/terminal/ServerTerminal.qml</file>
         <file alias="theme/Theme.qml">../qml/theme/Theme.qml</file>

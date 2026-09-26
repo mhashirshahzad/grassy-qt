@@ -1,5 +1,6 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
+import Qt5Compat.GraphicalEffects
 import "../theme" 1.0
 
 Button {
@@ -12,61 +13,49 @@ Button {
     hoverEnabled: true
     padding: 0
 
-    background: Rectangle {
-        radius: 7
-        color: control.hovered
-            ? Qt.rgba(
-                  Theme.background.r,
-                  Theme.background.g,
-                  Theme.background.b,
-                  0.75
-              )
-            : "transparent"
+    background: Item {}
 
-        border.width: control.hovered ? 1 : 0
-        border.color: Qt.rgba(
-            Theme.text.r,
-            Theme.text.g,
-            Theme.text.b,
-            0.25
-        )
-
-        Behavior on color {
-            ColorAnimation { duration: 120 }
-        }
-
-        Behavior on border.color {
-            ColorAnimation { duration: 120 }
-        }
-    }
-
-    contentItem: Image {
-        id: iconImage
-
-        source: control.iconSource
-        sourceSize: Qt.size(18, 18)
-        fillMode: Image.PreserveAspectFit
-
+    contentItem: Item {
+        id: iconContent
         transformOrigin: Item.Center
-
-        // Zoom
         scale: 1
-
-        // Shake
         rotation: 0
+
+        Image {
+            id: iconImage
+
+            anchors.fill: parent
+            source: control.iconSource
+            sourceSize: Qt.size(18, 18)
+            fillMode: Image.PreserveAspectFit
+            opacity: control.enabled ? 1 : 0.4
+        }
+
+        ColorOverlay {
+            anchors.fill: iconImage
+            source: iconImage
+            color: control.enabled
+                ? (control.hovered ? Theme.accent : Theme.text)
+                : Theme.disabledText
+            opacity: control.enabled ? 1 : 0.7
+
+            Behavior on color {
+                ColorAnimation { duration: 120 }
+            }
+        }
 
         SequentialAnimation {
             id: hoverAnimation
 
             PropertyAction {
-                target: iconImage
+                target: iconContent
                 property: "scale"
                 value: 1
             }
 
             ParallelAnimation {
                 NumberAnimation {
-                    target: iconImage
+                    target: iconContent
                     property: "scale"
                     to: 1.15
                     duration: 100
@@ -75,28 +64,28 @@ Button {
 
                 SequentialAnimation {
                     NumberAnimation {
-                        target: iconImage
+                        target: iconContent
                         property: "rotation"
                         to: -8
                         duration: 50
                     }
 
                     NumberAnimation {
-                        target: iconImage
+                        target: iconContent
                         property: "rotation"
                         to: 8
                         duration: 100
                     }
 
                     NumberAnimation {
-                        target: iconImage
+                        target: iconContent
                         property: "rotation"
                         to: -5
                         duration: 80
                     }
 
                     NumberAnimation {
-                        target: iconImage
+                        target: iconContent
                         property: "rotation"
                         to: 0
                         duration: 70

@@ -47,6 +47,7 @@ Rectangle {
                 iconSource: "qrc:/icons/delete.svg"
                 ToolTip.text: "Delete Server"
                 ToolTip.visible: hovered
+                enabled: !card.serverRunning
 
                 onClicked: card.deleteClicked()
             }
@@ -55,6 +56,7 @@ Rectangle {
                 iconSource: "qrc:/icons/edit.svg"
                 ToolTip.text: "Edit Server"
                 ToolTip.visible: hovered
+                enabled: !card.serverRunning
 
                 onClicked: card.editClicked()
             }

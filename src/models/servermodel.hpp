@@ -20,6 +20,10 @@ class ServerModel : public QAbstractListModel
 
     int rowCount(const QModelIndex &parent = {}) const override;
     Q_INVOKABLE void refresh();
+    Q_INVOKABLE bool renameServer(const QString &folder, const QString &name);
+    Q_INVOKABLE bool deleteServer(const QString &folder);
+    Q_INVOKABLE QString serverProperties(const QString &folder) const;
+    Q_INVOKABLE bool saveServerProperties(const QString &folder, const QString &contents);
     QVariant data(const QModelIndex &index, int role) const override;
 
     QHash<int, QByteArray> roleNames() const override;

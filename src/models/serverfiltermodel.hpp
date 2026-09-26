@@ -13,6 +13,10 @@ class ServerFilterModel : public QSortFilterProxyModel
   public:
     explicit ServerFilterModel(QObject *parent = nullptr);
     Q_INVOKABLE void setSearchText(const QString &text);
+    Q_INVOKABLE bool renameServer(const QString &folder, const QString &name);
+    Q_INVOKABLE bool deleteServer(const QString &folder);
+    Q_INVOKABLE QString serverProperties(const QString &folder) const;
+    Q_INVOKABLE bool saveServerProperties(const QString &folder, const QString &contents);
 
   private:
     QString m_searchText;
