@@ -1,27 +1,27 @@
 import QtQuick 2.15
 
 ServerSettingsSection {
-    property var popup
+    property var hostPopup
     title: "Security"
-    visible: root.popup.matches("security whitelist permission op")
+    visible: hostPopup.matches("security whitelist permission op")
 
     ServerToggleSetting {
-        popup: root.popup
+        settingsPopup: hostPopup
         label: "Whitelist"
         description: "Only whitelisted players can join."
         settingKey: "white-list"
     }
     ServerToggleSetting {
-        popup: root.popup
+        settingsPopup: hostPopup
         label: "Enforce whitelist"
         description: "Kick non-whitelisted players in-game."
         settingKey: "enforce-whitelist"
     }
     ServerChoiceSetting {
-        popup: root.popup
+        settingsPopup: hostPopup
         label: "OP permission level"
         settingKey: "op-permission-level"
-        options: ["1", "2", "3", "4"]
+        choices: ["1", "2", "3", "4"]
         fallback: "4"
     }
 }

@@ -1,46 +1,46 @@
 import QtQuick 2.15
 
 ServerSettingsSection {
-    property var popup
+    property var hostPopup
     title: "World"
-    visible: root.popup.matches("world name seed type generator structures hardcore size")
+    visible: hostPopup.matches("world name seed type generator structures hardcore size")
 
     ServerTextSetting {
-        popup: root.popup
+        settingsPopup: hostPopup
         label: "World name"
         settingKey: "level-name"
         fallback: "world"
     }
     ServerTextSetting {
-        popup: root.popup
+        settingsPopup: hostPopup
         label: "World seed"
         description: "Leave empty for a random seed."
         settingKey: "level-seed"
     }
     ServerChoiceSetting {
-        popup: root.popup
+        settingsPopup: hostPopup
         label: "World type"
         settingKey: "level-type"
-        options: ["minecraft:normal", "minecraft:flat",
+        choices: ["minecraft:normal", "minecraft:flat",
                   "minecraft:large_biomes", "minecraft:amplified",
                   "minecraft:single_biome_surface"]
         fallback: "minecraft:normal"
     }
     ServerToggleSetting {
-        popup: root.popup
+        settingsPopup: hostPopup
         label: "Generate structures"
         description: "Generate villages, temples, and other structures."
         settingKey: "generate-structures"
         fallback: true
     }
     ServerToggleSetting {
-        popup: root.popup
+        settingsPopup: hostPopup
         label: "Hardcore mode"
         description: "Players are banned on death."
         settingKey: "hardcore"
     }
     ServerNumberSetting {
-        popup: root.popup
+        settingsPopup: hostPopup
         label: "Max world size (blocks)"
         settingKey: "max-world-size"
         minimumValue: 1000

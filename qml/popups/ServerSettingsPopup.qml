@@ -6,7 +6,7 @@ import "../components" 1.0
 import "." 1.0
 
 CustomPopup {
-    id: root
+    id: serverSettingsPopup
 
     property var modelObject
     property string serverFolder
@@ -64,7 +64,7 @@ CustomPopup {
             }
         }
         errorMessage = ""
-        root.close()
+        serverSettingsPopup.close()
     }
 
     function openEditor() {
@@ -81,7 +81,8 @@ CustomPopup {
 
         ColumnLayout {
             Layout.fillWidth: true
-            Layout.rightMargin: root.closeButtonSize + root.closeButtonRightMargin + 12
+            Layout.rightMargin: serverSettingsPopup.closeButtonSize
+                + serverSettingsPopup.closeButtonRightMargin + 12
             spacing: 4
 
             Label {
@@ -105,7 +106,7 @@ CustomPopup {
             Layout.preferredHeight: 40
             showSearchIcon: true
             placeholderText: "Search server settings..."
-            onTextChanged: root.searchText = text
+            onTextChanged: serverSettingsPopup.searchText = text
         }
 
         ScrollView {
@@ -118,18 +119,18 @@ CustomPopup {
                 width: parent.width
                 spacing: 12
 
-                BasicServerSettings { popup: root }
-                GameplayServerSettings { popup: root }
-                WorldServerSettings { popup: root }
-                NetworkServerSettings { popup: root }
-                PerformanceServerSettings { popup: root }
-                PlayerServerSettings { popup: root }
-                SecurityServerSettings { popup: root }
+                BasicServerSettings { hostPopup: serverSettingsPopup }
+                GameplayServerSettings { hostPopup: serverSettingsPopup }
+                WorldServerSettings { hostPopup: serverSettingsPopup }
+                NetworkServerSettings { hostPopup: serverSettingsPopup }
+                PerformanceServerSettings { hostPopup: serverSettingsPopup }
+                PlayerServerSettings { hostPopup: serverSettingsPopup }
+                SecurityServerSettings { hostPopup: serverSettingsPopup }
             }
         }
 
         Label {
-            text: root.errorMessage
+            text: serverSettingsPopup.errorMessage
             color: Theme.failure
             visible: text.length > 0
             wrapMode: Text.WordWrap
@@ -146,12 +147,12 @@ CustomPopup {
                 buttonColor: Theme.surface3
                 buttonHoverColor: Theme.overlay1
                 buttonPressedColor: Theme.overlay2
-                onClicked: root.close()
+                onClicked: serverSettingsPopup.close()
             }
 
             ThemedButton {
                 text: "Save changes"
-                onClicked: root.save()
+                onClicked: serverSettingsPopup.save()
             }
         }
     }

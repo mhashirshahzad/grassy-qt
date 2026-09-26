@@ -1,12 +1,12 @@
 import QtQuick 2.15
 
 ServerSettingsSection {
-    property var popup
+    property var hostPopup
     title: "Performance"
-    visible: root.popup.matches("performance view simulation entity tick transport chunk compression")
+    visible: hostPopup.matches("performance view simulation entity tick transport chunk compression")
 
     ServerNumberSetting {
-        popup: root.popup
+        settingsPopup: hostPopup
         label: "View distance (chunks)"
         settingKey: "view-distance"
         minimumValue: 3
@@ -14,7 +14,7 @@ ServerSettingsSection {
         fallback: 10
     }
     ServerNumberSetting {
-        popup: root.popup
+        settingsPopup: hostPopup
         label: "Simulation distance (chunks)"
         settingKey: "simulation-distance"
         minimumValue: 3
@@ -22,7 +22,7 @@ ServerSettingsSection {
         fallback: 10
     }
     ServerNumberSetting {
-        popup: root.popup
+        settingsPopup: hostPopup
         label: "Entity broadcast range (%)"
         settingKey: "entity-broadcast-range-percentage"
         minimumValue: 10
@@ -30,22 +30,22 @@ ServerSettingsSection {
         fallback: 100
     }
     ServerToggleSetting {
-        popup: root.popup
+        settingsPopup: hostPopup
         label: "Use native transport"
         settingKey: "use-native-transport"
         fallback: true
     }
     ServerToggleSetting {
-        popup: root.popup
+        settingsPopup: hostPopup
         label: "Sync chunk writes"
         settingKey: "sync-chunk-writes"
         fallback: true
     }
     ServerChoiceSetting {
-        popup: root.popup
+        settingsPopup: hostPopup
         label: "Region file compression"
         settingKey: "region-file-compression"
-        options: ["deflate", "lz4", "none"]
+        choices: ["deflate", "lz4", "none"]
         fallback: "deflate"
     }
 }

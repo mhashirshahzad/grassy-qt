@@ -1,20 +1,15 @@
 import QtQuick 2.15
-import QtQuick.Controls 2.15
-import "../theme" 1.0
-
 ServerSettingCard {
-    property var popup
+    property var settingsPopup
     property string settingKey
-    property var options: []
+    property var choices: []
     property string fallback: ""
 
-    ComboBox {
+    ServerChoiceControl {
         anchors.fill: parent
-        model: root.options
-        currentIndex: Math.max(0, root.options.indexOf(
-            root.popup.value(root.settingKey, root.fallback)))
-        onActivated: root.popup.setValue(root.settingKey, currentText)
-        palette.text: Theme.text
-        palette.buttonText: Theme.text
+        currentIndex: Math.max(0, choices.indexOf(
+            settingsPopup.value(settingKey, fallback)))
+        options: choices
+        onActivated: settingsPopup.setValue(settingKey, value)
     }
 }

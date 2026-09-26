@@ -12,11 +12,14 @@
         <file alias="components/PlayerServerSettings.qml">../qml/components/PlayerServerSettings.qml</file>
         <file alias="components/SecurityServerSettings.qml">../qml/components/SecurityServerSettings.qml</file>
         <file alias="components/ServerCard.qml">../qml/components/ServerCard.qml</file>
+        <file alias="components/ServerChoiceControl.qml">../qml/components/ServerChoiceControl.qml</file>
         <file alias="components/ServerChoiceSetting.qml">../qml/components/ServerChoiceSetting.qml</file>
+        <file alias="components/ServerNumberControl.qml">../qml/components/ServerNumberControl.qml</file>
         <file alias="components/ServerNumberSetting.qml">../qml/components/ServerNumberSetting.qml</file>
         <file alias="components/ServerSettingCard.qml">../qml/components/ServerSettingCard.qml</file>
         <file alias="components/ServerSettingsSection.qml">../qml/components/ServerSettingsSection.qml</file>
         <file alias="components/ServerTextSetting.qml">../qml/components/ServerTextSetting.qml</file>
+        <file alias="components/ServerToggleControl.qml">../qml/components/ServerToggleControl.qml</file>
         <file alias="components/ServerToggleSetting.qml">../qml/components/ServerToggleSetting.qml</file>
         <file alias="components/ThemedButton.qml">../qml/components/ThemedButton.qml</file>
         <file alias="components/WorldServerSettings.qml">../qml/components/WorldServerSettings.qml</file>
