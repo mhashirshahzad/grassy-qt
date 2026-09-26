@@ -166,13 +166,14 @@ ApplicationWindow {
                 text: "Changes apply the next time the server starts."
                 color: Theme.subtext
             }
+
             TextArea {
                 id: propertiesEditor
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 text: root.settingsText
                 wrapMode: TextEdit.NoWrap
-                font.family: "monospace"
+                font.family: Theme.monoFamily
                 color: Theme.text
                 selectByMouse: true
                 background: Rectangle {

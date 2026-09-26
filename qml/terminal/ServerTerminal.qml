@@ -36,7 +36,7 @@ FocusScope {
                     : "error: runner is null"
                 textFormat: TextEdit.RichText
                 color: Theme.text
-                font.family: "monospace"
+                font.family: Theme.monoFamily
                 font.pixelSize: 13
                 selectByMouse: true
                 wrapMode: TextEdit.Wrap

@@ -16,6 +16,10 @@
         <file alias="fonts/Ubuntu/Ubuntu-Medium.ttf">../qml/fonts/Ubuntu/Ubuntu-Medium.ttf</file>
         <file alias="fonts/Ubuntu/Ubuntu-MediumItalic.ttf">../qml/fonts/Ubuntu/Ubuntu-MediumItalic.ttf</file>
         <file alias="fonts/Ubuntu/Ubuntu-Regular.ttf">../qml/fonts/Ubuntu/Ubuntu-Regular.ttf</file>
+        <file alias="fonts/Ubuntu/UbuntuMono-Bold.ttf">../qml/fonts/Ubuntu/UbuntuMono-Bold.ttf</file>
+        <file alias="fonts/Ubuntu/UbuntuMono-BoldItalic.ttf">../qml/fonts/Ubuntu/UbuntuMono-BoldItalic.ttf</file>
+        <file alias="fonts/Ubuntu/UbuntuMono-Italic.ttf">../qml/fonts/Ubuntu/UbuntuMono-Italic.ttf</file>
+        <file alias="fonts/Ubuntu/UbuntuMono-Regular.ttf">../qml/fonts/Ubuntu/UbuntuMono-Regular.ttf</file>
         <file alias="icons/close.svg">../qml/icons/close.svg</file>
         <file alias="icons/cog.svg">../qml/icons/cog.svg</file>
         <file alias="icons/delete.svg">../qml/icons/delete.svg</file>

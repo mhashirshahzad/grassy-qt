@@ -65,7 +65,7 @@ TextField {
         width: 16
         height: 16
 
-        source: "qrc:/qml/icons/magnify.svg"
+        source: "qrc:/icons/magnify.svg"
         opacity: control.enabled ? (control.activeFocus ? 1 : 0.7) : 0.4
 
         Behavior on opacity {
