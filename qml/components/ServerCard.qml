@@ -45,6 +45,7 @@ Rectangle {
 
             IconButton {
                 iconSource: "qrc:/icons/delete.svg"
+                destructive: true
                 ToolTip.text: "Delete Server"
                 ToolTip.visible: hovered
                 enabled: !card.serverRunning

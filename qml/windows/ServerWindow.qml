@@ -2,6 +2,7 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Window 2.15
+import Grassy 1.0
 import "../theme" 1.0
 import "../components" 1.0
 import "../terminal" 1.0
@@ -11,7 +12,11 @@ Window {
 
     property string serverFolder
     property string serverTitle
-    property var runner: null
+    property var runner: localRunner
+
+    ServerRunner {
+        id: localRunner
+    }
 
     width: 900
     height: 600

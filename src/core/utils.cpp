@@ -20,6 +20,7 @@
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <QUrl>
+#include <QFileDialog>
 
 Utils::Utils(QObject *parent) : QObject(parent), m_javaInstalled(::isJavaInstalled()) {}
 
@@ -61,6 +62,13 @@ bool Utils::saveServersDirectory(const QString &path)
 
     emit serversDirectoryChanged();
     return true;
+}
+
+QString Utils::chooseDirectory(const QString &currentPath)
+{
+    return QFileDialog::getExistingDirectory(
+        nullptr, QStringLiteral("Choose server folder"), currentPath,
+        QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
 }
 
 bool Utils::copyToClipboard(const QString &text)

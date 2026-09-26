@@ -1,7 +1,6 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
-import QtQuick.Dialogs 6.3
 import "../theme" 1.0
 import "../components" 1.0
 
@@ -10,6 +9,8 @@ Popup {
 
     property var utilsObject: null
     signal directorySaved()
+    property bool localIpCopied: false
+    property bool publicIpCopied: false
 
     width: Math.min(parent ? parent.width - 40 : 620, 620)
     height: Math.min(parent ? parent.height - 40 : 360, 360)
@@ -33,6 +34,7 @@ Popup {
         anchors.topMargin: 14
         anchors.rightMargin: 14
         iconSource: "qrc:/icons/close.svg"
+        destructive: true
         ToolTip.text: "Close"
         ToolTip.visible: hovered
         z: 2
@@ -91,8 +93,9 @@ Popup {
     }
 
     onOpened: {
-        copiedLabel.text = ""
         errorLabel.text = ""
+        localIpCopied = false
+        publicIpCopied = false
     }
 
     Component.onCompleted: {
@@ -104,14 +107,6 @@ Popup {
         target: root.utilsObject
         function onServersDirectoryChanged() {
             directoryField.text = root.utilsObject.serversDirectory
-        }
-    }
-
-    FolderDialog {
-        id: folderDialog
-        title: "Choose server folder"
-        onAccepted: {
-            directoryField.text = selectedFolder.toString().replace(/^file:\/\//, "")
         }
     }
 
@@ -146,7 +141,13 @@ Popup {
 
             ThemedButton {
                 text: "Browse"
-                onClicked: folderDialog.open()
+                onClicked: {
+                    if (utilsObject) {
+                        const selected = utilsObject.chooseDirectory(directoryField.text)
+                        if (selected.length > 0)
+                            directoryField.text = selected
+                    }
+                }
             }
         }
 
@@ -161,73 +162,87 @@ Popup {
             columnSpacing: 20
             rowSpacing: 8
 
-            Label { text: "Local IP"; color: Theme.subtext }
-            Rectangle {
-                id: localIpCell
-                implicitWidth: 180
-                implicitHeight: 28
-                color: localIpMouse.containsMouse ? Theme.surface3 : Theme.surface2
-                radius: 5
+            Label { text: "Local IP"; color: Theme.subtext; Layout.fillWidth: true }
+            RowLayout {
+                spacing: 8
 
-                Label {
-                    anchors.fill: parent
-                    anchors.margins: 6
-                    text: localIpMouse.containsMouse
-                        ? (utilsObject ? utilsObject.localIp : "Unavailable")
-                        : "Hover to reveal"
-                    color: Theme.text
-                    elide: Text.ElideRight
-                    verticalAlignment: Text.AlignVCenter
+                Rectangle {
+                    id: localIpCell
+                    implicitWidth: 180
+                    implicitHeight: 28
+                    radius: 5
+
+                    color: Theme.surface3
+                    Label {
+                        anchors.fill: parent
+                        anchors.margins: 6
+
+                        text: utilsObject ? utilsObject.localIp : "Unavailible"
+                        color: Theme.text
+                        elide: Text.ElideRight
+                        verticalAlignment : Text.AlignVCenter
+                    }
                 }
 
-                MouseArea {
-                    id: localIpMouse
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    cursorShape: Qt.PointingHandCursor
+                IconButton {
+                    iconSource: localIpCopied
+                        ? "qrc:/icons/check.svg"
+                        : "qrc:/icons/copy.svg"
+                    ToolTip.text: localIpCopied ? "Copied" : "Copy local IP"
+                    ToolTip.visible: hovered
                     onClicked: {
-                        if (utilsObject && utilsObject.copyToClipboard(utilsObject.localIp))
-                            copiedLabel.text = "Local IP copied"
+                        if (utilsObject && utilsObject.copyToClipboard(utilsObject.localIp)) {
+                            localIpCopied = true
+                            localCopyTimer.restart()
+                        }
                     }
                 }
             }
 
-            Label { text: "Public IP"; color: Theme.subtext }
-            Rectangle {
-                id: publicIpCell
-                implicitWidth: 180
-                implicitHeight: 28
-                color: publicIpMouse.containsMouse ? Theme.surface3 : Theme.surface2
-                radius: 5
+            Label { text: "Public IP"; color: Theme.subtext ; Layout.fillWidth : true}
+            RowLayout {
+                spacing: 8
 
-                Label {
-                    anchors.fill: parent
-                    anchors.margins: 6
-                    text: publicIpMouse.containsMouse
-                        ? (utilsObject ? utilsObject.publicIp : "Unavailable")
-                        : "Hover to reveal"
-                    color: Theme.text
-                    elide: Text.ElideRight
-                    verticalAlignment: Text.AlignVCenter
+                Rectangle {
+                    id: publicIpCell
+                    implicitWidth: 180
+                    implicitHeight: 28
+                    color: publicIpMouse.containsMouse ? Theme.surface3 : Theme.surface2
+                    radius: 5
+
+                    Label {
+                        anchors.fill: parent
+                        anchors.margins: 6
+                        text: publicIpMouse.containsMouse
+                            ? (utilsObject ? utilsObject.publicIp : "Unavailable")
+                            : "Hover to reveal"
+                        color: Theme.text
+                        elide: Text.ElideRight
+                        verticalAlignment: Text.AlignVCenter
+                    }
+
+                    MouseArea {
+                        id: publicIpMouse
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                    }
                 }
 
-                MouseArea {
-                    id: publicIpMouse
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    cursorShape: Qt.PointingHandCursor
+                IconButton {
+                    iconSource: publicIpCopied
+                        ? "qrc:/icons/check.svg"
+                        : "qrc:/icons/copy.svg"
+                    ToolTip.text: publicIpCopied ? "Copied" : "Copy public IP"
+                    ToolTip.visible: hovered
                     onClicked: {
-                        if (utilsObject && utilsObject.copyToClipboard(utilsObject.publicIp))
-                            copiedLabel.text = "Public IP copied"
+                        if (utilsObject && utilsObject.copyToClipboard(utilsObject.publicIp)) {
+                            publicIpCopied = true
+                            publicCopyTimer.restart()
+                        }
                     }
                 }
             }
-        }
-
-        Label {
-            id: copiedLabel
-            color: Theme.success
-            visible: text.length > 0
         }
 
         Label {
@@ -247,6 +262,18 @@ Popup {
                 text: "Save"
                 onClicked: root.saveDirectory()
             }
+        }
+
+        Timer {
+            id: localCopyTimer
+            interval: 1200
+            onTriggered: root.localIpCopied = false
+        }
+
+        Timer {
+            id: publicCopyTimer
+            interval: 1200
+            onTriggered: root.publicIpCopied = false
         }
     }
 }

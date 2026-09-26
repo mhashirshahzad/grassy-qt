@@ -18,6 +18,8 @@ class ServerFilterModel : public QSortFilterProxyModel
     Q_INVOKABLE bool deleteServer(const QString &folder);
     Q_INVOKABLE QString serverProperties(const QString &folder) const;
     Q_INVOKABLE bool saveServerProperties(const QString &folder, const QString &contents);
+    Q_INVOKABLE bool setServerProperty(const QString &folder, const QString &key,
+                                       const QString &value);
 
   private:
     QString m_searchText;

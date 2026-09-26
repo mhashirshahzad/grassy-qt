@@ -1,8 +1,9 @@
-#include <QGuiApplication>
+#include <QApplication>
 #include <QDebug>
 #include <QQmlContext>
 #include <QQmlApplicationEngine>
 #include <QtQuickControls2/QQuickStyle>
+#include <QtQml/qqml.h>
 
 #include "models/serverfiltermodel.hpp"
 #include "models/servermodel.hpp"
@@ -11,7 +12,7 @@
 
 int main(int argc, char *argv[])
 {
-    QGuiApplication app(argc, argv);
+    QApplication app(argc, argv);
     QQuickStyle::setStyle(QStringLiteral("Basic"));
 
     // so that later we can get ~/.config/grassy/settings.txt via qt's buitlin ways :3
@@ -24,12 +25,11 @@ int main(int argc, char *argv[])
     utils.refreshPublicIp();
     ServerModel serverModel;
     ServerFilterModel filteredServerModel;
-    ServerRunner serverRunner;
     filteredServerModel.setSourceModel(&serverModel);
 
     engine.rootContext()->setContextProperty(QStringLiteral("utils"), &utils);
-    engine.rootContext()->setContextProperty(QStringLiteral("serverRunner"), &serverRunner);
     engine.rootContext()->setContextProperty(QStringLiteral("serverModel"), &filteredServerModel);
+    qmlRegisterType<ServerRunner>("Grassy", 1, 0, "ServerRunner");
     QObject::connect(
         &engine, &QQmlApplicationEngine::warnings,
         [&loadErrors](const QList<QQmlError> &warnings) {

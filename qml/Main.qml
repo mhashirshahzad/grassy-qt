@@ -12,7 +12,8 @@ import "windows" 1.0
 ApplicationWindow {
     id: root
     property var modelObject: typeof serverModel !== "undefined" ? serverModel : null
-    property var runnerObject: typeof serverRunner !== "undefined" ? serverRunner : null
+    property var serverWindows: []
+    property int runningRevision: 0
     title: "Grassy Qt"
 
     font.family: Theme.fontFamily
@@ -42,9 +43,39 @@ ApplicationWindow {
         }
     }
 
-    ServerWindow {
-        id: serverWindow
-        runner: root.runnerObject
+    Component {
+        id: serverWindowComponent
+
+        ServerWindow {}
+    }
+
+    function openServer(folder, name) {
+        const window = serverWindowComponent.createObject(root)
+        if (!window) {
+            console.warn("Could not create server window")
+            return
+        }
+
+        serverWindows.push(window)
+        window.closing.connect(function() {
+            const index = serverWindows.indexOf(window)
+            if (index >= 0)
+                serverWindows.splice(index, 1)
+            runningRevision++
+        })
+        window.runner.runningChanged.connect(function() {
+            runningRevision++
+        })
+        window.openForServer(folder, name)
+        runningRevision++
+    }
+
+    function isServerRunning(folder) {
+        for (const window of serverWindows) {
+            if (window.runner && window.runner.serverFolder === folder && window.runner.running)
+                return true
+        }
+        return false
     }
 
     ListView {
@@ -64,10 +95,8 @@ ApplicationWindow {
             serverName: name
             serverMotd: motd
             serverFolder: folder
-            serverRunning: root.runnerObject !== null
-                && root.runnerObject.running
-                && root.runnerObject.serverFolder === folder
-            onStartClicked: serverWindow.openForServer(folder, name)
+            serverRunning: root.runningRevision >= 0 && root.isServerRunning(folder)
+            onStartClicked: root.openServer(folder, name)
             onEditClicked: {
                 renameDialog.serverFolder = folder
                 renameDialog.serverName = name

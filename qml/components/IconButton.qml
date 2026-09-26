@@ -7,13 +7,20 @@ Button {
     id: control
 
     property url iconSource
+    property bool destructive: false
 
-    width: 18
-    height: 18
+    property int iconSize: 24
+
+    implicitWidth: iconSize
+    implicitHeight: iconSize
+    width: iconSize
+    height: iconSize
     hoverEnabled: true
     padding: 0
 
-    background: Item {}
+    background: Rectangle {
+        color: Theme.transparent
+    }
 
     contentItem: Item {
         id: iconContent
@@ -26,18 +33,23 @@ Button {
 
             anchors.fill: parent
             source: control.iconSource
-            sourceSize: Qt.size(18, 18)
+            sourceSize: Qt.size(control.iconSize, control.iconSize)
             fillMode: Image.PreserveAspectFit
-            opacity: control.enabled ? 1 : 0.4
+            visible: false
         }
 
         ColorOverlay {
             anchors.fill: iconImage
             source: iconImage
-            color: control.enabled
-                ? (control.hovered ? Theme.accent : Theme.text)
-                : Theme.disabledText
-            opacity: control.enabled ? 1 : 0.7
+            visible: iconImage.status === Image.Ready
+            color: !control.enabled
+                ? Theme.disabledText
+                : control.destructive && control.hovered
+                    ? Theme.failure
+                    : control.hovered
+                        ? Theme.accent
+                        : Theme.text
+            opacity: control.enabled ? 1 : 0.4
 
             Behavior on color {
                 ColorAnimation { duration: 120 }
@@ -57,7 +69,7 @@ Button {
                 NumberAnimation {
                     target: iconContent
                     property: "scale"
-                    to: 1.15
+                    to: 1.25
                     duration: 100
                     easing.type: Easing.OutBack
                 }
@@ -94,12 +106,37 @@ Button {
             }
         }
 
+        ParallelAnimation {
+            id: restoreAnimation
+
+            NumberAnimation {
+                target: iconContent
+                property: "scale"
+                to: 1
+                duration: 120
+                easing.type: Easing.OutCubic
+            }
+
+            NumberAnimation {
+                target: iconContent
+                property: "rotation"
+                to: 0
+                duration: 100
+                easing.type: Easing.OutCubic
+            }
+        }
+
         Connections {
             target: control
 
             function onHoveredChanged() {
-                if (control.hovered)
+                if (control.hovered) {
+                    restoreAnimation.stop()
                     hoverAnimation.restart()
+                } else {
+                    hoverAnimation.stop()
+                    restoreAnimation.restart()
+                }
             }
         }
     }

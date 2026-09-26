@@ -24,6 +24,8 @@ class ServerModel : public QAbstractListModel
     Q_INVOKABLE bool deleteServer(const QString &folder);
     Q_INVOKABLE QString serverProperties(const QString &folder) const;
     Q_INVOKABLE bool saveServerProperties(const QString &folder, const QString &contents);
+    Q_INVOKABLE bool setServerProperty(const QString &folder, const QString &key,
+                                       const QString &value);
     QVariant data(const QModelIndex &index, int role) const override;
 
     QHash<int, QByteArray> roleNames() const override;

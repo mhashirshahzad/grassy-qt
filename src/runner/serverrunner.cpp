@@ -1,4 +1,5 @@
 #include "serverrunner.hpp"
+#include "../core/serverconfig.hpp"
 
 #include <QDir>
 #include <QFile>
@@ -222,6 +223,12 @@ void ServerRunner::start()
     if (m_serverFolder.isEmpty())
     {
         appendConsole("Error: no server folder configured\n");
+        return;
+    }
+
+    if (!ensureEulaAccepted(m_serverFolder))
+    {
+        appendConsole("Error: unable to create or update eula.txt\n");
         return;
     }
 

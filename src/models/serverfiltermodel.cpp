@@ -45,6 +45,13 @@ bool ServerFilterModel::saveServerProperties(const QString &folder, const QStrin
     return model && model->saveServerProperties(folder, contents);
 }
 
+bool ServerFilterModel::setServerProperty(const QString &folder, const QString &key,
+                                          const QString &value)
+{
+    auto *model = qobject_cast<ServerModel *>(sourceModel());
+    return model && model->setServerProperty(folder, key, value);
+}
+
 bool ServerFilterModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
 {
     if (m_searchText.isEmpty())

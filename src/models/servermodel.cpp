@@ -8,6 +8,61 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QSettings>
+#include <QTextStream>
+
+namespace
+{
+QString propertiesFilePath(const QString &folder)
+{
+    return QDir(folder).filePath(QStringLiteral("server.properties"));
+}
+
+QString readProperty(const QString &contents, const QString &key)
+{
+    QTextStream stream(const_cast<QString *>(&contents), QIODevice::ReadOnly);
+    while (!stream.atEnd())
+    {
+        const QString line = stream.readLine();
+        if (line.isEmpty() || line.startsWith('#'))
+            continue;
+
+        const qsizetype separator = line.indexOf('=');
+        if (separator >= 0 && line.left(separator).trimmed() == key)
+            return line.mid(separator + 1);
+    }
+    return {};
+}
+
+bool writeProperty(QString &contents, const QString &key, const QString &value)
+{
+    QStringList lines = contents.split('\n');
+    bool replaced = false;
+
+    for (QString &line : lines)
+    {
+        if (line.isEmpty() || line.startsWith('#'))
+            continue;
+
+        const qsizetype separator = line.indexOf('=');
+        if (separator >= 0 && line.left(separator).trimmed() == key)
+        {
+            line = line.left(separator + 1) + value;
+            replaced = true;
+            break;
+        }
+    }
+
+    if (!replaced)
+    {
+        if (!contents.isEmpty() && !contents.endsWith('\n'))
+            lines.append(QString());
+        lines.append(key + '=' + value);
+    }
+
+    contents = lines.join('\n');
+    return true;
+}
+} // namespace
 
 ServerModel::ServerModel(QObject *parent) : QAbstractListModel(parent)
 {
@@ -90,7 +145,14 @@ void ServerModel::refresh()
         server.folder = folder.filePath();
         server.motd = "A Minecraft Server";
 
-        // TODO: load server.properties
+        QFile propertiesFile(propertiesFilePath(folder.filePath()));
+        if (propertiesFile.open(QIODevice::ReadOnly | QIODevice::Text))
+        {
+            const QString contents = QString::fromUtf8(propertiesFile.readAll());
+            const QString motd = readProperty(contents, QStringLiteral("motd"));
+            if (!motd.isEmpty())
+                server.motd = motd;
+        }
 
         m_servers.append(server);
     }
@@ -129,7 +191,7 @@ bool ServerModel::deleteServer(const QString &folder)
 
 QString ServerModel::serverProperties(const QString &folder) const
 {
-    QFile file(QDir(folder).filePath(QStringLiteral("server.properties")));
+    QFile file(propertiesFilePath(folder));
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return {};
     return QString::fromUtf8(file.readAll());
@@ -137,8 +199,29 @@ QString ServerModel::serverProperties(const QString &folder) const
 
 bool ServerModel::saveServerProperties(const QString &folder, const QString &contents)
 {
-    QFile file(QDir(folder).filePath(QStringLiteral("server.properties")));
+    QFile file(propertiesFilePath(folder));
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate))
         return false;
     return file.write(contents.toUtf8()) == contents.toUtf8().size();
+}
+
+bool ServerModel::setServerProperty(const QString &folder, const QString &key,
+                                    const QString &value)
+{
+    const QString trimmedKey = key.trimmed();
+    if (trimmedKey.isEmpty() || trimmedKey.contains('=') || trimmedKey.contains('\n') ||
+        value.contains('\n'))
+        return false;
+
+    QFile file(propertiesFilePath(folder));
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+        return false;
+
+    QString contents = QString::fromUtf8(file.readAll());
+    file.close();
+
+    if (!writeProperty(contents, trimmedKey, value))
+        return false;
+
+    return saveServerProperties(folder, contents);
 }
