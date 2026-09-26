@@ -8,11 +8,13 @@ import "theme" 1.0
 import "components" 1.0
 import "windows" 1.0
 
-Window {
+ApplicationWindow {
     id: root
     property var modelObject: typeof serverModel !== "undefined" ? serverModel : null
     property var runnerObject: typeof serverRunner !== "undefined" ? serverRunner : null
     title: "Grassy Qt"
+
+    font.family: Theme.fontFamily
 
     visible: true
     width: 800

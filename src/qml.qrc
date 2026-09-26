@@ -1,15 +1,21 @@
 <RCC>
     <qresource prefix="/">
-        <file alias="theme/qmldir">../qml/theme/qmldir</file>
-        <file alias="windows/qmldir">../qml/windows/qmldir</file>
-        <file alias="terminal/qmldir">../qml/terminal/qmldir</file>
-        <file alias="components/qmldir">../qml/components/qmldir</file>
+        <file alias="Main.qml">../qml/Main.qml</file>
         <file alias="components/CustomTextField.qml">../qml/components/CustomTextField.qml</file>
         <file alias="components/CustomTitleBar.qml">../qml/components/CustomTitleBar.qml</file>
         <file alias="components/IconButton.qml">../qml/components/IconButton.qml</file>
         <file alias="components/JavaStatusBar.qml">../qml/components/JavaStatusBar.qml</file>
         <file alias="components/ServerCard.qml">../qml/components/ServerCard.qml</file>
         <file alias="components/ThemedButton.qml">../qml/components/ThemedButton.qml</file>
+        <file alias="components/qmldir">../qml/components/qmldir</file>
+        <file alias="fonts/Ubuntu/Ubuntu-Bold.ttf">../qml/fonts/Ubuntu/Ubuntu-Bold.ttf</file>
+        <file alias="fonts/Ubuntu/Ubuntu-BoldItalic.ttf">../qml/fonts/Ubuntu/Ubuntu-BoldItalic.ttf</file>
+        <file alias="fonts/Ubuntu/Ubuntu-Italic.ttf">../qml/fonts/Ubuntu/Ubuntu-Italic.ttf</file>
+        <file alias="fonts/Ubuntu/Ubuntu-Light.ttf">../qml/fonts/Ubuntu/Ubuntu-Light.ttf</file>
+        <file alias="fonts/Ubuntu/Ubuntu-LightItalic.ttf">../qml/fonts/Ubuntu/Ubuntu-LightItalic.ttf</file>
+        <file alias="fonts/Ubuntu/Ubuntu-Medium.ttf">../qml/fonts/Ubuntu/Ubuntu-Medium.ttf</file>
+        <file alias="fonts/Ubuntu/Ubuntu-MediumItalic.ttf">../qml/fonts/Ubuntu/Ubuntu-MediumItalic.ttf</file>
+        <file alias="fonts/Ubuntu/Ubuntu-Regular.ttf">../qml/fonts/Ubuntu/Ubuntu-Regular.ttf</file>
         <file alias="icons/close.svg">../qml/icons/close.svg</file>
         <file alias="icons/cog.svg">../qml/icons/cog.svg</file>
         <file alias="icons/delete.svg">../qml/icons/delete.svg</file>
@@ -21,9 +27,11 @@
         <file alias="icons/search.svg">../qml/icons/search.svg</file>
         <file alias="icons/settings.svg">../qml/icons/settings.svg</file>
         <file alias="icons/warning.svg">../qml/icons/warning.svg</file>
-        <file alias="Main.qml">../qml/Main.qml</file>
         <file alias="terminal/ServerTerminal.qml">../qml/terminal/ServerTerminal.qml</file>
+        <file alias="terminal/qmldir">../qml/terminal/qmldir</file>
         <file alias="theme/Theme.qml">../qml/theme/Theme.qml</file>
+        <file alias="theme/qmldir">../qml/theme/qmldir</file>
         <file alias="windows/ServerWindow.qml">../qml/windows/ServerWindow.qml</file>
+        <file alias="windows/qmldir">../qml/windows/qmldir</file>
     </qresource>
 </RCC>

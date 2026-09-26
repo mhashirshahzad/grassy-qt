@@ -95,4 +95,12 @@ QtObject {
     readonly property color scrim: "#000000"
 
     readonly property color transparent: "#00000000"
+
+
+    readonly property FontLoader ubuntu : FontLoader {
+        source: "qrc:fonts/Ubuntu/Ubuntu-Regular.ttf"
+    }
+
+    readonly property string fontFamily: ubuntu.name
 }
+
