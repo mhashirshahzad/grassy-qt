@@ -1,5 +1,6 @@
 #include "serverrunner.hpp"
 #include "../core/serverconfig.hpp"
+#include "qobject.h"
 
 #include <QDir>
 #include <QFile>
@@ -19,9 +20,16 @@ namespace
 {
 QString highlightLogKeywords(const QString &escapedText)
 {
+
+    // static const QRegularExpression keywords(
+    //     QStringLiteral(
+    //         R"(\b(warning|warn|info|error|exception|fatal|failed|failure|crash|crashed|exited|stopped|done|started|online|java|jar|nogui|-xms|-xmx|running)\b)"),
+    //     QRegularExpression::CaseInsensitiveOption);
+
     static const QRegularExpression keywords(
         QStringLiteral(
-            R"(\b(warning|warn|info|error|exception|fatal|failed|failure|crash|crashed|exited|stopped|done|started|online)\b)"),
+            R"(\b(warning|warn|info|error|exception|fatal|failed|failure|crash|crashed|exited|stopped|done|started|online|java|jar|nogui|running)\b)"
+            R"(|(-Xms|-Xmx))"),
         QRegularExpression::CaseInsensitiveOption);
 
     QString highlighted;
@@ -46,6 +54,12 @@ QString highlightLogKeywords(const QString &escapedText)
                  keyword == "failed" || keyword == "failure" || keyword == "crash" ||
                  keyword == "crashed" || keyword == "exited" || keyword == "stopped")
             color = QStringLiteral("#bf616a");
+        else if (keyword == "java" || keyword == "jar" || keyword == "-xms" || keyword == "-xmx")
+            color = QStringLiteral("#8fbcbb");
+        else if (keyword == "nogui")
+            color = QStringLiteral("#d08770");
+        else if (keyword == "running")
+            color = QStringLiteral("#b48ead");
         else
             color = QStringLiteral("#a3be8c");
 
@@ -122,17 +136,18 @@ QString ansiToHtml(const QString &text)
 
     html +=
         highlightLogKeywords(text.mid(start).toHtmlEscaped()).replace('\n', QStringLiteral("<br>"));
-    static const QRegularExpression commandLine(
-        QStringLiteral(R"(^Running:.*?(?:<br>|$))"));
-    html.replace(commandLine, QStringLiteral("<font color=\"#b48ead\"><b>\\1</b></font>"));
+
+    // // Make the first line special.
+
+    // static const QRegularExpression commandLine(QStringLiteral(R"(^Running:.*?(?:<br>|$))"));
+    // html.replace(commandLine, QStringLiteral("<font color=\"#b48ead\"><b>\\1</b></font>"));
 
     return QStringLiteral("<font color=\"%1\">%2</font>").arg(color, html);
 }
 
 qint64 javaMemoryLimitKb(const QString &command)
 {
-    static const QRegularExpression memoryOption(
-        QStringLiteral(R"(-Xmx(\d+)([kKmMgGtT]?))"));
+    static const QRegularExpression memoryOption(QStringLiteral(R"(-Xmx(\d+)([kKmMgGtT]?))"));
     const auto match = memoryOption.match(command);
     if (!match.hasMatch())
         return 4 * 1024 * 1024;
@@ -162,7 +177,11 @@ ServerRunner::ServerRunner(QObject *parent) : QObject(parent), m_process(new QPr
     m_process->setProcessChannelMode(QProcess::MergedChannels);
 #ifdef Q_OS_LINUX
     m_process->setChildProcessModifier(
-        [] { setpgid(0, 0); prctl(PR_SET_PDEATHSIG, SIGTERM); });
+        []
+        {
+            setpgid(0, 0);
+            prctl(PR_SET_PDEATHSIG, SIGTERM);
+        });
 #endif
     connect(m_process, &QProcess::readyRead, this, &ServerRunner::readOutput);
     connect(m_process, &QProcess::stateChanged, this,
@@ -226,6 +245,7 @@ void ServerRunner::start()
         return;
     }
 
+    // eula.txt is auto created but this is just in case
     if (!ensureEulaAccepted(m_serverFolder))
     {
         appendConsole("Error: unable to create or update eula.txt\n");
@@ -283,7 +303,7 @@ void ServerRunner::start()
         m_process->start("java", args);
     }
     emit runningChanged();
-        m_usageTimer.start();
+    m_usageTimer.start();
 }
 
 void ServerRunner::stop()
@@ -365,8 +385,7 @@ void ServerRunner::readOutput()
 
 void ServerRunner::appendConsole(const QString &text)
 {
-    static const QRegularExpression clearScreen(
-        QStringLiteral("\x1b\\[(?:2J|3J|H|[0-9;]+H)|\x0c"));
+    static const QRegularExpression clearScreen(QStringLiteral("\x1b\\[(?:2J|3J|H|[0-9;]+H)|\x0c"));
 
     QString remaining = text;
     qsizetype matchOffset = 0;
@@ -390,11 +409,12 @@ void ServerRunner::appendConsole(const QString &text)
     emit consoleHtmlChanged();
 }
 
-void ServerRunner::appendConsoleHtml(const QString &text)
-{
-    m_consoleHtml += ansiToHtml(text);
-    emit consoleHtmlChanged();
-}
+// DEPRECATED: use appendConsole instead
+// void ServerRunner::appendConsoleHtml(const QString &text)
+// {
+//     m_consoleHtml += ansiToHtml(text);
+//     emit consoleHtmlChanged();
+// }
 
 void ServerRunner::processFinished(int exitCode, QProcess::ExitStatus status)
 {
@@ -443,8 +463,7 @@ void ServerRunner::updateUsage()
         const qsizetype closeName = contents.lastIndexOf(')');
         if (closeName >= 0)
         {
-            const QList<QByteArray> fields =
-                contents.mid(closeName + 2).simplified().split(' ');
+            const QList<QByteArray> fields = contents.mid(closeName + 2).simplified().split(' ');
             bool groupOk = false;
             if (fields.size() > 2)
             {
@@ -487,8 +506,7 @@ void ServerRunner::updateUsage()
         if (closeName < 0)
             continue;
 
-        const QList<QByteArray> fields =
-            contents.mid(closeName + 2).simplified().split(' ');
+        const QList<QByteArray> fields = contents.mid(closeName + 2).simplified().split(' ');
         if (fields.size() <= 14)
             continue;
 
