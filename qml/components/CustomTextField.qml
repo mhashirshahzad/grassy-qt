@@ -7,7 +7,7 @@ TextField {
 
     property color borderColor: Theme.subtext
     property color focusBorderColor: Theme.accent
-    property color backgroundColor: Theme.surface2
+    property color backgroundColor: Theme.surface0
     property bool showSearchIcon: true
 
     implicitWidth: 280

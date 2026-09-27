@@ -17,7 +17,7 @@ Item {
     Rectangle {
         anchors.fill: parent
         radius: 7
-        color: Theme.surface2
+        color: Theme.surface0
         border.color: Theme.border
         border.width: 1
 
@@ -76,7 +76,7 @@ Item {
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
 
         background: Rectangle {
-            color: Theme.surface2
+            color: Theme.surface0
             border.color: Theme.border
             radius: 7
         }

@@ -17,6 +17,7 @@ Popup {
     anchors.centerIn: Overlay.overlay
     closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
     padding: 20
+    focus: true
 
     background: Rectangle {
         color: Theme.background
@@ -29,7 +30,14 @@ Popup {
         color: Theme.scrim
     }
 
+    Shortcut  {
+        sequences: [StandardKey.Back]
+        // context: root.open
+        onActivated: root.close()
+    }
+    
     IconButton {
+     
         visible: root.showCloseButton
         anchors.top: parent.top
         anchors.right: parent.right

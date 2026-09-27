@@ -121,8 +121,7 @@ void ServerModel::refresh()
 
     if (!serversDir.exists())
     {
-        GRASSY_WARNING() << "Servers directory does not exist:"
-                         << serversDir.absolutePath();
+        GRASSY_WARNING() << "Servers directory does not exist:" << serversDir.absolutePath();
         serversDir.mkpath(".");
         endResetModel();
         return;
@@ -166,9 +165,8 @@ bool ServerModel::renameServer(const QString &folder, const QString &name)
 {
     const QString trimmedName = name.trimmed();
     QFileInfo current(folder);
-    if (!current.exists() || trimmedName.isEmpty() ||
-        trimmedName == current.fileName() || trimmedName.contains('/') ||
-        trimmedName.contains('\\'))
+    if (!current.exists() || trimmedName.isEmpty() || trimmedName == current.fileName() ||
+        trimmedName.contains('/') || trimmedName.contains('\\'))
         return false;
 
     QDir parent(current.absolutePath());
@@ -203,11 +201,14 @@ bool ServerModel::saveServerProperties(const QString &folder, const QString &con
     QFile file(propertiesFilePath(folder));
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate))
         return false;
-    return file.write(contents.toUtf8()) == contents.toUtf8().size();
+
+    bool code = file.write(contents.toUtf8()) == contents.toUtf8().size();
+    // refresh();
+
+    return code;
 }
 
-bool ServerModel::setServerProperty(const QString &folder, const QString &key,
-                                    const QString &value)
+bool ServerModel::setServerProperty(const QString &folder, const QString &key, const QString &value)
 {
     const QString trimmedKey = key.trimmed();
     if (trimmedKey.isEmpty() || trimmedKey.contains('=') || trimmedKey.contains('\n') ||
@@ -247,11 +248,10 @@ bool ServerModel::createStartScript(const QString &folder, const QString &minimu
     if (!script.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate))
         return false;
 
-    const QByteArray contents =
-        "#!/bin/sh\n"
-        "exec java -Xms" + minimumMemory.trimmed().toUtf8() +
-        " -Xmx" + maximumMemory.trimmed().toUtf8() +
-        " -jar server.jar nogui\n";
+    const QByteArray contents = "#!/bin/sh\n"
+                                "exec java -Xms" +
+                                minimumMemory.trimmed().toUtf8() + " -Xmx" +
+                                maximumMemory.trimmed().toUtf8() + " -jar server.jar nogui\n";
     if (script.write(contents) != contents.size())
         return false;
     script.close();

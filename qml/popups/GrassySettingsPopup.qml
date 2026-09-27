@@ -188,6 +188,10 @@ CustomPopup {
 
         Item { Layout.fillHeight: true }
 
+        Shortcut {
+            sequences: ["Enter", "Return"]
+            onActivated : root.saveDirectory()
+        }
         RowLayout {
             Layout.alignment: Qt.AlignRight
             spacing: 8
@@ -195,7 +199,7 @@ CustomPopup {
 
             Layout.fillWidth : true
             ThemedButton {
-                text: "Save"
+                text: "Save (Enter)"
                 Layout.fillWidth : true
                 onClicked: root.saveDirectory()
             }

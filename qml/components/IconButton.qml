@@ -11,6 +11,7 @@ Button {
 
     property int iconSize: 24
 
+    
     implicitWidth: iconSize
     implicitHeight: iconSize
     width: iconSize

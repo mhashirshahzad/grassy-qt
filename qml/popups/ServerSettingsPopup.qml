@@ -141,7 +141,6 @@ CustomPopup {
             id: searchField
             Layout.fillWidth: true
             Layout.preferredHeight: 40
-            backgroundColor: Theme.surface2
             showSearchIcon: true
             placeholderText: "Search server settings..."
             onTextChanged: serverSettingsPopup.searchText = text

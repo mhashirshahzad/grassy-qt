@@ -25,6 +25,10 @@ CustomPopup {
         }
         root.close()
     }
+    Shortcut {
+        sequences: ["Enter", "Return"]
+        onActivated : root.accept()
+    }
 
     ColumnLayout {
         anchors.fill: parent
@@ -62,7 +66,7 @@ CustomPopup {
 
             ThemedButton {
                 Layout.fillWidth : true
-                text: "Rename"
+                text: "Rename (Enter)"
                 onClicked: root.accept()
             }
         }

@@ -13,7 +13,7 @@ Item {
     Rectangle {
         anchors.fill: parent
         radius: height / 2
-        color: control.checked ? Theme.accent : Theme.surface3
+        color: control.checked ? Theme.accent : Theme.surface0
         border.color: Theme.border
         border.width: 1
 

@@ -21,7 +21,6 @@ ServerSettingsSection {
         CustomTextField {
             anchors.fill: parent
             showSearchIcon: false
-            backgroundColor: Theme.surface2
             text: root.hostPopup ? root.hostPopup.minimumMemory : "2G"
             onTextEdited: {
                 if (root.hostPopup)
@@ -43,7 +42,6 @@ ServerSettingsSection {
         CustomTextField {
             anchors.fill: parent
             showSearchIcon: false
-            backgroundColor: Theme.surface2
             text: root.hostPopup ? root.hostPopup.maximumMemory : "4G"
             onTextEdited: {
                 if (root.hostPopup)
