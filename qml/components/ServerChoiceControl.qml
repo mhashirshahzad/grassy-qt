@@ -1,6 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
-import QtQuick.Layouts 2.15
+import QtQuick.Layouts 1.15
+import QtQuick.Window 2.15
 import "../theme" 1.0
 
 Item {
@@ -12,32 +13,6 @@ Item {
 
     implicitWidth: 220
     implicitHeight: 34
-
-    function popupPoint() {
-        if (!Overlay.overlay)
-            return Qt.point(0, 0)
-        return control.mapToItem(Overlay.overlay, 0, 0)
-    }
-
-    function popupX() {
-        if (!Overlay.overlay)
-            return 4
-        const point = popupPoint()
-        return Math.max(4, Math.min(
-            point.x, Overlay.overlay.width - controlPopup.width - 4))
-    }
-
-    function popupY() {
-        if (!Overlay.overlay)
-            return 4
-        const point = popupPoint()
-        const below = point.y + control.height + 4
-        const above = point.y - controlPopup.height - 4
-        const fitsBelow = below + controlPopup.height <= Overlay.overlay.height - 4
-        return fitsBelow
-            ? below
-            : Math.max(4, above)
-    }
 
     Rectangle {
         anchors.fill: parent
@@ -53,8 +28,9 @@ Item {
             spacing: 8
 
             Label {
-                text: control.options.length > control.currentIndex
-                    ? control.options[control.currentIndex] : ""
+                text: (control.options && control.options.length > control.currentIndex && control.currentIndex >= 0)
+                    ? control.options[control.currentIndex]
+                    : ""
                 color: Theme.text
                 elide: Text.ElideRight
                 Layout.fillWidth: true
@@ -71,20 +47,32 @@ Item {
             anchors.fill: parent
             hoverEnabled: true
             cursorShape: Qt.PointingHandCursor
-            onClicked: controlPopup.open()
+            onClicked: {
+                if (controlPopup.visible)
+                    controlPopup.close()
+                else
+                    controlPopup.open()
+            }
         }
     }
 
     Popup {
         id: controlPopup
-        parent: Overlay.overlay
-        x: control.popupX()
-        y: control.popupY()
+        y: {
+            const win = control.Window.window
+            if (!win)
+                return control.height + 4
+            const pt = control.mapToItem(null, 0, 0)
+            const popupH = height
+            if (pt.y + control.height + popupH + 8 > win.height)
+                return -popupH - 4
+            return control.height + 4
+        }
         width: control.width
-        height: Math.min(control.options.length * 32 + 8, 220)
+        height: Math.min((control.options ? control.options.length : 0) * 32 + 8, 220)
         padding: 4
         modal: false
-        z: 10
+        z: 100
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
 
         background: Rectangle {
@@ -94,12 +82,11 @@ Item {
         }
 
         contentItem: ListView {
-            anchors.fill: parent
-            model: control.options
             clip: true
+            model: control.options
 
             delegate: Rectangle {
-                width: ListView.view.width
+                width: ListView.view ? ListView.view.width : (control.width - 8)
                 height: 32
                 radius: 5
                 color: optionMouse.containsMouse ? Theme.surface3 : Theme.transparent

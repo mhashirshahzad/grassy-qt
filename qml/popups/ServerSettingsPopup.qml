@@ -1,6 +1,6 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
-import QtQuick.Layouts 2.15
+import QtQuick.Layouts 1.15
 import "../theme" 1.0
 import "../components" 1.0
 import "." 1.0
@@ -18,6 +18,7 @@ CustomPopup {
 
     width: Math.min(parent ? parent.width - 32 : 980, 980)
     height: Math.min(parent ? parent.height - 32 : 760, 760)
+
     function readProperties(contents) {
         const result = {}
         const lines = contents.split("\n")
@@ -61,7 +62,34 @@ CustomPopup {
         return false
     }
 
+    function createStartScript() {
+        if (!modelObject
+                || !modelObject.createStartScript(
+                    serverFolder, minimumMemory, maximumMemory)) {
+            errorMessage = "Enter valid memory values, such as 2G and 4G."
+            return false
+        }
+        errorMessage = ""
+        return true
+    }
+
+    function openEditor() {
+        values = readProperties(modelObject ? modelObject.serverProperties(serverFolder) : "")
+        if (modelObject && modelObject.readStartScript) {
+            const startSettings = modelObject.readStartScript(serverFolder)
+            if (startSettings.minMemory)
+                minimumMemory = startSettings.minMemory
+            if (startSettings.maxMemory)
+                maximumMemory = startSettings.maxMemory
+        }
+        errorMessage = ""
+        searchText = ""
+    }
+
     function save() {
+        if (!createStartScript())
+            return
+
         if (!modelObject) {
             errorMessage = "Server model is unavailable."
             return
@@ -76,27 +104,17 @@ CustomPopup {
         serverSettingsPopup.close()
     }
 
-    function createStartScript() {
-        if (!modelObject
-                || !modelObject.createStartScript(
-                    serverFolder, minimumMemory, maximumMemory)) {
-            errorMessage = "Enter valid memory values, such as 2G and 4G."
-            return
-        }
-        errorMessage = ""
-    }
-
-    function openEditor() {
-        values = readProperties(modelObject ? modelObject.serverProperties(serverFolder) : "")
-        errorMessage = ""
-        searchText = ""
-    }
-
     onOpened: openEditor()
+
+    Shortcut {
+        sequences: ["Return", "Enter"]
+        enabled: serverSettingsPopup.opened
+        onActivated: serverSettingsPopup.save()
+    }
 
     ColumnLayout {
         anchors.fill: parent
-        spacing: 14
+        spacing: 8
 
         ColumnLayout {
             Layout.fillWidth: true
@@ -112,7 +130,7 @@ CustomPopup {
             }
 
             Label {
-                text: "Configure how this server behaves. Changes are saved to server.properties."
+                text: "Configure how this server behaves. Changes are saved to server.properties and start.sh."
                 color: Theme.subtext
                 wrapMode: Text.WordWrap
                 Layout.fillWidth: true
@@ -127,6 +145,7 @@ CustomPopup {
             showSearchIcon: true
             placeholderText: "Search server settings..."
             onTextChanged: serverSettingsPopup.searchText = text
+            onAccepted: serverSettingsPopup.save()
         }
 
         ScrollView {
@@ -139,6 +158,7 @@ CustomPopup {
                 width: parent.width
                 spacing: 12
 
+                JavaServerSettings { hostPopup: serverSettingsPopup }
                 BasicServerSettings { hostPopup: serverSettingsPopup }
                 GameplayServerSettings { hostPopup: serverSettingsPopup }
                 WorldServerSettings { hostPopup: serverSettingsPopup }
@@ -146,52 +166,6 @@ CustomPopup {
                 PerformanceServerSettings { hostPopup: serverSettingsPopup }
                 PlayerServerSettings { hostPopup: serverSettingsPopup }
                 SecurityServerSettings { hostPopup: serverSettingsPopup }
-
-                ServerSettingsSection {
-                    title: "Java memory"
-                    searchHost: serverSettingsPopup
-                    searchBlob: "java memory ram start script minimum maximum"
-
-                    ServerSettingCard {
-                        label: "Minimum memory"
-                        description: "Initial Java heap size, for example 2G."
-                        settingKey: "java-xms"
-                        searchHost: serverSettingsPopup
-
-                        CustomTextField {
-                            anchors.fill: parent
-                            showSearchIcon: false
-                            backgroundColor: Theme.surface2
-                            text: serverSettingsPopup.minimumMemory
-                            onTextChanged: serverSettingsPopup.minimumMemory = text
-                        }
-                    }
-
-                    ServerSettingCard {
-                        label: "Maximum memory"
-                        description: "Maximum Java heap size, for example 4G."
-                        settingKey: "java-xmx"
-                        searchHost: serverSettingsPopup
-
-                        CustomTextField {
-                            anchors.fill: parent
-                            showSearchIcon: false
-                            backgroundColor: Theme.surface2
-                            text: serverSettingsPopup.maximumMemory
-                            onTextChanged: serverSettingsPopup.maximumMemory = text
-                        }
-                    }
-
-                    RowLayout {
-                        Layout.fillWidth: true
-                        Layout.leftMargin: 8
-
-                        ThemedButton {
-                            text: "Create start.sh"
-                            onClicked: serverSettingsPopup.createStartScript()
-                        }
-                    }
-                }
             }
         }
 
@@ -209,15 +183,8 @@ CustomPopup {
             spacing: 8
 
             ThemedButton {
-                text: "Cancel"
-                buttonColor: Theme.surface3
-                buttonHoverColor: Theme.overlay1
-                buttonPressedColor: Theme.overlay2
-                onClicked: serverSettingsPopup.close()
-            }
-
-            ThemedButton {
-                text: "Save changes"
+                Layout.fillWidth: true
+                text: "Save changes (Enter)"
                 onClicked: serverSettingsPopup.save()
             }
         }

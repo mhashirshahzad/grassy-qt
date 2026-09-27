@@ -245,19 +245,21 @@ void ServerRunner::start()
     if (QFileInfo::exists(startScript))
     {
         QString command = startScript;
+        qint64 memoryLimitKb = 4 * 1024 * 1024;
         QFile script(startScript);
         if (script.open(QIODevice::ReadOnly | QIODevice::Text))
         {
             const QString scriptText = QString::fromUtf8(script.readAll());
             static const QRegularExpression javaCommand(
-                QStringLiteral(R"(^\s*(java\b.*)$)"),
+                QStringLiteral(R"(^\s*(?:exec\s+)?(java\b.*)$)"),
                 QRegularExpression::MultilineOption);
             const auto match = javaCommand.match(scriptText);
             if (match.hasMatch())
                 command = match.captured(1).trimmed();
+
+            memoryLimitKb = javaMemoryLimitKb(scriptText);
         }
 
-        const qint64 memoryLimitKb = javaMemoryLimitKb(command);
         if (m_memoryLimitKb != memoryLimitKb)
         {
             m_memoryLimitKb = memoryLimitKb;

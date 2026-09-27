@@ -5,6 +5,7 @@ CustomTitleBar 1.0 CustomTitleBar.qml
 BasicServerSettings 1.0 BasicServerSettings.qml
 GameplayServerSettings 1.0 GameplayServerSettings.qml
 IconButton 1.0 IconButton.qml
+JavaServerSettings 1.0 JavaServerSettings.qml
 JavaStatusBar 1.0 JavaStatusBar.qml
 NetworkServerSettings 1.0 NetworkServerSettings.qml
 PerformanceServerSettings 1.0 PerformanceServerSettings.qml

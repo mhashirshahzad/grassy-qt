@@ -28,6 +28,7 @@ class ServerModel : public QAbstractListModel
                                        const QString &value);
     Q_INVOKABLE bool createStartScript(const QString &folder, const QString &minimumMemory,
                                        const QString &maximumMemory);
+    Q_INVOKABLE QVariantMap readStartScript(const QString &folder) const;
     QVariant data(const QModelIndex &index, int role) const override;
 
     QHash<int, QByteArray> roleNames() const override;

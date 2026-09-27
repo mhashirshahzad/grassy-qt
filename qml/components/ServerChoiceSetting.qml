@@ -7,8 +7,15 @@ ServerSettingCard {
 
     ServerChoiceControl {
         anchors.fill: parent
-        currentIndex: Math.max(0, choices.indexOf(
-            settingsPopup.value(settingKey, fallback)))
+        currentIndex: {
+            if (!settingsPopup || !settingsPopup.values)
+                return 0
+            const currentVal = settingsPopup.values[settingKey] !== undefined
+                ? settingsPopup.values[settingKey]
+                : fallback
+            const idx = choices.indexOf(currentVal)
+            return idx >= 0 ? idx : 0
+        }
         options: choices
         onActivated: function (selectedValue) {
             settingsPopup.setValue(settingKey, selectedValue)

@@ -20,5 +20,6 @@ ServerSettingCard {
             if (acceptableInput)
                 settingsPopup.setValue(settingKey, text)
         }
+        onAccepted: settingsPopup.save()
     }
 }

@@ -8,5 +8,6 @@ ServerSettingCard {
         showSearchIcon: false
         text: settingsPopup.value(settingKey, fallback)
         onTextChanged: settingsPopup.setValue(settingKey, text)
+        onAccepted: settingsPopup.save()
     }
 }

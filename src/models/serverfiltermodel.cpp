@@ -52,6 +52,19 @@ bool ServerFilterModel::setServerProperty(const QString &folder, const QString &
     return model && model->setServerProperty(folder, key, value);
 }
 
+bool ServerFilterModel::createStartScript(const QString &folder, const QString &minimumMemory,
+                                          const QString &maximumMemory)
+{
+    auto *model = qobject_cast<ServerModel *>(sourceModel());
+    return model && model->createStartScript(folder, minimumMemory, maximumMemory);
+}
+
+QVariantMap ServerFilterModel::readStartScript(const QString &folder) const
+{
+    auto *model = qobject_cast<ServerModel *>(sourceModel());
+    return model ? model->readStartScript(folder) : QVariantMap{};
+}
+
 bool ServerFilterModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
 {
     if (m_searchText.isEmpty())

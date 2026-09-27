@@ -259,3 +259,30 @@ bool ServerModel::createStartScript(const QString &folder, const QString &minimu
     return script.setPermissions(script.permissions() | QFileDevice::ExeOwner |
                                  QFileDevice::ExeGroup | QFileDevice::ExeOther);
 }
+
+QVariantMap ServerModel::readStartScript(const QString &folder) const
+{
+    QVariantMap result;
+    result[QStringLiteral("minMemory")] = QStringLiteral("2G");
+    result[QStringLiteral("maxMemory")] = QStringLiteral("4G");
+    result[QStringLiteral("exists")] = false;
+
+    const QString scriptPath = QDir(folder).filePath(QStringLiteral("start.sh"));
+    QFile script(scriptPath);
+    if (script.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        result[QStringLiteral("exists")] = true;
+        const QString text = QString::fromUtf8(script.readAll());
+        static const QRegularExpression xmsRegex(QStringLiteral(R"(-Xms(\d+[kKmMgGtT]?))"));
+        static const QRegularExpression xmxRegex(QStringLiteral(R"(-Xmx(\d+[kKmMgGtT]?))"));
+
+        const auto xmsMatch = xmsRegex.match(text);
+        if (xmsMatch.hasMatch())
+            result[QStringLiteral("minMemory")] = xmsMatch.captured(1);
+
+        const auto xmxMatch = xmxRegex.match(text);
+        if (xmxMatch.hasMatch())
+            result[QStringLiteral("maxMemory")] = xmxMatch.captured(1);
+    }
+    return result;
+}

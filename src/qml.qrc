@@ -6,6 +6,7 @@
         <file alias="components/CustomTitleBar.qml">../qml/components/CustomTitleBar.qml</file>
         <file alias="components/GameplayServerSettings.qml">../qml/components/GameplayServerSettings.qml</file>
         <file alias="components/IconButton.qml">../qml/components/IconButton.qml</file>
+        <file alias="components/JavaServerSettings.qml">../qml/components/JavaServerSettings.qml</file>
         <file alias="components/JavaStatusBar.qml">../qml/components/JavaStatusBar.qml</file>
         <file alias="components/NetworkServerSettings.qml">../qml/components/NetworkServerSettings.qml</file>
         <file alias="components/PerformanceServerSettings.qml">../qml/components/PerformanceServerSettings.qml</file>
