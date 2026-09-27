@@ -101,6 +101,7 @@ CustomPopup {
             }
         }
         errorMessage = ""
+        modelObject.refresh()
         serverSettingsPopup.close()
     }
 
