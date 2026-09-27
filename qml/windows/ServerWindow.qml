@@ -35,18 +35,20 @@ Window {
         ? (serverTitle.length > 0 ? serverTitle : "Server")
         : "error: runner is null"
 
-    // TODO: make each have a fixed size
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: 12
         spacing: 10
 
+        // TODO: give each one a unique border to make them apparent and popout (from the theme) 
         RowLayout {
             Layout.fillWidth: true
             spacing: 16
 
             ColumnLayout {
-                Layout.fillWidth: true
+
+                Layout.fillWidth : true
+                Layout.minimumWidth : 220
                 spacing: 3
 
                 Label {
@@ -88,7 +90,11 @@ Window {
             }
 
             ColumnLayout {
+                Layout.preferredWidth: 120
+                Layout.minimumWidth : 120
+                Layout.maximumWidth : 120
                 spacing: 3
+
 
                 Label {
                     text: "Port"
@@ -126,7 +132,8 @@ Window {
                 }
             }
             ColumnLayout {
-                Layout.fillWidth: true
+                Layout.fillWidth : true
+                Layout.minimumWidth : 220
                 spacing: 3
 
                 Label {
