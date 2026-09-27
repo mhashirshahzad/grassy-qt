@@ -43,6 +43,45 @@ bool setEulaValue(QString &contents)
 }
 } // namespace
 
+QString serverPropertiesPath(const QString &serverFolder)
+{
+    return QDir(serverFolder).filePath(QStringLiteral("server.properties"));
+}
+
+QString readServerProperty(const QString &serverFolder, const QString &key)
+{
+    QFile file(serverPropertiesPath(serverFolder));
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+        return {};
+
+    while (!file.atEnd())
+    {
+        const QString line = QString::fromUtf8(file.readLine()).trimmed();
+        if (line.isEmpty() || line.startsWith('#') || line.startsWith('!'))
+            continue;
+
+        const qsizetype separator = line.indexOf('=');
+        if (separator > 0 && line.left(separator).trimmed() == key)
+            return line.mid(separator + 1).trimmed();
+    }
+
+    return {};
+}
+
+int serverPort(const QString &serverFolder, int fallback)
+{
+    const QString value = readServerProperty(serverFolder, QStringLiteral("server-port"));
+    if (value.isEmpty())
+        return fallback;
+
+    bool ok = false;
+    const int port = value.toInt(&ok);
+    if (!ok || port < 1 || port > 65535)
+        return fallback;
+
+    return port;
+}
+
 bool ensureEulaAccepted(const QString &serverFolder)
 {
     const QString path = eulaFilePath(serverFolder);

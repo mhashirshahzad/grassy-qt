@@ -3,6 +3,7 @@ import QtQuick.Controls 2.15
 import "../theme" 1.0
 import "../components" 1.0
 
+// TODO: Errors should make it flash red and the error should be in the heading? (suggest a better way)
 Popup {
     id: root
 

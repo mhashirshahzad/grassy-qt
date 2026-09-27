@@ -1,5 +1,6 @@
 #pragma once
 
+#include "qtypes.h"
 #include <QObject>
 #include <QProcess>
 #include <QTimer>
@@ -9,13 +10,15 @@ class ServerRunner : public QObject
     Q_OBJECT
 
     Q_PROPERTY(QString serverName READ serverName NOTIFY serverNameChanged)
-    Q_PROPERTY(QString serverFolder READ serverFolder WRITE setServerFolder NOTIFY serverFolderChanged)
+    Q_PROPERTY(
+        QString serverFolder READ serverFolder WRITE setServerFolder NOTIFY serverFolderChanged)
     Q_PROPERTY(QString consoleText READ consoleText NOTIFY consoleTextChanged)
     Q_PROPERTY(QString consoleHtml READ consoleHtml NOTIFY consoleHtmlChanged)
     Q_PROPERTY(bool running READ running NOTIFY runningChanged)
     Q_PROPERTY(double cpuUsage READ cpuUsage NOTIFY usageChanged)
     Q_PROPERTY(qint64 memoryUsageKb READ memoryUsageKb NOTIFY usageChanged)
     Q_PROPERTY(qint64 memoryLimitKb READ memoryLimitKb NOTIFY limitsChanged)
+    Q_PROPERTY(int port READ port NOTIFY portChanged)
     Q_PROPERTY(int cpuCoreCount READ cpuCoreCount CONSTANT)
 
   public:
@@ -30,6 +33,7 @@ class ServerRunner : public QObject
     double cpuUsage() const;
     qint64 memoryUsageKb() const;
     qint64 memoryLimitKb() const;
+    int port() const;
     int cpuCoreCount() const;
 
     Q_INVOKABLE void start();
@@ -37,6 +41,7 @@ class ServerRunner : public QObject
     Q_INVOKABLE void shutdown();
     Q_INVOKABLE void interrupt();
     Q_INVOKABLE void sendCommand(const QString &command);
+    Q_INVOKABLE QString address() const;
 
   signals:
     void serverFolderChanged();
@@ -46,6 +51,7 @@ class ServerRunner : public QObject
     void runningChanged();
     void usageChanged();
     void limitsChanged();
+    void portChanged();
     void outputReceived(const QString &text);
 
   private slots:
@@ -56,6 +62,7 @@ class ServerRunner : public QObject
 
   private:
     void setServerFolder(const QString &serverFolder);
+    void updatePort();
     void appendConsole(const QString &text);
     void appendConsoleHtml(const QString &text);
 
@@ -70,6 +77,7 @@ class ServerRunner : public QObject
     double m_cpuUsage = 0.0;
     qint64 m_memoryUsageKb = 0;
     qint64 m_memoryLimitKb = 4 * 1024 * 1024;
+    int m_port = 0;
     quint64 m_previousProcessTicks = 0;
     quint64 m_previousSystemTicks = 0;
 };

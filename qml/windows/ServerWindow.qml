@@ -13,6 +13,14 @@ Window {
     property string serverFolder
     property string serverTitle
     property var runner: localRunner
+    property var utilsObject: typeof utils !== "undefined" ? utils : null
+    property bool portCopied: false
+
+    Timer {
+        id: portCopyTimer
+        interval: 1500
+        onTriggered: root.portCopied = false
+    }
 
     ServerRunner {
         id: localRunner
@@ -27,6 +35,7 @@ Window {
         ? (serverTitle.length > 0 ? serverTitle : "Server")
         : "error: runner is null"
 
+    // TODO: make each have a fixed size
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: 12
@@ -78,6 +87,44 @@ Window {
                 }
             }
 
+            ColumnLayout {
+                spacing: 3
+
+                Label {
+                    text: "Port"
+                    color: Theme.subtext2
+                }
+
+                RowLayout {
+                    spacing: 4
+
+                    Label {
+                        text: runner && runner.port > 0
+                            ? runner.port
+                            : "--"
+                        color: runner && runner.port > 0 ? Theme.text : Theme.subtext2
+                    }
+
+                    Item { Layout.fillWidth: true }
+
+                    IconButton {
+                        iconSize: 18
+                        visible: runner !== null && runner.port > 0
+                        iconSource: root.portCopied
+                            ? "qrc:/icons/check.svg"
+                            : "qrc:/icons/copy.svg"
+                        ToolTip.text: root.portCopied ? "Copied" : "Copy address"
+                        ToolTip.visible: hovered
+                        onClicked: {
+                            if (root.utilsObject
+                                    && root.utilsObject.copyToClipboard(runner.address())) {
+                                root.portCopied = true
+                                portCopyTimer.restart()
+                            }
+                        }
+                    }
+                }
+            }
             ColumnLayout {
                 Layout.fillWidth: true
                 spacing: 3
@@ -136,6 +183,7 @@ Window {
     function openForServer(folder, name) {
         serverFolder = folder
         serverTitle = name
+        portCopied = false
         if (!runner) {
             console.warn("error: runner is null")
             return

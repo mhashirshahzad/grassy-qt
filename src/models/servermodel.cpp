@@ -2,38 +2,17 @@
 #include "../core/logging.hpp"
 #include "qdir.h"
 #include "qhashfunctions.h"
+#include "../core/serverconfig.hpp"
 #include "../core/utils.hpp"
 
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
-#include <QSettings>
 #include <QTextStream>
 #include <QRegularExpression>
 
 namespace
 {
-QString propertiesFilePath(const QString &folder)
-{
-    return QDir(folder).filePath(QStringLiteral("server.properties"));
-}
-
-QString readProperty(const QString &contents, const QString &key)
-{
-    QTextStream stream(const_cast<QString *>(&contents), QIODevice::ReadOnly);
-    while (!stream.atEnd())
-    {
-        const QString line = stream.readLine();
-        if (line.isEmpty() || line.startsWith('#'))
-            continue;
-
-        const qsizetype separator = line.indexOf('=');
-        if (separator >= 0 && line.left(separator).trimmed() == key)
-            return line.mid(separator + 1);
-    }
-    return {};
-}
-
 bool writeProperty(QString &contents, const QString &key, const QString &value)
 {
     QStringList lines = contents.split('\n');
@@ -143,16 +122,9 @@ void ServerModel::refresh()
         Server server;
         server.name = folder.fileName();
         server.folder = folder.filePath();
-        server.motd = "A Minecraft Server";
 
-        QFile propertiesFile(propertiesFilePath(folder.filePath()));
-        if (propertiesFile.open(QIODevice::ReadOnly | QIODevice::Text))
-        {
-            const QString contents = QString::fromUtf8(propertiesFile.readAll());
-            const QString motd = readProperty(contents, QStringLiteral("motd"));
-            if (!motd.isEmpty())
-                server.motd = motd;
-        }
+        const QString motd = readServerProperty(server.folder, QStringLiteral("motd"));
+        server.motd = motd.isEmpty() ? QStringLiteral("A Minecraft Server") : motd;
 
         m_servers.append(server);
     }
@@ -190,7 +162,7 @@ bool ServerModel::deleteServer(const QString &folder)
 
 QString ServerModel::serverProperties(const QString &folder) const
 {
-    QFile file(propertiesFilePath(folder));
+    QFile file(serverPropertiesPath(folder));
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return {};
     return QString::fromUtf8(file.readAll());
@@ -198,7 +170,7 @@ QString ServerModel::serverProperties(const QString &folder) const
 
 bool ServerModel::saveServerProperties(const QString &folder, const QString &contents)
 {
-    QFile file(propertiesFilePath(folder));
+    QFile file(serverPropertiesPath(folder));
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate))
         return false;
 
@@ -215,7 +187,7 @@ bool ServerModel::setServerProperty(const QString &folder, const QString &key, c
         value.contains('\n'))
         return false;
 
-    QFile file(propertiesFilePath(folder));
+    QFile file(serverPropertiesPath(folder));
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return false;
 

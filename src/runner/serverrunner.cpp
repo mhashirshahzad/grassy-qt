@@ -211,6 +211,8 @@ qint64 ServerRunner::memoryUsageKb() const { return m_memoryUsageKb; }
 
 qint64 ServerRunner::memoryLimitKb() const { return m_memoryLimitKb; }
 
+int ServerRunner::port() const { return m_port; }
+
 int ServerRunner::cpuCoreCount() const { return qMax(1, QThread::idealThreadCount()); }
 
 void ServerRunner::setServerFolder(const QString &serverFolder)
@@ -220,7 +222,26 @@ void ServerRunner::setServerFolder(const QString &serverFolder)
 
     m_serverFolder = serverFolder;
     m_serverName = QFileInfo(serverFolder).fileName();
+    updatePort();
     emit serverFolderChanged();
+}
+
+void ServerRunner::updatePort()
+{
+    const int port = m_serverFolder.isEmpty() ? 0 : serverPort(m_serverFolder);
+    if (m_port == port)
+        return;
+
+    m_port = port;
+    emit portChanged();
+}
+
+QString ServerRunner::address() const
+{
+    if (m_port == 0)
+        return {};
+
+    return QStringLiteral("127.0.0.1:%1").arg(m_port);
 }
 
 void ServerRunner::start()
@@ -238,6 +259,9 @@ void ServerRunner::start()
     emit consoleTextChanged();
     emit consoleHtmlChanged();
     emit usageChanged();
+
+    // the port may have been edited in server.properties while the window was open
+    updatePort();
 
     if (m_serverFolder.isEmpty())
     {
