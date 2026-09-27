@@ -45,48 +45,16 @@ Window {
             Layout.fillWidth: true
             spacing: 16
 
-            ColumnLayout {
-
-                Layout.fillWidth : true
+            CustomLabeledProgressBar {
                 Layout.minimumWidth : 220
-                spacing: 3
-
-                Label {
-                    text: runner && runner.running
-                        ? "RAM %1 / %2 MB"
-                            .arg((runner.memoryUsageKb / 1024).toFixed(1))
-                            .arg((runner.memoryLimitKb / 1024).toFixed(1))
-                        : "RAM --"
-                    color: runner && runner.running
-                        ? usageColor(runner.memoryUsageKb / runner.memoryLimitKb)
-                        : Theme.subtext
-                }
-
-                ProgressBar {
-                    id: ramBar
-                    Layout.fillWidth: true
-                    from: 0
-                    to: 1
-                    value: runner && runner.running && runner.memoryLimitKb > 0
-                        ? runner.memoryUsageKb / runner.memoryLimitKb
-                        : 0
-                    enabled: runner !== null && runner.running
-                    background: Rectangle {
-                        implicitHeight: 6
-                        radius: 3
-                        color: Theme.surface3
-                    }
-                    contentItem: Item {
-                        Rectangle {
-                            width: parent.width * Math.min(1, Math.max(0, ramBar.value))
-                            height: parent.height
-                            radius: 3
-                            color: runner && runner.running
-                                ? usageColor(ramBar.value)
-                                : Theme.disabled
-                        }
-                    }
-                }
+                runner: root.runner
+                label: "RAM"
+                current_value: root.runner ? root.runner.memoryUsageKb : 0
+                maximum_value: root.runner ? root.runner.memoryLimitKb : 0
+                value_text: root.runner
+                    ? (root.runner.memoryUsageKb / 1024).toFixed(1) + " / "
+                        + (root.runner.memoryLimitKb / 1024).toFixed(1) + " MB"
+                    : ""
             }
 
             ColumnLayout {
@@ -131,47 +99,16 @@ Window {
                     }
                 }
             }
-            ColumnLayout {
-                Layout.fillWidth : true
+            CustomLabeledProgressBar {
                 Layout.minimumWidth : 220
-                spacing: 3
-
-                Label {
-                    text: runner && runner.running
-                        ? "CPU %1% (%2 cores)"
-                            .arg(runner.cpuUsage.toFixed(1))
-                            .arg(runner.cpuCoreCount)
-                        : "CPU --"
-                    color: runner && runner.running
-                        ? usageColor(runner.cpuUsage / (runner.cpuCoreCount * 100))
-                        : Theme.subtext
-                }
-
-                ProgressBar {
-                    id: cpuBar
-                    Layout.fillWidth: true
-                    from: 0
-                    to: 1
-                    value: runner && runner.running && runner.cpuCoreCount > 0
-                        ? runner.cpuUsage / (runner.cpuCoreCount * 100)
-                        : 0
-                    enabled: runner !== null && runner.running
-                    background: Rectangle {
-                        implicitHeight: 6
-                        radius: 3
-                        color: Theme.surface3
-                    }
-                    contentItem: Item {
-                        Rectangle {
-                            width: parent.width * Math.min(1, Math.max(0, cpuBar.value))
-                            height: parent.height
-                            radius: 3
-                            color: runner && runner.running
-                                ? usageColor(cpuBar.value)
-                                : Theme.disabled
-                        }
-                    }
-                }
+                runner: root.runner
+                label: "CPU"
+                current_value: root.runner ? root.runner.cpuUsage : 0
+                maximum_value: root.runner ? root.runner.cpuCoreCount * 100 : 0
+                value_text: root.runner
+                    ? root.runner.cpuUsage.toFixed(1) + "% ("
+                        + root.runner.cpuCoreCount + " cores)"
+                    : ""
             }
         }
 
@@ -206,13 +143,5 @@ Window {
     onClosing: function(close) {
         if (runner)
             runner.shutdown()
-    }
-
-    function usageColor(ratio) {
-        if (ratio >= 0.9)
-            return Theme.failure
-        if (ratio >= 0.75)
-            return Theme.warning
-        return Theme.success
     }
 }

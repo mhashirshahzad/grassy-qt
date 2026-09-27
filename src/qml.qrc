@@ -2,6 +2,7 @@
     <qresource prefix="/">
         <file alias="Main.qml">../qml/Main.qml</file>
         <file alias="components/BasicServerSettings.qml">../qml/components/BasicServerSettings.qml</file>
+        <file alias="components/CustomLabeledProgressBar.qml">../qml/components/CustomLabeledProgressBar.qml</file>
         <file alias="components/CustomTextField.qml">../qml/components/CustomTextField.qml</file>
         <file alias="components/CustomTitleBar.qml">../qml/components/CustomTitleBar.qml</file>
         <file alias="components/GameplayServerSettings.qml">../qml/components/GameplayServerSettings.qml</file>

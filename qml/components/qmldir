@@ -1,5 +1,6 @@
 module Grassy.Components
 
+CustomLabeledProgressBar 1.0 CustomLabeledProgressBar.qml
 CustomTextField 1.0 CustomTextField.qml
 CustomTitleBar 1.0 CustomTitleBar.qml
 BasicServerSettings 1.0 BasicServerSettings.qml
