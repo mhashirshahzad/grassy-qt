@@ -16,6 +16,8 @@ Window {
     property var utilsObject: typeof utils !== "undefined" ? utils : null
     property bool portCopied: false
 
+    modality: Qt.NonModal
+    flags: Qt.Window
     Timer {
         id: portCopyTimer
         interval: 1500

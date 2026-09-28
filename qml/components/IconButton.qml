@@ -3,6 +3,9 @@ import QtQuick.Controls 2.15
 import Qt5Compat.GraphicalEffects
 import "../theme" 1.0
 
+
+
+// TODO: This gets really blurry when scaled
 Button {
     id: control
 
@@ -34,9 +37,14 @@ Button {
 
             anchors.fill: parent
             source: control.iconSource
-            sourceSize: Qt.size(control.iconSize, control.iconSize)
+            sourceSize: Qt.size(
+                control.iconSize * 1.25 * Screen.devicePixelRatio * 2,
+                control.iconSize * 1.25 * Screen.devicePixelRatio * 2
+            )
             fillMode: Image.PreserveAspectFit
             visible: false
+            smooth : true
+            mipmap : true
         }
 
         ColorOverlay {

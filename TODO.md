@@ -7,9 +7,11 @@
 
 stupid ai started using snake_case in ServerWindow and CustomLabelProgressBar
 
-shortcuts (for UI)
+shortcuts (for UI) ?
 (done) The serverRunner and Terminal (don't display the cmd executed like ./start.sh) or smth
-also they don't tell which port they are using which should be on the top :3
+(done)also they don't tell which port they are using which should be on the top :3
+the port thingi in ServerWindow has diff size compared to Progress Bars TT
+Icons get blurry when scaled
 customVer of Java support (other than /usr/bin/java) for mods
 
 downloading mcServer and fabricServer
