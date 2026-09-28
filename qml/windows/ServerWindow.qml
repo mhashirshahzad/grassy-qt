@@ -40,7 +40,6 @@ Window {
         anchors.margins: 12
         spacing: 10
 
-        // TODO: give each one a unique border to make them apparent and popout (from the theme) 
         RowLayout {
             Layout.fillWidth: true
             spacing: 16
@@ -56,45 +55,81 @@ Window {
                         + (root.runner.memoryLimitKb / 1024).toFixed(1) + " MB"
                     : ""
             }
+            Item {
+                id: addressContainer
 
-            ColumnLayout {
-                Layout.preferredWidth: 120
-                Layout.minimumWidth : 120
-                Layout.maximumWidth : 120
-                spacing: 3
+                Layout.preferredWidth: 220
+                Layout.minimumWidth: 220
+                Layout.maximumWidth: 220
 
+                implicitHeight: addressCard.implicitHeight + 12
+                implicitWidth: addressCard.implicitWidth + 12
 
-                Label {
-                    text: "Port"
-                    color: Theme.subtext2
+                Rectangle {
+                    z: -1
+                    anchors.fill: parent
+
+                    color: addressMouse.containsMouse
+                        ? Theme.surface2
+                        : Theme.surface0
+
+                    border.color: Theme.surface2
+                    border.width: 1
+                    radius: 6
                 }
 
-                RowLayout {
-                    spacing: 4
+                ColumnLayout {
+                    id: addressCard
+
+                    spacing: 3
+                    anchors.fill: parent
+                    anchors.margins: 6
+
+                    property string address: runner && runner.port > 0
+                        ? utils.publicIp + ":" + runner.port
+                        : "--"
 
                     Label {
-                        text: runner && runner.port > 0
-                            ? runner.port
-                            : "--"
-                        color: runner && runner.port > 0 ? Theme.text : Theme.subtext2
+                        text: "Public IP + Port"
+                        color: Theme.text
                     }
 
-                    Item { Layout.fillWidth: true }
+                    RowLayout {
+                        spacing: 4
 
-                    IconButton {
-                        iconSize: 18
-                        visible: runner !== null && runner.port > 0
-                        iconSource: root.portCopied
-                            ? "qrc:/icons/check.svg"
-                            : "qrc:/icons/copy.svg"
-                        ToolTip.text: root.portCopied ? "Copied" : "Copy address"
-                        ToolTip.visible: hovered
-                        onClicked: {
-                            if (root.utilsObject
-                                    && root.utilsObject.copyToClipboard(runner.address())) {
-                                root.portCopied = true
-                                portCopyTimer.restart()
-                            }
+                        Label {
+                            Layout.fillWidth: true
+
+                            text: addressMouse.containsMouse
+                                ? addressCard.address
+                                : "Hover to reveal"
+
+                        color: Theme.subtext2
+
+                            elide: Text.ElideRight
+                        }
+
+                        Item {
+                            Layout.fillWidth: true
+                        }
+                    }
+                }
+
+                MouseArea {
+                    id: addressMouse
+
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    ToolTip.text: root.portCopied ? "Copied" : "Copy address"
+                    ToolTip.visible: addressMouse.containsMouse
+
+                    onClicked: {
+                        if (root.utilsObject &&
+                            root.utilsObject.copyToClipboard(addressCard.address)) {
+
+                            root.portCopied = true
+                            portCopyTimer.restart()
                         }
                     }
                 }
