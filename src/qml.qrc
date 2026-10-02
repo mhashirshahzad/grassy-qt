@@ -63,8 +63,10 @@
         <file alias="popups/ServerSettingsPopup.qml">../qml/popups/ServerSettingsPopup.qml</file>
         <file alias="terminal/qmldir">../qml/terminal/qmldir</file>
         <file alias="terminal/ServerTerminal.qml">../qml/terminal/ServerTerminal.qml</file>
+        <file alias="theme/Nord.ini">../qml/theme/Nord.ini</file>
         <file alias="theme/qmldir">../qml/theme/qmldir</file>
         <file alias="theme/Theme.qml">../qml/theme/Theme.qml</file>
+        <file alias="theme/TokyoNight.ini">../qml/theme/TokyoNight.ini</file>
         <file alias="windows/qmldir">../qml/windows/qmldir</file>
         <file alias="windows/ServerWindow.qml">../qml/windows/ServerWindow.qml</file>
     </qresource>

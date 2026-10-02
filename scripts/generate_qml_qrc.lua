@@ -31,6 +31,9 @@ add_files("**.qml")
 -- Icons
 add_files("**.svg")
 
+-- Theme definitions
+add_files("**.ini")
+
 -- Fonts
 add_files("**.ttf")
 add_files("**.otf")

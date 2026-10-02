@@ -22,8 +22,88 @@
 #include <QUrl>
 #include <QFileDialog>
 #include <QDirIterator>
+#include <QSettings>
+#include <QGuiApplication>
+#include <QPalette>
 
-Utils::Utils(QObject *parent) : QObject(parent), m_javaInstalled(::isJavaInstalled()) {}
+namespace
+{
+QString themeDirectory()
+{
+    return QDir(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation))
+        .filePath(QStringLiteral("grassy/themes"));
+}
+
+QString settingsFilePath()
+{
+    const QString configDirectory =
+        QDir(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation))
+            .filePath(QStringLiteral("grassy"));
+    if (!QDir().mkpath(configDirectory))
+        GRASSY_WARNING() << "Unable to create config directory:" << configDirectory;
+    return QDir(configDirectory).filePath(QStringLiteral("settings.ini"));
+}
+
+QVariantMap readTheme(const QString &path)
+{
+    QSettings settings(path, QSettings::IniFormat);
+    QVariantMap theme;
+        settings.beginGroup(QStringLiteral("Theme"));
+        for (const QString &key : settings.allKeys())
+            theme.insert(key, settings.value(key));
+        settings.endGroup();
+    return theme;
+}
+
+QVariantMap systemTheme()
+{
+    const QPalette palette = QGuiApplication::palette();
+    auto color = [&palette](QPalette::ColorRole role) {
+        return palette.color(QPalette::Active, role).name(QColor::HexArgb);
+    };
+    QVariantMap theme;
+    theme["background"] = color(QPalette::Window);
+    theme["surface0"] = color(QPalette::Base);
+    theme["surface1"] = color(QPalette::Window);
+    theme["surface2"] = color(QPalette::AlternateBase);
+    theme["surface3"] = color(QPalette::Mid);
+    theme["overlay0"] = color(QPalette::Mid);
+    theme["overlay1"] = color(QPalette::Button);
+    theme["overlay2"] = color(QPalette::Light);
+    theme["overlay3"] = color(QPalette::BrightText);
+    theme["text"] = color(QPalette::Text);
+    theme["textBright"] = color(QPalette::WindowText);
+    theme["subtext0"] = color(QPalette::Mid);
+    theme["subtext1"] = color(QPalette::Mid);
+    theme["subtext2"] = color(QPalette::Dark);
+    for (const QString &key : {"accent", "accentHover", "success", "warning", "failure", "info"})
+        theme[key] = color(QPalette::Highlight);
+    theme["accentPressed"] = color(QPalette::Dark);
+    theme["accentMuted"] = color(QPalette::Mid);
+    theme["successHover"] = theme["accent"];
+    theme["successMuted"] = theme["accentMuted"];
+    theme["warningHover"] = theme["accent"];
+    theme["warningMuted"] = theme["accentMuted"];
+    theme["failureHover"] = theme["accent"];
+    theme["failureMuted"] = theme["accentMuted"];
+    theme["infoHover"] = theme["accent"];
+    theme["infoMuted"] = theme["accentMuted"];
+    theme["border"] = color(QPalette::Mid);
+    theme["borderHover"] = color(QPalette::Button);
+    theme["selection"] = color(QPalette::Highlight);
+    theme["selectionHover"] = theme["selection"];
+    theme["disabled"] = color(QPalette::Mid);
+    theme["disabledText"] = color(QPalette::Mid);
+    theme["shadow"] = color(QPalette::Dark);
+    theme["scrim"] = QStringLiteral("#73000000");
+    return theme;
+}
+}
+
+Utils::Utils(QObject *parent) : QObject(parent), m_javaInstalled(::isJavaInstalled())
+{
+    loadThemes();
+}
 
 bool Utils::javaInstalled() const { return m_javaInstalled; }
 
@@ -53,6 +133,54 @@ QString Utils::localIp() const
 QString Utils::publicIp() const
 {
     return m_publicIp.isEmpty() ? QStringLiteral("Loading...") : m_publicIp;
+}
+
+QStringList Utils::themeNames() const { return m_themeNames; }
+QString Utils::selectedTheme() const { return m_selectedTheme; }
+QVariantMap Utils::themePalette() const { return m_themePalette; }
+
+void Utils::loadThemes()
+{
+    QDir().mkpath(themeDirectory());
+    QHash<QString, QVariantMap> themes;
+    themes.insert(QStringLiteral("System"), systemTheme());
+    for (const QString &path : {QStringLiteral(":/theme/TokyoNight.ini"),
+                                QStringLiteral(":/theme/Nord.ini")})
+    {
+        const QFileInfo info(path);
+        themes.insert(info.baseName(), readTheme(path));
+    }
+    const QDir userDir(themeDirectory());
+    for (const QString &path : userDir.entryList({QStringLiteral("*.ini")}, QDir::Files))
+        themes.insert(QFileInfo(path).baseName(), readTheme(userDir.filePath(path)));
+
+    m_themeNames = themes.keys();
+    m_themeNames.sort();
+    QSettings settings(settingsFilePath(), QSettings::IniFormat);
+    m_selectedTheme = settings.value(QStringLiteral("General/theme"),
+                                      QStringLiteral("TokyoNight")).toString();
+    if (!themes.contains(m_selectedTheme))
+        m_selectedTheme = QStringLiteral("TokyoNight");
+    m_themePalette = themes.value(m_selectedTheme);
+}
+
+void Utils::setTheme(const QString &name)
+{
+    if (!m_themeNames.contains(name) || name == m_selectedTheme)
+        return;
+    m_selectedTheme = name;
+    m_themePalette = name == QStringLiteral("System") ? systemTheme() : m_themePalette;
+    if (name != QStringLiteral("System"))
+    {
+        const QString builtIn = QStringLiteral(":/theme/%1.ini").arg(name);
+        m_themePalette = readTheme(QFile::exists(builtIn)
+                                       ? builtIn
+                                       : QDir(themeDirectory()).filePath(name + ".ini"));
+    }
+    QSettings settings(settingsFilePath(), QSettings::IniFormat);
+    settings.setValue(QStringLiteral("General/theme"), name);
+    settings.sync();
+    emit themeChanged();
 }
 
 bool Utils::saveServersDirectory(const QString &path)
@@ -120,50 +248,30 @@ QStringList Utils::javaExecutables() const
     return paths;
 }
 
-static QString settingsFilePath()
-{
-    const QString configDir =
-        QDir(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation)).filePath("grassy");
-
-    if (!QDir().mkpath(configDir))
-        GRASSY_WARNING() << "Unable to create config directory:" << configDir;
-
-    return QDir(configDir).filePath("settings.txt");
-}
-
 QString getServersDir()
 {
-    const QString settingsFile = settingsFilePath();
-
     const QString dataDir =
         QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation);
     const QString defaultDir = QDir(dataDir).filePath("grassy");
 
-    // Try to read the saved directory
-    QFile file(settingsFile);
-
-    if (file.open(QIODevice::ReadOnly | QIODevice::Text))
+    QSettings settings(settingsFilePath(), QSettings::IniFormat);
+    const QString saved = settings.value(QStringLiteral("General/serversDirectory")).toString();
+    if (!saved.isEmpty())
     {
-        QTextStream in(&file);
-        const QString saved = in.readAll().trimmed();
-
-        if (!saved.isEmpty())
+        const QString legacyDataDir =
+            QDir(dataDir).filePath(QStringLiteral("grassy/grassy"));
+        const QString legacyDefault =
+            QDir(legacyDataDir).filePath(QStringLiteral("servers"));
+        if (QDir::cleanPath(saved) == QDir::cleanPath(legacyDataDir) ||
+            QDir::cleanPath(saved) == QDir::cleanPath(legacyDefault))
         {
-            const QString legacyDataDir =
-                QDir(dataDir).filePath(QStringLiteral("grassy/grassy"));
-            const QString legacyDefault =
-                QDir(legacyDataDir).filePath(QStringLiteral("servers"));
-            if (QDir::cleanPath(saved) == QDir::cleanPath(legacyDataDir) ||
-                QDir::cleanPath(saved) == QDir::cleanPath(legacyDefault))
-            {
-                QDir().mkpath(defaultDir);
-                saveServersDir(defaultDir);
-                GRASSY_INFO() << "Migrated default servers directory to:" << defaultDir;
-                return defaultDir;
-            }
-            GRASSY_INFO() << "Using configured servers directory:" << saved;
-            return saved;
+            QDir().mkpath(defaultDir);
+            saveServersDir(defaultDir);
+            GRASSY_INFO() << "Migrated default servers directory to:" << defaultDir;
+            return defaultDir;
         }
+        GRASSY_INFO() << "Using configured servers directory:" << saved;
+        return saved;
     }
 
     GRASSY_INFO() << "Using default servers directory:" << defaultDir;
@@ -175,18 +283,14 @@ QString getServersDir()
 
 bool saveServersDir(const QString &path)
 {
-    const QString settingsFile = settingsFilePath();
-    QFile file(settingsFile);
-
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+    QSettings settings(settingsFilePath(), QSettings::IniFormat);
+    settings.setValue(QStringLiteral("General/serversDirectory"), path);
+    settings.sync();
+    if (settings.status() != QSettings::NoError)
     {
-        GRASSY_WARNING() << "Unable to write settings file:" << settingsFile
-                         << file.errorString();
+        GRASSY_WARNING() << "Unable to write settings file:" << settings.fileName();
         return false;
     }
-
-    QTextStream out(&file);
-    out << path;
 
     GRASSY_INFO() << "Saved servers directory:" << path;
     return true;

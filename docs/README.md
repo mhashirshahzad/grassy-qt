@@ -22,6 +22,11 @@ Welcome to the Grassy documentation suite. Grassy is a fast, modern Minecraft se
 | Resource | Location | Description |
 | :--- | :--- | :--- |
 | **Theme Singleton** | [`qml/theme/Theme.qml`](file:///home/mr-pineapple/Projects/grassy-qt/qml/theme/Theme.qml) | Color tokens, surface elevations, bundled fonts. |
+
+Themes are loaded from the built-in INI files in `qml/theme/` and from
+`<config-dir>/grassy/themes/*.ini`. User themes use a `[Theme]` section whose
+keys match the palette tokens exposed by `Theme.qml`; the file name becomes the
+theme name. The selected theme is stored in the application configuration.
 | **Server Runner** | [`src/runner/serverrunner.hpp`](file:///home/mr-pineapple/Projects/grassy-qt/src/runner/serverrunner.hpp) | `QProcess` wrapper, ANSI rich text parser, CPU/RAM telemetry. |
 | **Server Model** | [`src/models/servermodel.hpp`](file:///home/mr-pineapple/Projects/grassy-qt/src/models/servermodel.hpp) | Filesystem directory scanner, `server.properties` CRUD. |
 | **Main Window** | [`qml/Main.qml`](file:///home/mr-pineapple/Projects/grassy-qt/qml/Main.qml) | Primary desktop view with custom titlebar and card list. |

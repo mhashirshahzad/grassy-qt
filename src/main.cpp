@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
     QQuickStyle::setStyle(QStringLiteral("Basic"));
 
-    // so that later we can get ~/.config/grassy/settings.txt via qt's buitlin ways :3
+    // Use Qt's platform-specific config location for settings.ini and themes/.
     app.setOrganizationName("grassy");
     app.setApplicationName("grassy");
 
