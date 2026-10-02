@@ -29,6 +29,11 @@ ApplicationWindow {
     height: 600
     color: Theme.background
 
+    onActiveChanged: {
+        if (active)
+            raise()
+    }
+
 
     CustomTitleBar {
         id: customTitleBar
@@ -56,7 +61,7 @@ ApplicationWindow {
     }
 
     function openServer(folder, name) {
-        const window = serverWindowComponent.createObject(root)
+        const window = serverWindowComponent.createObject(null)
         if (!window) {
             console.warn("Could not create server window")
             return

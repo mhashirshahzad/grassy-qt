@@ -18,6 +18,7 @@ Window {
 
     modality: Qt.NonModal
     flags: Qt.Window
+    transientParent: null
     Timer {
         id: portCopyTimer
         interval: 1500
@@ -86,7 +87,8 @@ Window {
                     anchors.margins: 8
 
                     property string address: runner && runner.port > 0
-                        ? utils.publicIp + ":" + runner.port
+                        ? (root.utilsObject ? root.utilsObject.publicIp : "Unavailable")
+                            + ":" + runner.port
                         : "--"
 
                     Label {
