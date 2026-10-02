@@ -10,6 +10,7 @@
 #include <QFileInfo>
 #include <QTextStream>
 #include <QRegularExpression>
+#include <limits>
 
 namespace
 {
@@ -41,6 +42,34 @@ bool writeProperty(QString &contents, const QString &key, const QString &value)
 
     contents = lines.join('\n');
     return true;
+}
+
+qint64 memoryToBytes(const QString &value, bool *ok)
+{
+    static const QRegularExpression memoryPattern(QStringLiteral(R"(^(\d+)([kKmMgGtT]?)$)"));
+    const auto match = memoryPattern.match(value.trimmed());
+    if (!match.hasMatch())
+    {
+        *ok = false;
+        return 0;
+    }
+
+    const qint64 amount = match.captured(1).toLongLong(ok);
+    if (!*ok)
+        return 0;
+
+    const QString unit = match.captured(2).toLower();
+    const qint64 multiplier = unit == "t" ? 1024LL * 1024 * 1024 * 1024
+        : unit == "g"                         ? 1024LL * 1024 * 1024
+        : unit == "m"                         ? 1024LL * 1024
+        : unit == "k"                         ? 1024LL
+                                              : 1;
+    if (amount > std::numeric_limits<qint64>::max() / multiplier)
+    {
+        *ok = false;
+        return 0;
+    }
+    return amount * multiplier;
 }
 } // namespace
 
@@ -174,10 +203,23 @@ bool ServerModel::saveServerProperties(const QString &folder, const QString &con
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate))
         return false;
 
-    bool code = file.write(contents.toUtf8()) == contents.toUtf8().size();
-    // refresh();
+    const QByteArray encoded = contents.toUtf8();
+    if (file.write(encoded) != encoded.size())
+        return false;
+    file.close();
 
-    return code;
+    for (int row = 0; row < m_servers.size(); ++row)
+    {
+        if (m_servers[row].folder != folder)
+            continue;
+
+        const QString motd = readServerProperty(folder, QStringLiteral("motd"));
+        m_servers[row].motd = motd.isEmpty() ? QStringLiteral("A Minecraft Server") : motd;
+        const QModelIndex changed = index(row);
+        emit dataChanged(changed, changed, {MotdRole});
+        break;
+    }
+    return true;
 }
 
 bool ServerModel::setServerProperty(const QString &folder, const QString &key, const QString &value)
@@ -201,17 +243,20 @@ bool ServerModel::setServerProperty(const QString &folder, const QString &key, c
 }
 
 bool ServerModel::createStartScript(const QString &folder, const QString &minimumMemory,
-                                    const QString &maximumMemory)
+                                    const QString &maximumMemory,
+                                    const QString &javaExecutable)
 {
     static const QRegularExpression memoryPattern(QStringLiteral(R"(^\d+[kKmMgGtT]?$)"));
+    static const QRegularExpression javaPattern(QStringLiteral(R"(^[A-Za-z0-9_./+-]+$)"));
     if (!memoryPattern.match(minimumMemory.trimmed()).hasMatch() ||
-        !memoryPattern.match(maximumMemory.trimmed()).hasMatch())
+        !memoryPattern.match(maximumMemory.trimmed()).hasMatch() ||
+        !javaPattern.match(javaExecutable.trimmed()).hasMatch())
         return false;
 
     bool minOk = false;
     bool maxOk = false;
-    const qint64 minimumBytes = minimumMemory.trimmed().toLongLong(&minOk);
-    const qint64 maximumBytes = maximumMemory.trimmed().toLongLong(&maxOk);
+    const qint64 minimumBytes = memoryToBytes(minimumMemory, &minOk);
+    const qint64 maximumBytes = memoryToBytes(maximumMemory, &maxOk);
     if (minOk && maxOk && minimumBytes > maximumBytes)
         return false;
 
@@ -221,7 +266,8 @@ bool ServerModel::createStartScript(const QString &folder, const QString &minimu
         return false;
 
     const QByteArray contents = "#!/bin/sh\n"
-                                "exec java -Xms" +
+                                "exec " +
+                                javaExecutable.trimmed().toUtf8() + " -Xms" +
                                 minimumMemory.trimmed().toUtf8() + " -Xmx" +
                                 maximumMemory.trimmed().toUtf8() + " -jar server.jar nogui\n";
     if (script.write(contents) != contents.size())
@@ -237,6 +283,7 @@ QVariantMap ServerModel::readStartScript(const QString &folder) const
     QVariantMap result;
     result[QStringLiteral("minMemory")] = QStringLiteral("2G");
     result[QStringLiteral("maxMemory")] = QStringLiteral("4G");
+    result[QStringLiteral("javaExecutable")] = QStringLiteral("java");
     result[QStringLiteral("exists")] = false;
 
     const QString scriptPath = QDir(folder).filePath(QStringLiteral("start.sh"));
@@ -245,6 +292,9 @@ QVariantMap ServerModel::readStartScript(const QString &folder) const
     {
         result[QStringLiteral("exists")] = true;
         const QString text = QString::fromUtf8(script.readAll());
+        static const QRegularExpression javaRegex(
+            QStringLiteral(R"(^\s*(?:exec\s+)?([A-Za-z0-9_./+-]+)\s+-Xms)"),
+            QRegularExpression::MultilineOption);
         static const QRegularExpression xmsRegex(QStringLiteral(R"(-Xms(\d+[kKmMgGtT]?))"));
         static const QRegularExpression xmxRegex(QStringLiteral(R"(-Xmx(\d+[kKmMgGtT]?))"));
 
@@ -255,6 +305,9 @@ QVariantMap ServerModel::readStartScript(const QString &folder) const
         const auto xmxMatch = xmxRegex.match(text);
         if (xmxMatch.hasMatch())
             result[QStringLiteral("maxMemory")] = xmxMatch.captured(1);
+        const auto javaMatch = javaRegex.match(text);
+        if (javaMatch.hasMatch())
+            result[QStringLiteral("javaExecutable")] = javaMatch.captured(1);
     }
     return result;
 }

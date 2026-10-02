@@ -21,7 +21,8 @@ class ServerFilterModel : public QSortFilterProxyModel
     Q_INVOKABLE bool setServerProperty(const QString &folder, const QString &key,
                                        const QString &value);
     Q_INVOKABLE bool createStartScript(const QString &folder, const QString &minimumMemory,
-                                       const QString &maximumMemory);
+                                       const QString &maximumMemory,
+                                       const QString &javaExecutable = QStringLiteral("java"));
     Q_INVOKABLE QVariantMap readStartScript(const QString &folder) const;
 
   private:

@@ -15,6 +15,7 @@ CustomPopup {
     property string searchText: ""
     property string minimumMemory: "2G"
     property string maximumMemory: "4G"
+    property string javaExecutable: "java"
 
     width: Math.min(parent ? parent.width - 32 : 980, 980)
     height: Math.min(parent ? parent.height - 32 : 760, 760)
@@ -65,8 +66,8 @@ CustomPopup {
     function createStartScript() {
         if (!modelObject
                 || !modelObject.createStartScript(
-                    serverFolder, minimumMemory, maximumMemory)) {
-            errorMessage = "Enter valid memory values, such as 2G and 4G."
+                    serverFolder, minimumMemory, maximumMemory, javaExecutable)) {
+            errorMessage = "Enter valid Java and memory values."
             return false
         }
         errorMessage = ""
@@ -81,6 +82,8 @@ CustomPopup {
                 minimumMemory = startSettings.minMemory
             if (startSettings.maxMemory)
                 maximumMemory = startSettings.maxMemory
+            if (startSettings.javaExecutable)
+                javaExecutable = startSettings.javaExecutable
         }
         errorMessage = ""
         searchText = ""
@@ -101,7 +104,6 @@ CustomPopup {
             }
         }
         errorMessage = ""
-        modelObject.refresh()
         serverSettingsPopup.close()
     }
 
@@ -110,6 +112,7 @@ CustomPopup {
     Shortcut {
         sequences: ["Return", "Enter"]
         enabled: serverSettingsPopup.opened
+        context: Qt.WindowShortcut
         onActivated: serverSettingsPopup.save()
     }
 

@@ -33,7 +33,8 @@ Popup {
 
     Shortcut  {
         sequences: [StandardKey.Back]
-        // context: root.open
+        enabled: root.opened
+        context: Qt.WindowShortcut
         onActivated: root.close()
     }
     

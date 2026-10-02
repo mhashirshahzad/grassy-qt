@@ -190,6 +190,8 @@ CustomPopup {
 
         Shortcut {
             sequences: ["Enter", "Return"]
+            enabled: root.opened
+            context: Qt.WindowShortcut
             onActivated : root.saveDirectory()
         }
         RowLayout {

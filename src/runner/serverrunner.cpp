@@ -288,19 +288,11 @@ void ServerRunner::start()
     const QString startScript = QDir(m_serverFolder).filePath("start.sh");
     if (QFileInfo::exists(startScript))
     {
-        QString command = startScript;
         qint64 memoryLimitKb = 4 * 1024 * 1024;
         QFile script(startScript);
         if (script.open(QIODevice::ReadOnly | QIODevice::Text))
         {
             const QString scriptText = QString::fromUtf8(script.readAll());
-            static const QRegularExpression javaCommand(
-                QStringLiteral(R"(^\s*(?:exec\s+)?(java\b.*)$)"),
-                QRegularExpression::MultilineOption);
-            const auto match = javaCommand.match(scriptText);
-            if (match.hasMatch())
-                command = match.captured(1).trimmed();
-
             memoryLimitKb = javaMemoryLimitKb(scriptText);
         }
 
@@ -309,8 +301,6 @@ void ServerRunner::start()
             m_memoryLimitKb = memoryLimitKb;
             emit limitsChanged();
         }
-        m_sessionHeader = "Running: " + command + "\n";
-        appendConsole(m_sessionHeader);
         m_process->start("/bin/sh", {startScript});
     }
     else
@@ -322,8 +312,6 @@ void ServerRunner::start()
             m_memoryLimitKb = memoryLimitKb;
             emit limitsChanged();
         }
-        m_sessionHeader = "Running: java " + args.join(' ') + "\n";
-        appendConsole(m_sessionHeader);
         m_process->start("java", args);
     }
     emit runningChanged();

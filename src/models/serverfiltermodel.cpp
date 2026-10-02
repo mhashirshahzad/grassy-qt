@@ -53,10 +53,12 @@ bool ServerFilterModel::setServerProperty(const QString &folder, const QString &
 }
 
 bool ServerFilterModel::createStartScript(const QString &folder, const QString &minimumMemory,
-                                          const QString &maximumMemory)
+                                          const QString &maximumMemory,
+                                          const QString &javaExecutable)
 {
     auto *model = qobject_cast<ServerModel *>(sourceModel());
-    return model && model->createStartScript(folder, minimumMemory, maximumMemory);
+    return model &&
+           model->createStartScript(folder, minimumMemory, maximumMemory, javaExecutable);
 }
 
 QVariantMap ServerFilterModel::readStartScript(const QString &folder) const

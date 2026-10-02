@@ -21,6 +21,7 @@
 #include <QNetworkRequest>
 #include <QUrl>
 #include <QFileDialog>
+#include <QDirIterator>
 
 Utils::Utils(QObject *parent) : QObject(parent), m_javaInstalled(::isJavaInstalled()) {}
 
@@ -93,6 +94,30 @@ void Utils::refreshPublicIp()
         m_publicIp = address;
         emit publicIpChanged();
     });
+}
+
+QStringList Utils::javaExecutables() const
+{
+    QStringList paths;
+    const QString pathJava = QStandardPaths::findExecutable(QStringLiteral("java"));
+    if (!pathJava.isEmpty())
+        paths.append(pathJava);
+
+#ifdef Q_OS_UNIX
+    QDirIterator iterator(QStringLiteral("/usr/lib/jvm"),
+                          {QStringLiteral("java")}, QDir::Files,
+                          QDirIterator::Subdirectories);
+    while (iterator.hasNext())
+    {
+        const QString path = iterator.next();
+        if (QFileInfo(path).isExecutable())
+            paths.append(path);
+    }
+#endif
+
+    paths.removeDuplicates();
+    paths.sort();
+    return paths;
 }
 
 static QString settingsFilePath()

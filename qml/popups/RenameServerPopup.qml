@@ -25,8 +25,15 @@ CustomPopup {
         }
         root.close()
     }
+
+    onOpened: {
+        renameField.forceActiveFocus()
+        renameField.selectAll()
+    }
     Shortcut {
         sequences: ["Enter", "Return"]
+        enabled: root.opened
+        context: Qt.WindowShortcut
         onActivated : root.accept()
     }
 
@@ -46,7 +53,6 @@ CustomPopup {
             showSearchIcon: false
             text: root.serverName
             onTextChanged: root.serverName = text
-            Component.onCompleted: selectAll()
         }
 
         Label {

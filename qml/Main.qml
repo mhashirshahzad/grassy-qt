@@ -18,6 +18,12 @@ ApplicationWindow {
 
     font.family: Theme.fontFamily
 
+    Shortcut {
+        sequences: ["Ctrl+R"]
+        context: Qt.WindowShortcut
+        onActivated: root.modelObject ? root.modelObject.refresh() : undefined
+    }
+
     visible: true
     width: 800
     height: 600

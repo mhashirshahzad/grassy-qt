@@ -25,6 +25,7 @@ public:
     Q_INVOKABLE QString chooseDirectory(const QString &currentPath);
     Q_INVOKABLE bool copyToClipboard(const QString &text);
     Q_INVOKABLE void refreshPublicIp();
+    Q_INVOKABLE QStringList javaExecutables() const;
 
 signals:
     void serversDirectoryChanged();

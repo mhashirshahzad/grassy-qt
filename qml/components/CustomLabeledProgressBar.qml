@@ -8,19 +8,19 @@ Item {
 
     property var runner: null
     property string label: ""
-    property real current_value: 0
-    property real maximum_value: 0
-    property string value_text: ""
+    property real currentValue: 0
+    property real maximumValue: 0
+    property string valueText: ""
 
     readonly property bool active: runner !== null && runner.running
 
-    readonly property real ratio: maximum_value > 0
-        ? Math.max(0, current_value / maximum_value)
+    readonly property real ratio: maximumValue > 0
+        ? Math.max(0, currentValue / maximumValue)
         : 0
 
-    readonly property string shown_text: value_text.length > 0
-        ? value_text
-        : current_value + " / " + maximum_value
+    readonly property string shownText: valueText.length > 0
+        ? valueText
+        : currentValue + " / " + maximumValue
 
     Layout.fillWidth: true
 
@@ -53,7 +53,7 @@ Item {
         }
 
         Label {
-            text: root.active ? " " + root.shown_text : " --"
+            text: root.active ? " " + root.shownText : " --"
             color: Theme.subtext
             font.pixelSize: 10
         }

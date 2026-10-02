@@ -5,7 +5,6 @@ import "../theme" 1.0
 
 
 
-// TODO: This gets really blurry when scaled
 Button {
     id: control
 
@@ -13,6 +12,7 @@ Button {
     property bool destructive: false
 
     property int iconSize: 24
+    property real visualIconScale: 1
 
     
     implicitWidth: iconSize
@@ -29,18 +29,17 @@ Button {
     contentItem: Item {
         id: iconContent
         transformOrigin: Item.Center
-        scale: 1
         rotation: 0
 
         Image {
             id: iconImage
 
-            anchors.fill: parent
+            anchors.centerIn: parent
+            width: control.iconSize * control.visualIconScale
+            height: control.iconSize * control.visualIconScale
             source: control.iconSource
-            sourceSize: Qt.size(
-                control.iconSize * 1.25 * Screen.devicePixelRatio * 2,
-                control.iconSize * 1.25 * Screen.devicePixelRatio * 2
-            )
+            sourceSize: Qt.size(Math.ceil(width * Screen.devicePixelRatio),
+                                Math.ceil(height * Screen.devicePixelRatio))
             fillMode: Image.PreserveAspectFit
             visible: false
             smooth : true
@@ -69,15 +68,15 @@ Button {
             id: hoverAnimation
 
             PropertyAction {
-                target: iconContent
-                property: "scale"
+                target: control
+                property: "visualIconScale"
                 value: 1
             }
 
             ParallelAnimation {
                 NumberAnimation {
-                    target: iconContent
-                    property: "scale"
+                    target: control
+                    property: "visualIconScale"
                     to: 1.25
                     duration: 100
                     easing.type: Easing.OutBack
@@ -119,8 +118,8 @@ Button {
             id: restoreAnimation
 
             NumberAnimation {
-                target: iconContent
-                property: "scale"
+                target: control
+                property: "visualIconScale"
                 to: 1
                 duration: 120
                 easing.type: Easing.OutCubic
