@@ -16,3 +16,7 @@
 
 (done) downloading mcServer and fabricServer
 
+
+# WINDOWS (5th class citizen)
+- java support (and windows folders)
+- windows server download and running cuz it aint posix :(
