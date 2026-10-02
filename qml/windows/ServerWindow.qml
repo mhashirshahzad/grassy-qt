@@ -47,26 +47,24 @@ Window {
             spacing: 16
 
             CustomLabeledProgressBar {
-                Layout.minimumWidth : 220
+                Layout.minimumWidth: 220
+                Layout.preferredWidth: 220
                 runner: root.runner
                 label: "RAM"
-                current_value: root.runner ? root.runner.memoryUsageKb : 0
-                maximum_value: root.runner ? root.runner.memoryLimitKb : 0
-                value_text: root.runner
+                currentValue: root.runner ? root.runner.memoryUsageKb : 0
+                maximumValue: root.runner ? root.runner.memoryLimitKb : 0
+                valueText: root.runner
                     ? (root.runner.memoryUsageKb / 1024).toFixed(1) + " / "
                         + (root.runner.memoryLimitKb / 1024).toFixed(1) + " MB"
                     : ""
             }
             Item {
                 id: addressContainer
-
-                Layout.preferredWidth: 220
                 Layout.minimumWidth: 220
-                Layout.maximumWidth: 220
-
+                Layout.preferredWidth: 220
+                Layout.fillWidth: true
                 implicitHeight: addressCard.implicitHeight + 12
                 implicitWidth: addressCard.implicitWidth + 12
-
                 Rectangle {
                     z: -1
                     anchors.fill: parent
@@ -83,9 +81,9 @@ Window {
                 ColumnLayout {
                     id: addressCard
 
-                    spacing: 3
+                    spacing: 4
                     anchors.fill: parent
-                    anchors.margins: 6
+                    anchors.margins: 8
 
                     property string address: runner && runner.port > 0
                         ? utils.publicIp + ":" + runner.port
@@ -106,7 +104,7 @@ Window {
                                 ? addressCard.address
                                 : "Hover to reveal"
 
-                        color: Theme.subtext2
+                            color: Theme.subtext2
 
                             elide: Text.ElideRight
                         }
@@ -137,12 +135,13 @@ Window {
                 }
             }
             CustomLabeledProgressBar {
-                Layout.minimumWidth : 220
+                Layout.minimumWidth: 220
+                Layout.preferredWidth: 220
                 runner: root.runner
                 label: "CPU"
-                current_value: root.runner ? root.runner.cpuUsage : 0
-                maximum_value: root.runner ? root.runner.cpuCoreCount * 100 : 0
-                value_text: root.runner
+                currentValue: root.runner ? root.runner.cpuUsage : 0
+                maximumValue: root.runner ? root.runner.cpuCoreCount * 100 : 0
+                valueText: root.runner
                     ? root.runner.cpuUsage.toFixed(1) + "% ("
                         + root.runner.cpuCoreCount + " cores)"
                     : ""
