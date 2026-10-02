@@ -5,7 +5,13 @@ set_version("0.1.0")
 set_defaultmode("debug")
 
 set_languages("c++20")
-set_config("qt", "/usr/lib/qt6")
+
+if is_plat("windows") then
+    set_toolchains("mingw")
+    set_config("qt", "/opt/Qt/6.x.x/mingw_64")
+else
+    set_config("qt", "/usr/lib/qt6")
+end
 
 rule("qml.qrc.generator")
     set_extensions(".qml", ".svg", ".ini")
