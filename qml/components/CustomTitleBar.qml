@@ -68,11 +68,15 @@ Rectangle {
         IconButton {
             iconSource: "qrc:/icons/refresh.svg"
             onClicked: root.reloadClicked()
+            ToolTip.visible: hovered
+            ToolTip.text: "Refresh Servers"
         }
 
         IconButton {
             iconSource: "qrc:/icons/plus.svg"
             onClicked: root.addServerClicked()
+            ToolTip.visible: hovered
+            ToolTip.text: "Download New Server"
         }
 
     }

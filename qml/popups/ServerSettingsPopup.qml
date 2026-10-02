@@ -16,6 +16,7 @@ CustomPopup {
     property string minimumMemory: "2G"
     property string maximumMemory: "4G"
     property string javaExecutable: "java"
+    errorState: errorMessage.length > 0
 
     width: Math.min(parent ? parent.width - 32 : 980, 980)
     height: Math.min(parent ? parent.height - 32 : 760, 760)
@@ -127,10 +128,12 @@ CustomPopup {
             spacing: 4
 
             Label {
-                text: "Server settings"
+                text: serverSettingsPopup.errorMessage.length > 0
+                    ? serverSettingsPopup.errorMessage : "Server settings"
                 font.pixelSize: 24
                 font.bold: true
-                color: Theme.textBright
+                color: serverSettingsPopup.errorMessage.length > 0
+                    ? Theme.failure : Theme.textBright
             }
 
             Label {
@@ -175,7 +178,7 @@ CustomPopup {
         Label {
             text: serverSettingsPopup.errorMessage
             color: Theme.failure
-            visible: text.length > 0
+            visible: false
             wrapMode: Text.WordWrap
             Layout.fillWidth: true
         }

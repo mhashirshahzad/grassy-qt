@@ -15,6 +15,7 @@ TextField {
     hoverEnabled: true
     selectByMouse: true
     verticalAlignment: TextInput.AlignVCenter
+    horizontalAlignment: TextInput.AlignLeft
 
     leftPadding: showSearchIcon ? 38 : 12
     rightPadding: 12

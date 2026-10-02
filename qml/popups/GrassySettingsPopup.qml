@@ -12,6 +12,8 @@ CustomPopup {
     signal directorySaved()
     property bool localIpCopied: false
     property bool publicIpCopied: false
+    property bool hasError: errorLabel.text.length > 0
+    errorState: hasError
 
     width: Math.min(parent ? parent.width - 40 : 620, 620)
     height: Math.min(parent ? parent.height - 40 : 360, 360)
@@ -50,9 +52,10 @@ CustomPopup {
         spacing: 14
 
         Label {
-            text: "Server storage"
+            text: root.hasError ? errorLabel.text : "Server storage"
             font.pixelSize: 20
             font.bold: true
+            color: root.hasError ? Theme.failure : Theme.textBright
             Layout.rightMargin: closeButtonSize + closeButtonRightMargin + 12
         }
 
@@ -183,7 +186,7 @@ CustomPopup {
         Label {
             id: errorLabel
             color: Theme.failure
-            visible: text.length > 0
+            visible: false
         }
 
         Item { Layout.fillHeight: true }

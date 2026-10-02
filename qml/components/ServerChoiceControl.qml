@@ -5,11 +5,16 @@ import QtQuick.Window 2.15
 import "../theme" 1.0
 
 Item {
-    id: control
+    id: root
 
     property var options: []
     property int currentIndex: 0
+    property bool editable: false
+    readonly property bool editing: editable && editField.activeFocus
+    property string editText: currentIndex >= 0 && currentIndex < options.length
+        ? options[currentIndex] : ""
     signal activated(string value)
+    signal textEdited(string value)
 
     implicitWidth: 220
     implicitHeight: 34
@@ -18,8 +23,8 @@ Item {
         anchors.fill: parent
         radius: 7
         color: Theme.surface0
-        border.color: Theme.border
         border.width: 1
+        border.color: root.editing ? Theme.borderFocus : Theme.border
 
         RowLayout {
             anchors.fill: parent
@@ -28,30 +33,70 @@ Item {
             spacing: 8
 
             Label {
-                text: (control.options && control.options.length > control.currentIndex && control.currentIndex >= 0)
-                    ? control.options[control.currentIndex]
+                visible: !root.editable
+                text: (root.options && root.options.length > root.currentIndex && root.currentIndex >= 0)
+                    ? root.options[root.currentIndex]
                     : ""
                 color: Theme.text
                 elide: Text.ElideRight
                 Layout.fillWidth: true
             }
 
+            CustomTextField {
+                id: editField
+                visible: root.editable
+                Layout.fillWidth: true
+                showSearchIcon: false
+                borderColor: Theme.transparent
+                focusBorderColor: Theme.transparent
+                hoverEnabled: false
+                horizontalAlignment: Text.AlignLeft
+                text: root.editText
+                onTextEdited: root.textEdited(text)
+                onActiveFocusChanged: {
+                    if (activeFocus)
+                        root.openPopup()
+                }
+                onAccepted: {
+                    root.editText = text
+                    root.activated(text)
+                    root.closePopup()
+                }
+            }
+
             Label {
+                id: arrowLabel
                 text: controlPopup.visible ? "▲" : "▼"
                 color: Theme.subtext
             }
         }
 
         MouseArea {
+            visible: !root.editable
             id: controlMouse
             anchors.fill: parent
             hoverEnabled: true
             cursorShape: Qt.PointingHandCursor
             onClicked: {
                 if (controlPopup.visible)
-                    controlPopup.close()
+                    root.closePopup()
                 else
-                    controlPopup.open()
+                    root.openPopup()
+            }
+        }
+
+        MouseArea {
+            visible: root.editable
+            anchors.right: parent.right
+            anchors.top: parent.top
+            anchors.bottom: parent.bottom
+            width: arrowLabel.width + 16
+            cursorShape: Qt.PointingHandCursor
+            onClicked: {
+                if (controlPopup.visible)
+                    root.closePopup()
+                else
+                    root.openPopup()
             }
         }
     }
@@ -59,17 +104,17 @@ Item {
     Popup {
         id: controlPopup
         y: {
-            const win = control.Window.window
+            const win = root.Window.window
             if (!win)
-                return control.height + 4
-            const pt = control.mapToItem(null, 0, 0)
+                return root.height + 4
+            const pt = root.mapToItem(null, 0, 0)
             const popupH = height
-            if (pt.y + control.height + popupH + 8 > win.height)
+            if (pt.y + root.height + popupH + 8 > win.height)
                 return -popupH - 4
-            return control.height + 4
+            return root.height + 4
         }
-        width: control.width
-        height: Math.min((control.options ? control.options.length : 0) * 32 + 8, 220)
+        width: root.width
+        height: Math.min((root.options ? root.options.length : 0) * 32 + 8, 220)
         padding: 4
         modal: false
         z: 100
@@ -83,10 +128,10 @@ Item {
 
         contentItem: ListView {
             clip: true
-            model: control.options
+            model: root.options
 
             delegate: Rectangle {
-                width: ListView.view ? ListView.view.width : (control.width - 8)
+                width: ListView.view ? ListView.view.width : (root.width - 8)
                 height: 32
                 radius: 5
                 color: optionMouse.containsMouse ? Theme.surface3 : Theme.transparent
@@ -104,12 +149,23 @@ Item {
                     anchors.fill: parent
                     hoverEnabled: true
                     onClicked: {
-                        control.currentIndex = index
-                        control.activated(modelData)
-                        controlPopup.close()
+                        const selectedValue = modelData
+                        root.currentIndex = root.options.indexOf(selectedValue)
+                        root.editText = modelData
+                        root.activated(modelData)
+                        root.closePopup()
                     }
                 }
             }
+
         }
+    }
+
+    function closePopup() {
+        controlPopup.close()
+    }
+
+    function openPopup() {
+        controlPopup.open()
     }
 }

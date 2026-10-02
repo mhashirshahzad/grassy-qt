@@ -132,5 +132,19 @@ ApplicationWindow {
                 root.modelObject.refresh()
         }
     }
+
+    AddServerPopup {
+        id: addServerPopup
+        parent: Overlay.overlay
+        modelObject: root.modelObject
+        anchors.centerIn: parent
+    }
+
+    Connections {
+        target: customTitleBar
+        function onAddServerClicked() {
+            addServerPopup.openFresh()
+        }
+    }
     
 }

@@ -11,8 +11,15 @@ Item {
     property real currentValue: 0
     property real maximumValue: 0
     property string valueText: ""
+    property bool standaloneActive: false
+    property bool useGradient: true
+    property color progressStartColor: Theme.success
+    property color progressEndColor: Theme.success
+    property color inactiveColor: Theme.disabled
+    property color labelColor: progressStartColor
+    property color valueTextColor: Theme.subtext
 
-    readonly property bool active: runner !== null && runner.running
+    readonly property bool active: standaloneActive || (runner !== null && runner.running)
 
     readonly property real ratio: maximumValue > 0
         ? Math.max(0, currentValue / maximumValue)
@@ -46,7 +53,7 @@ Item {
         Label {
             text: root.label
             color: root.active
-                ? root.usageColor(root.ratio)
+                ? root.labelColor
                 : Theme.subtext
 
             font.pixelSize: 12
@@ -54,7 +61,7 @@ Item {
 
         Label {
             text: root.active ? " " + root.shownText : " --"
-            color: Theme.subtext
+            color: root.valueTextColor
             font.pixelSize: 10
         }
 
@@ -85,9 +92,23 @@ Item {
                     height: parent.height
                     radius: 3
 
-                    color: root.active
+                    color: root.active && !root.useGradient
                         ? root.usageColor(bar.value)
-                        : Theme.disabled
+                        : root.inactiveColor
+
+                    gradient: root.active && root.useGradient ? progressGradient : null
+
+                    Gradient {
+                        id: progressGradient
+                        GradientStop {
+                            position: 0
+                            color: root.progressStartColor
+                        }
+                        GradientStop {
+                            position: 1
+                            color: root.progressEndColor
+                        }
+                    }
                 }
             }
         }

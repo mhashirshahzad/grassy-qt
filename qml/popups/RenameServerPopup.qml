@@ -12,6 +12,7 @@ CustomPopup {
     property string serverFolder
     property string serverName
     property string errorMessage
+    errorState: errorMessage.length > 0
 
     width: 420
     height: 160
@@ -42,9 +43,10 @@ CustomPopup {
         spacing: 10
 
         Label {
-            text: "Rename server folder ?"
+            text: root.errorMessage.length > 0 ? root.errorMessage : "Rename server folder ?"
             font.pixelSize: 20
             font.bold: true
+            color: root.errorMessage.length > 0 ? Theme.failure : Theme.textBright
         }
 
         CustomTextField {
@@ -58,7 +60,7 @@ CustomPopup {
         Label {
             text: root.errorMessage
             color: Theme.failure
-            visible: text.length > 0
+            visible: false
         }
 
         Item { Layout.fillHeight: true }

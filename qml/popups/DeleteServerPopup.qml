@@ -12,6 +12,7 @@ CustomPopup {
     property string serverFolder
     property string serverName
     property string errorMessage
+    errorState: errorMessage.length > 0
 
     width: 460
     height: 280
@@ -30,9 +31,10 @@ CustomPopup {
         spacing: 12
 
         Label {
-            text: "Delete server ?"
+            text: root.errorMessage.length > 0 ? root.errorMessage : "Delete server ?"
             font.pixelSize: 20
             font.bold: true
+            color: root.errorMessage.length > 0 ? Theme.failure : Theme.textBright
         }
 
         Image {
@@ -53,7 +55,7 @@ CustomPopup {
         Label {
             text: root.errorMessage
             color: Theme.failure
-            visible: text.length > 0
+            visible: false
         }
 
         Item { Layout.fillHeight: true }

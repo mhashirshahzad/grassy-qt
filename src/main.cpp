@@ -12,6 +12,7 @@
 #include "models/serverfiltermodel.hpp"
 #include "models/servermodel.hpp"
 #include "runner/serverrunner.hpp"
+#include "downloader/serverdownloader.hpp"
 #include "core/utils.hpp"
 
 namespace
@@ -66,6 +67,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty(QStringLiteral("utils"), &utils);
     engine.rootContext()->setContextProperty(QStringLiteral("serverModel"), &filteredServerModel);
     qmlRegisterType<ServerRunner>("Grassy", 1, 0, "ServerRunner");
+    qmlRegisterType<ServerDownloader>("Grassy", 1, 0, "ServerDownloader");
     QObject::connect(
         &engine, &QQmlApplicationEngine::warnings,
         [&loadErrors](const QList<QQmlError> &warnings) {
