@@ -12,7 +12,7 @@
 (done)also they don't tell which port they are using which should be on the top :3
 (bruh, for later) the port thingi in ServerWindow has diff size compared to Progress Bars TT
 (done)Icons get blurry when scaled
-customVer of Java support (other than /usr/bin/java) for mods
+(done) customVer of Java support (other than /usr/bin/java) for mods
 
-downloading mcServer and fabricServer
+(done) downloading mcServer and fabricServer
 
