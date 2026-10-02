@@ -127,11 +127,13 @@ Item {
         }
 
         contentItem: ListView {
+            id: optionsView
             clip: true
             model: root.options
+            property var owner: root
 
             delegate: Rectangle {
-                width: ListView.view ? ListView.view.width : (root.width - 8)
+                width: optionsView.width
                 height: 32
                 radius: 5
                 color: optionMouse.containsMouse ? Theme.surface3 : Theme.transparent
@@ -150,10 +152,11 @@ Item {
                     hoverEnabled: true
                     onClicked: {
                         const selectedValue = modelData
-                        root.currentIndex = root.options.indexOf(selectedValue)
-                        root.editText = modelData
-                        root.activated(modelData)
-                        root.closePopup()
+                        const control = optionsView.owner
+                        control.currentIndex = control.options.indexOf(selectedValue)
+                        control.editText = modelData
+                        control.activated(modelData)
+                        control.closePopup()
                     }
                 }
             }

@@ -7,6 +7,7 @@ import QtQuick.Window 2.15
 import "theme" 1.0
 import "components" 1.0
 import "popups" 1.0
+import "popups/downloaders" 1.0
 import "windows" 1.0
 
 ApplicationWindow {
@@ -138,6 +139,30 @@ ApplicationWindow {
         parent: Overlay.overlay
         modelObject: root.modelObject
         anchors.centerIn: parent
+    }
+
+    MinecraftServerPopup {
+        id: minecraftServerPopup
+        parent: Overlay.overlay
+        modelObject: root.modelObject
+        anchors.centerIn: parent
+    }
+
+    FabricServerPopup {
+        id: fabricServerPopup
+        parent: Overlay.overlay
+        modelObject: root.modelObject
+        anchors.centerIn: parent
+    }
+
+    Connections {
+        target: addServerPopup
+        function onMinecraftSelected() {
+            minecraftServerPopup.openFresh()
+        }
+        function onFabricSelected() {
+            fabricServerPopup.openFresh()
+        }
     }
 
     Connections {
