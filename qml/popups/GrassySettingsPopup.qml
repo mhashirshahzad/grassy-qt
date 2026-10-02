@@ -16,7 +16,8 @@ CustomPopup {
     errorState: hasError
 
     width: Math.min(parent ? parent.width - 40 : 620, 620)
-    height: Math.min(parent ? parent.height - 40 : 360, 360)
+    height: Math.min(parent ? parent.height - 40 : 400, 400)
+
     function saveDirectory() {
         const path = directoryField.text.trim()
         if (!utilsObject || path.length === 0 || !utilsObject.saveServersDirectory(path)) {
@@ -65,6 +66,7 @@ CustomPopup {
             wrapMode: Text.WordWrap
         }
 
+
         RowLayout {
             Layout.fillWidth: true
             spacing: 8
@@ -95,10 +97,29 @@ CustomPopup {
             color: Theme.border
         }
 
+        RowLayout {
+            spacing: 8
+
+            Label {
+                text: "Theme"
+                color: Theme.subtext
+                Layout.fillWidth: true
+            }
+
+            ChoiceControl {
+                options: Theme.themeNames
+                currentIndex: Theme.themeNames.indexOf(Theme.selectedTheme)
+                onActivated: function(selectedTheme) {
+                    Theme.setTheme(selectedTheme)
+                }
+            }
+        }
+
         GridLayout {
             columns: 2
             columnSpacing: 20
             rowSpacing: 8
+
 
             Label { text: "Local IP"; color: Theme.subtext; Layout.fillWidth: true }
             RowLayout {

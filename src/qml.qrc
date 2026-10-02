@@ -1,6 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file alias="components/BasicServerSettings.qml">../qml/components/BasicServerSettings.qml</file>
+        <file alias="components/ChoiceControl.qml">../qml/components/ChoiceControl.qml</file>
         <file alias="components/CustomLabeledProgressBar.qml">../qml/components/CustomLabeledProgressBar.qml</file>
         <file alias="components/CustomTextField.qml">../qml/components/CustomTextField.qml</file>
         <file alias="components/CustomTitleBar.qml">../qml/components/CustomTitleBar.qml</file>
@@ -14,7 +15,6 @@
         <file alias="components/qmldir">../qml/components/qmldir</file>
         <file alias="components/SecurityServerSettings.qml">../qml/components/SecurityServerSettings.qml</file>
         <file alias="components/ServerCard.qml">../qml/components/ServerCard.qml</file>
-        <file alias="components/ServerChoiceControl.qml">../qml/components/ServerChoiceControl.qml</file>
         <file alias="components/ServerChoiceSetting.qml">../qml/components/ServerChoiceSetting.qml</file>
         <file alias="components/ServerNumberSetting.qml">../qml/components/ServerNumberSetting.qml</file>
         <file alias="components/ServerSettingCard.qml">../qml/components/ServerSettingCard.qml</file>

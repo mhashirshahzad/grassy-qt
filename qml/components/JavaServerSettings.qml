@@ -18,7 +18,7 @@ ServerSettingsSection {
         settingKey: "java-executable"
         searchHost: root.hostPopup
 
-        ServerChoiceControl {
+        ChoiceControl {
             anchors.fill: parent
             editable: true
             options: {

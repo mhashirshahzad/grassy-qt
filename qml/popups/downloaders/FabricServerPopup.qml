@@ -104,7 +104,7 @@ CustomPopup {
             Layout.fillWidth: true
         }
 
-        ServerChoiceControl {
+        ChoiceControl {
             Layout.fillWidth: true
             editable: true
             options: root.minecraftVersions
@@ -123,7 +123,7 @@ CustomPopup {
             Layout.fillWidth: true
         }
 
-        ServerChoiceControl {
+        ChoiceControl {
             Layout.fillWidth: true
             editable: true
             options: root.loaderVersions
@@ -139,7 +139,7 @@ CustomPopup {
             Layout.fillWidth: true
         }
 
-        ServerChoiceControl {
+        ChoiceControl {
             Layout.fillWidth: true
             editable: true
             options: root.installerVersions

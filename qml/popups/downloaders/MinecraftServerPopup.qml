@@ -86,7 +86,7 @@ CustomPopup {
             Layout.fillWidth: true
         }
 
-        ServerChoiceControl {
+        ChoiceControl {
             Layout.fillWidth: true
             editable: true
             options: root.minecraftVersions

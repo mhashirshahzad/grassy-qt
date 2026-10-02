@@ -5,7 +5,7 @@ ServerSettingCard {
     property string fallback: ""
     searchHost: settingsPopup
 
-    ServerChoiceControl {
+    ChoiceControl {
         anchors.fill: parent
         currentIndex: {
             if (!settingsPopup || !settingsPopup.values)
