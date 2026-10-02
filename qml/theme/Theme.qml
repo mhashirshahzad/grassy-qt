@@ -37,9 +37,10 @@ QtObject {
             info: "#81a1c1", infoHover: "#8fbcbb", infoMuted: "#4c566a",
             border: "#4c566a", borderHover: "#616e88", selection: "#5e81ac", selectionHover: "#81a1c1",
             disabled: "#4c566a", disabledText: "#616e88", shadow: "#242933", scrim: "#242933cc"
-        }
+        },
+        "System": systemColors
     })
-    readonly property var themeNames: ["System"].concat(Object.keys(themes))
+    readonly property var themeNames: Object.keys(themes)
 
     readonly property var systemColors: ({
         background: systemPalette.window,
@@ -89,8 +90,7 @@ QtObject {
 
     readonly property string selectedTheme: themes[settings.selectedTheme]
         ? settings.selectedTheme : themeNames[0]
-    readonly property var palette: selectedTheme === "System"
-        ? systemColors : themes[selectedTheme]
+    readonly property var palette: themes[selectedTheme]
 
     function setTheme(name) {
         if (themes[name])
@@ -148,6 +148,5 @@ QtObject {
         source: "qrc:/fonts/Ubuntu/UbuntuMono-Regular.ttf"
     }
     readonly property string monoFamily: monoFont.name
-    readonly property string fontFamily: selectedTheme === "System"
-        ? Qt.application.font.family : ubuntu.name
+    readonly property string fontFamily: ubuntu.name
 }
