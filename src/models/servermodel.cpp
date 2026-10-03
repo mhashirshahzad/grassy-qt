@@ -4,7 +4,6 @@
 #include "qhashfunctions.h"
 #include "../core/serverconfig.hpp"
 #include "../core/servermetadata.hpp"
-#include "../core/servermetadata.hpp"
 #include "../core/serverscripts.hpp"
 #include "../core/utils.hpp"
 
@@ -227,7 +226,7 @@ QString ServerModel::serverProperties(const QString &folder) const
 {
     QFile file(serverPropertiesPath(folder));
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-        return {};
+        return QStringLiteral("motd=A Minecraft Server\n");
     return QString::fromUtf8(file.readAll());
 }
 
@@ -264,11 +263,14 @@ bool ServerModel::setServerProperty(const QString &folder, const QString &key, c
         return false;
 
     QFile file(serverPropertiesPath(folder));
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-        return false;
-
-    QString contents = QString::fromUtf8(file.readAll());
-    file.close();
+    QString contents;
+    if (file.exists())
+    {
+        if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+            return false;
+        contents = QString::fromUtf8(file.readAll());
+        file.close();
+    }
 
     if (!writeProperty(contents, trimmedKey, value))
         return false;
