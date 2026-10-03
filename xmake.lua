@@ -46,13 +46,17 @@ target("grassy")
 task("mingw")
     set_menu({
         usage = "xmake mingw",
-        description = "Configure and build the Windows MinGW target",
+        description = "Configure, build, and stage the Windows MinGW target",
     })
     on_run(function()
+        local qt_target = "/opt/mingw/qt-sdk/6.11.2/mingw_64"
+        local build_dir = path.join("build", "mingw", "x86_64", get_config("mode") or "debug")
+        local dist_dir = path.join(build_dir, "dist")
+
         local configure = {
             "f", "-v", "-c", "-p", "mingw",
             "--mingw=/usr",
-            "--qt=/opt/mingw/qt-sdk/6.11.2/mingw_64",
+            "--qt=" .. qt_target,
             "--qt_host=/usr/lib/qt6",
             "-a", "x86_64",
         }
@@ -65,6 +69,29 @@ task("mingw")
         if status ~= 0 then
             raise("MinGW build failed")
         end
+
+        os.rm(dist_dir)
+        os.mkdir(dist_dir)
+        os.cp(path.join(build_dir, "grassy.exe"), dist_dir)
+
+        local function copy_files(source_dir, pattern, destination)
+            os.mkdir(destination)
+            for _, file in ipairs(os.files(path.join(source_dir, pattern))) do
+                os.cp(file, destination)
+            end
+        end
+
+        copy_files(path.join(qt_target, "bin"), "Qt6*.dll", dist_dir)
+        copy_files("/usr/x86_64-w64-mingw32/bin", "libgcc_s_seh-1.dll", dist_dir)
+        copy_files("/usr/x86_64-w64-mingw32/bin", "libstdc++-6.dll", dist_dir)
+        copy_files("/usr/x86_64-w64-mingw32/bin", "libwinpthread-1.dll", dist_dir)
+        os.cp(path.join(qt_target, "qml", "*"), path.join(dist_dir, "qml"))
+        copy_files(
+            path.join(qt_target, "plugins", "platforms"),
+            "*.dll",
+            path.join(dist_dir, "plugins", "platforms")
+        )
+        print("MinGW distribution staged at " .. path.absolute(dist_dir))
     end)
 
 task("live-reload")
