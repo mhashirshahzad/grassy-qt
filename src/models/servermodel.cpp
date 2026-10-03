@@ -3,6 +3,8 @@
 #include "qdir.h"
 #include "qhashfunctions.h"
 #include "../core/serverconfig.hpp"
+#include "../core/servermetadata.hpp"
+#include "../core/serverscripts.hpp"
 #include "../core/utils.hpp"
 
 #include <QDir>
@@ -107,6 +109,15 @@ QVariant ServerModel::data(const QModelIndex &index, int role) const
     case FolderRole:
         return server.folder;
 
+    case TypeRole:
+        return server.type;
+
+    case InstallRequiredRole:
+        return server.installRequired;
+
+    case MetadataRole:
+        return server.metadata;
+
     default:
         return {};
     }
@@ -114,7 +125,12 @@ QVariant ServerModel::data(const QModelIndex &index, int role) const
 
 QHash<int, QByteArray> ServerModel::roleNames() const
 {
-    return {{NameRole, "name"}, {MotdRole, "motd"}, {FolderRole, "folder"}};
+    return {{NameRole, "name"},
+            {MotdRole, "motd"},
+            {FolderRole, "folder"},
+            {TypeRole, "serverTypeRole"},
+            {InstallRequiredRole, "serverInstallRequired"},
+            {MetadataRole, "serverMetadataText"}};
 }
 
 void ServerModel::refresh()
@@ -140,17 +156,34 @@ void ServerModel::refresh()
 
     for (const QFileInfo &folder : folders)
     {
-        const QString serverJar = folder.filePath() + "/server.jar";
+        const QDir serverDir(folder.filePath());
+        const ServerMetadata metadata = readServerMetadata(folder.filePath());
+        const bool hasMetadata =
+            QFile::exists(serverDir.filePath(QStringLiteral("grassy-meta.ini")));
+        const bool forgeServer = hasMetadata && metadata.type == QStringLiteral("forge");
+        const bool fabricServer = hasMetadata && metadata.type == QStringLiteral("fabric");
+        const bool officialServer = QFile::exists(serverDir.filePath(QStringLiteral("server.jar")));
 
-        if (!QFile::exists(serverJar))
+        if (!officialServer && !hasMetadata)
         {
-            GRASSY_INFO() << "Skipping directory without server.jar:" << folder.filePath();
+            GRASSY_INFO() << "Skipping directory without a recognized server:"
+                          << folder.filePath();
             continue;
         }
 
         Server server;
         server.name = folder.fileName();
         server.folder = folder.filePath();
+        server.type = forgeServer ? QStringLiteral("Forge")
+            : fabricServer                   ? QStringLiteral("Fabric")
+                                             : QStringLiteral("Minecraft");
+        server.installRequired = hasMetadata && !metadata.installed;
+        if (server.type == QStringLiteral("Minecraft"))
+            server.metadata = QStringLiteral("Vanilla Minecraft");
+        else
+            server.metadata = QStringLiteral("%1 %2 • Loader %3")
+                                  .arg(server.type, metadata.minecraftVersion,
+                                       metadata.loaderVersion);
 
         const QString motd = readServerProperty(server.folder, QStringLiteral("motd"));
         server.motd = motd.isEmpty() ? QStringLiteral("A Minecraft Server") : motd;
@@ -260,28 +293,8 @@ bool ServerModel::createStartScript(const QString &folder, const QString &minimu
     if (minOk && maxOk && minimumBytes > maximumBytes)
         return false;
 
-    const QByteArray java = javaExecutable.trimmed().toUtf8();
-    const QByteArray minimum = minimumMemory.trimmed().toUtf8();
-    const QByteArray maximum = maximumMemory.trimmed().toUtf8();
-    const QByteArray unixContents = "#!/bin/sh\nexec \"" + java + "\" -Xms" + minimum +
-                                    " -Xmx" + maximum + " -jar server.jar nogui\n";
-    const QByteArray windowsContents = "@echo off\r\n\"" + java + "\" -Xms" + minimum +
-                                       " -Xmx" + maximum + " -jar server.jar nogui\r\n";
-
-    const auto writeScript = [&folder](const QString &name, const QByteArray &contents) {
-        QFile script(QDir(folder).filePath(name));
-        if (!script.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate))
-            return false;
-        if (script.write(contents) != contents.size())
-            return false;
-        script.close();
-        return name != QStringLiteral("run.sh") ||
-               script.setPermissions(script.permissions() | QFileDevice::ExeOwner |
-                                     QFileDevice::ExeGroup | QFileDevice::ExeOther);
-    };
-
-    return writeScript(QStringLiteral("run.sh"), unixContents) &&
-           writeScript(QStringLiteral("run.bat"), windowsContents);
+    return writeServerScripts(folder, javaExecutable.trimmed(), minimumMemory.trimmed(),
+                              maximumMemory.trimmed());
 }
 
 QVariantMap ServerModel::readStartScript(const QString &folder) const

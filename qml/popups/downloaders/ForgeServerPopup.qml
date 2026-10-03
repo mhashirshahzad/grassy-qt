@@ -17,8 +17,16 @@ CustomPopup {
     property bool completed: false
     property var minecraftVersions: []
     property var forgeVersions: []
+    signal installationCompleted()
     property bool hasError: statusMessage.startsWith("Error")
     errorState: hasError
+
+    Timer {
+        id: closeTimer
+        interval: 1000
+        repeat: false
+        onTriggered: root.close()
+    }
 
     width: Math.min(parent ? parent.width - 32 : 620, 620)
     height: content.implicitHeight + topPadding + bottomPadding
@@ -60,6 +68,8 @@ CustomPopup {
             root.statusMessage = "Installed " + folderName
             if (root.modelObject)
                 root.modelObject.refresh()
+            root.installationCompleted()
+            closeTimer.start()
         }
         function onFailed(message) {
             root.downloading = false
@@ -81,8 +91,16 @@ CustomPopup {
         }
         Label {
             visible: !root.hasError
-            text: "Download and install a Forge server inside your servers folder"
+            text: "Download a Forge server inside your servers folder"
             color: Theme.subtext
+            wrapMode: Text.WordWrap
+            Layout.fillWidth: true
+        }
+        Label {
+            visible: !root.hasError
+            text: "<b>Run the server at least once after downloading to install Forge and fetch the required libraries.</b>"
+            textFormat: Text.RichText
+            color: Theme.warning
             wrapMode: Text.WordWrap
             Layout.fillWidth: true
         }
@@ -114,7 +132,7 @@ CustomPopup {
             id: progressBar
             visible: root.downloading
             Layout.fillWidth: true
-            label: "Download and installation progress"
+            label: "Download progress"
             standaloneActive: true
             currentValue: progressValue
             maximumValue: 1
@@ -125,16 +143,11 @@ CustomPopup {
             labelColor: Theme.accent
             inactiveColor: Theme.surface3
         }
-        Label {
-            visible: root.completed && !root.downloading
-            text: "Forge server installed."
-            color: Theme.accent
-            Layout.fillWidth: true
-        }
         Item { Layout.fillHeight: true }
+
         ThemedButton {
             Layout.fillWidth: true
-            text: root.downloading ? "Installing..." : "Download server"
+            text: root.downloading ? "Downloading..." : "Download server"
             enabled: !root.downloading && root.minecraftVersion.length > 0
                 && root.forgeVersion.length > 0
             onClicked: {

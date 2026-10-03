@@ -8,6 +8,11 @@
 
 ServerFilterModel::ServerFilterModel(QObject *parent) : QSortFilterProxyModel(parent) {}
 
+QHash<int, QByteArray> ServerFilterModel::roleNames() const
+{
+    return sourceModel() ? sourceModel()->roleNames() : QHash<int, QByteArray>{};
+}
+
 void ServerFilterModel::refresh()
 {
     auto *model = qobject_cast<ServerModel *>(sourceModel());

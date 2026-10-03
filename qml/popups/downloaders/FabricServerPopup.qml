@@ -19,8 +19,16 @@ CustomPopup {
     property var minecraftVersions: []
     property var loaderVersions: []
     property var installerVersions: []
+    signal installationCompleted()
     property bool hasError: statusMessage.startsWith("Error")
     errorState: hasError
+
+    Timer {
+        id: closeTimer
+        interval: 1000
+        repeat: false
+        onTriggered: root.close()
+    }
 
     width: Math.min(parent ? parent.width - 32 : 620, 620)
     height: content.implicitHeight + topPadding + bottomPadding
@@ -70,6 +78,8 @@ CustomPopup {
             root.statusMessage = "Installed " + folderName
             if (root.modelObject)
                 root.modelObject.refresh()
+            root.installationCompleted()
+            closeTimer.start()
         }
         function onFailed(message) {
             root.downloading = false
@@ -94,6 +104,14 @@ CustomPopup {
             visible: !root.hasError
             text: "Download a Fabric server inside your servers folder"
             color: Theme.subtext
+            wrapMode: Text.WordWrap
+            Layout.fillWidth: true
+        }
+        Label {
+            visible: !root.hasError
+            text: "<b>Run the server at least once after downloading to fetch the required libraries.</b>"
+            textFormat: Text.RichText
+            color: Theme.warning
             wrapMode: Text.WordWrap
             Layout.fillWidth: true
         }
@@ -167,7 +185,8 @@ CustomPopup {
 
         Label {
             visible: root.completed && !root.downloading
-            text: "fabric.jar installed; run the server to fetch mods and mc.jar."
+            text: "<b>Run the server at least once to fetch the required libraries and Minecraft server jar.</b>"
+            textFormat: Text.RichText
             color: Theme.accent
             wrapMode: Text.WordWrap
             Layout.fillWidth: true

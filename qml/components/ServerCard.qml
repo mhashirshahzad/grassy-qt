@@ -10,6 +10,9 @@ Rectangle {
     required property string serverName
     required property string serverMotd
     required property string serverFolder
+    property string serverMetadata: ""
+    property string serverType: "Minecraft"
+    property bool installRequired: false
     required property var modelObject
     property bool serverRunning: false
 
@@ -19,7 +22,7 @@ Rectangle {
     signal folderClicked()
     signal deleteClicked()
 
-    implicitHeight: 100
+    implicitHeight: content.implicitHeight + 24
     radius: 8
     color: Theme.surface
     border.color: Theme.surface
@@ -28,6 +31,7 @@ Rectangle {
     width: ListView.view ? ListView.view.width: 0
     
     ColumnLayout {
+        id: content
         anchors.fill: parent
         anchors.margins: 12
         spacing: 8
@@ -82,16 +86,28 @@ Rectangle {
 
         }
 
+        Label {
+            text: "Motd: " + card.serverMotd
+            color: Theme.subtext
+            elide: Text.ElideRight
+
+            font.pixelSize : 14
+            Layout.fillWidth: true
+        }
+
+
         // Bottom row
         RowLayout {
             Layout.fillWidth: true
             spacing: 12
 
+
             Label {
-                text: card.serverMotd
+                text: "MetaData: " + card.serverMetadata
+                color: Theme.subtext
+                font.pixelSize: 11
                 opacity: 0.7
                 elide: Text.ElideRight
-
                 Layout.fillWidth: true
             }
 
@@ -103,10 +119,20 @@ Rectangle {
             }
 
             ThemedButton {
-                text: card.serverRunning ? "Running" : "Start Server"
-                buttonColor: card.serverRunning ? Theme.success : Theme.accent
-                buttonHoverColor: card.serverRunning ? Theme.successHover : Theme.accentHover
-                buttonPressedColor: card.serverRunning ? Theme.successMuted : Theme.accentPressed
+                text: card.serverRunning
+                    ? "Running"
+                    : (card.installRequired
+                        ? "Install Server"
+                        : "Start Server")
+                buttonColor:
+                    card.installRequired ? Theme.warning :
+                    card.serverRunning ? Theme.success : Theme.accent
+                buttonHoverColor:
+                    card.installRequired ? Theme.warningHover :
+                    card.serverRunning ? Theme.successHover : Theme.accentHover
+                buttonPressedColor:
+                    card.installRequired ? Theme.warningMuted :
+                    card.serverRunning ? Theme.successMuted : Theme.accentPressed
                 onClicked: card.startClicked()
             }
         }

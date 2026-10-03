@@ -14,6 +14,7 @@ class ServerFilterModel : public QSortFilterProxyModel
     explicit ServerFilterModel(QObject *parent = nullptr);
     Q_INVOKABLE void refresh();
     Q_INVOKABLE void setSearchText(const QString &text);
+    QHash<int, QByteArray> roleNames() const override;
     Q_INVOKABLE bool renameServer(const QString &folder, const QString &name);
     Q_INVOKABLE bool deleteServer(const QString &folder);
     Q_INVOKABLE QString serverProperties(const QString &folder) const;

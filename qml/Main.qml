@@ -107,9 +107,15 @@ ApplicationWindow {
             required property string name
             required property string motd
             required property string folder
+            required property string serverTypeRole
+            required property bool serverInstallRequired
+            required property string serverMetadataText
             serverName: name
             serverMotd: motd
             serverFolder: folder
+            serverType: serverTypeRole
+            installRequired: serverInstallRequired
+            serverMetadata: serverMetadataText
             modelObject: root.modelObject
             serverRunning: root.runningRevision >= 0 && root.isServerRunning(folder)
             onStartClicked: root.openServer(folder, name)
@@ -175,6 +181,27 @@ ApplicationWindow {
         }
         function onForgeSelected() {
             forgeServerPopup.openFresh()
+        }
+    }
+
+    Connections {
+        target: minecraftServerPopup
+        function onInstallationCompleted() {
+            addServerPopup.closeAfterInstall()
+        }
+    }
+
+    Connections {
+        target: fabricServerPopup
+        function onInstallationCompleted() {
+            addServerPopup.closeAfterInstall()
+        }
+    }
+
+    Connections {
+        target: forgeServerPopup
+        function onInstallationCompleted() {
+            addServerPopup.closeAfterInstall()
         }
     }
 

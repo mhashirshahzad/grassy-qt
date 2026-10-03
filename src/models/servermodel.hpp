@@ -13,7 +13,10 @@ class ServerModel : public QAbstractListModel
     {
         NameRole = Qt::UserRole + 1,
         MotdRole,
-        FolderRole
+        FolderRole,
+        TypeRole,
+        InstallRequiredRole,
+        MetadataRole
     };
 
     explicit ServerModel(QObject *parent = nullptr);
@@ -40,6 +43,9 @@ class ServerModel : public QAbstractListModel
         QString name;
         QString motd;
         QString folder;
+        QString type;
+        QString metadata;
+        bool installRequired = false;
     };
 
     QList<Server> m_servers;

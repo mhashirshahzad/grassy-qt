@@ -41,6 +41,8 @@ class ServerDownloader : public QObject
     void fetchMinecraftServer(const QString &version);
     void downloadJar(const QUrl &url, const QString &folderName);
     void downloadForgeInstaller(const QUrl &url, const QString &folderName);
+    void downloadFabricInstaller(const QUrl &url, const QString &folderName,
+                                 const QString &minecraftVersion, const QString &loaderVersion);
     void reportError(QNetworkReply *reply);
 
     QNetworkAccessManager m_network;

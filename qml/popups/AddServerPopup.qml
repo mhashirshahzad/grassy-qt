@@ -15,11 +15,22 @@ CustomPopup {
     signal forgeSelected()
     signal ftbSelected()
 
+    Timer {
+        id: closeTimer
+        interval: 1000
+        repeat: false
+        onTriggered: root.close()
+    }
+
     width: Math.min(parent ? parent.width - 32 : 520, 520)
     height: content.implicitHeight + topPadding + bottomPadding
 
     function openFresh() {
         root.open()
+    }
+
+    function closeAfterInstall() {
+        closeTimer.restart()
     }
 
     ColumnLayout {
@@ -62,7 +73,10 @@ CustomPopup {
         ThemedButton {
             Layout.fillWidth: true
             text: "Forge"
-            onClicked: root.forgeSelected()
+            onClicked: {
+                root.close()
+                root.forgeSelected()
+            }
         }
 
         ThemedButton {

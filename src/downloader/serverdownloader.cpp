@@ -1,5 +1,7 @@
 #include "serverdownloader.hpp"
 
+#include "../core/servermetadata.hpp"
+#include "../core/serverscripts.hpp"
 #include "../core/utils.hpp"
 
 #include <QDir>
@@ -10,11 +12,9 @@
 #include <QJsonObject>
 #include <QNetworkReply>
 #include <QNetworkRequest>
-#include <QProcess>
 #include <QRegularExpression>
 #include <QXmlStreamReader>
 #include <QUrlQuery>
-
 #include <algorithm>
 
 /*
@@ -32,9 +32,9 @@
  *   Minecraft version as:
  *   https://maven.minecraftforge.net/net/minecraftforge/forge/
  *   {MC_VERSION}-{FORGE_VERSION}/forge-{MC_VERSION}-{FORGE_VERSION}-installer.jar
- *   The downloaded Forge installer is executed with "java -jar ... --installServer"
- *   in the destination folder, because the installer must generate the actual
- *   server files before the folder can be started.
+ *   The downloaded installer is intentionally not executed here. It is saved
+ *   beside run.sh/run.bat; the first server launch runs the installer so the
+ *   required libraries are fetched at runtime.
  */
 
 ServerDownloader::ServerDownloader(QObject *parent) : QObject(parent) {}
@@ -204,9 +204,24 @@ void ServerDownloader::download(const QString &kind, const QString &minecraftVer
         !installerVersion.isEmpty())
     {
         const QUrl url(QStringLiteral(
-                           "https://meta.fabricmc.net/v2/versions/loader/%1/%2/%3/server/jar")
-                           .arg(minecraftVersion, loaderVersion, installerVersion));
-        downloadJar(url, QStringLiteral("fabric_%1").arg(minecraftVersion));
+                           "https://maven.fabricmc.net/net/fabricmc/fabric-installer/%1/"
+                           "fabric-installer-%1.jar")
+                           .arg(installerVersion));
+        const QString folderName = QStringLiteral("fabric_%1").arg(minecraftVersion);
+        const QString folder = QDir(getServersDir()).filePath(folderName);
+        ServerMetadata metadata;
+        metadata.type = QStringLiteral("fabric");
+        metadata.minecraftVersion = minecraftVersion;
+        metadata.loaderVersion = loaderVersion;
+        metadata.installerVersion = installerVersion;
+        metadata.installed = false;
+        if (!QDir().mkpath(folder) || !writeServerMetadata(folder, metadata) ||
+            !writeServerScripts(folder))
+        {
+            emit failed(QStringLiteral("Could not prepare the Fabric server folder."));
+            return;
+        }
+        downloadFabricInstaller(url, folderName, minecraftVersion, loaderVersion);
         return;
     }
     if (kind == QStringLiteral("Forge") && !loaderVersion.isEmpty())
@@ -216,7 +231,25 @@ void ServerDownloader::download(const QString &kind, const QString &minecraftVer
                            "https://maven.minecraftforge.net/net/minecraftforge/forge/%1/"
                            "forge-%1-installer.jar")
                            .arg(fullVersion));
-        downloadForgeInstaller(url, QStringLiteral("forge_%1").arg(minecraftVersion));
+        const QString folderName = QStringLiteral("forge_%1").arg(minecraftVersion);
+        const QString folder = QDir(getServersDir()).filePath(folderName);
+        ServerMetadata metadata;
+        metadata.type = QStringLiteral("forge");
+        metadata.minecraftVersion = minecraftVersion;
+        metadata.loaderVersion = loaderVersion;
+        metadata.installerVersion = QString();
+        metadata.installed = false;
+        if (!QDir().mkpath(folder) || !writeServerMetadata(folder, metadata))
+        {
+            emit failed(QStringLiteral("Could not prepare the Forge server folder."));
+            return;
+        }
+        if (!writeServerScripts(folder))
+        {
+            emit failed(QStringLiteral("Could not create the Forge run scripts."));
+            return;
+        }
+        downloadForgeInstaller(url, folderName);
         return;
     }
     emit failed(kind == QStringLiteral("Forge")
@@ -259,37 +292,58 @@ void ServerDownloader::downloadForgeInstaller(const QUrl &url, const QString &fo
             return;
         }
         installer.close();
-        reply->deleteLater();
-
-        auto *process = new QProcess(this);
-        process->setWorkingDirectory(folder);
-        connect(process, qOverload<int, QProcess::ExitStatus>(&QProcess::finished), this,
-                [this, process, installerPath, folderName](int exitCode,
-                                                            QProcess::ExitStatus status) {
-                    QFile::remove(installerPath);
-                    const bool success = status == QProcess::NormalExit && exitCode == 0;
-                    if (!success)
-                    {
-                        emit failed(QStringLiteral("Forge installation failed: %1")
-                                        .arg(process->readAllStandardError().trimmed()));
-                    }
-                    else
-                    {
-                        emit progressChanged(1);
-                        emit completed(folderName);
-                    }
-                    process->deleteLater();
-                });
-        process->start(QStringLiteral("java"),
-                       {QStringLiteral("-jar"), QStringLiteral("forge-installer.jar"),
-                        QStringLiteral("--installServer")});
-        if (!process->waitForStarted(5000))
+        if (!writeServerScripts(folder))
         {
-            QFile::remove(installerPath);
-            emit failed(QStringLiteral("Could not start Java for Forge installation."));
-            process->deleteLater();
+            emit failed(QStringLiteral("Could not create the Forge run scripts."));
+            reply->deleteLater();
+            return;
         }
+        reply->deleteLater();
+        emit progressChanged(1);
+        emit completed(folderName);
     });
+}
+
+void ServerDownloader::downloadFabricInstaller(const QUrl &url, const QString &folderName,
+                                               const QString &minecraftVersion,
+                                               const QString &loaderVersion)
+{
+    const QString folder = QDir(getServersDir()).filePath(folderName);
+    if (!QDir().mkpath(folder))
+    {
+        emit failed(QStringLiteral("Could not create the server folder."));
+        return;
+    }
+
+    QNetworkReply *reply = m_network.get(QNetworkRequest(url));
+    connect(reply, &QNetworkReply::downloadProgress, this,
+            [this](qint64 received, qint64 total) {
+                emit progressChanged(total > 0 ? static_cast<double>(received) / total : 0);
+            });
+    connect(reply, &QNetworkReply::finished, this,
+            [this, reply, folder, folderName, minecraftVersion, loaderVersion] {
+                if (reply->error() != QNetworkReply::NoError)
+                {
+                    reportError(reply);
+                    return;
+                }
+                QFile installer(QDir(folder).filePath(QStringLiteral("fabric-installer.jar")));
+                const QByteArray installerData = reply->readAll();
+                reply->deleteLater();
+                if (!installer.open(QIODevice::WriteOnly) ||
+                    installer.write(installerData) != installerData.size())
+                {
+                    emit failed(QStringLiteral("Could not write the Fabric installer files."));
+                    return;
+                }
+                if (!writeServerScripts(folder))
+                {
+                    emit failed(QStringLiteral("Could not create the Fabric run scripts."));
+                    return;
+                }
+                emit progressChanged(1);
+                emit completed(folderName);
+            });
 }
 
 void ServerDownloader::downloadJar(const QUrl &url, const QString &folderName)
@@ -325,6 +379,15 @@ void ServerDownloader::downloadJar(const QUrl &url, const QString &folderName)
             return;
         }
         file.close();
+        ServerMetadata metadata;
+        metadata.type = QStringLiteral("official");
+        metadata.installed = true;
+        if (!writeServerMetadata(folder, metadata) || !writeServerScripts(folder))
+        {
+            emit failed(QStringLiteral("Could not create the server metadata or run scripts."));
+            reply->deleteLater();
+            return;
+        }
         reply->deleteLater();
         emit progressChanged(1);
         emit completed(folderName);

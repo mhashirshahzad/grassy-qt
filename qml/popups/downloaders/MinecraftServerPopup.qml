@@ -15,6 +15,7 @@ CustomPopup {
     property bool downloading: false
     property bool completed: false
     property var minecraftVersions: []
+    signal installationCompleted()
     property bool hasError: statusMessage.startsWith("Error")
     errorState: hasError
 
@@ -52,6 +53,7 @@ CustomPopup {
             root.statusMessage = "Installed " + folderName
             if (root.modelObject)
                 root.modelObject.refresh()
+            root.installationCompleted()
         }
         function onFailed(message) {
             root.downloading = false

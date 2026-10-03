@@ -28,7 +28,7 @@ QString highlightLogKeywords(const QString &escapedText, const QVariantMap &pale
 
     static const QRegularExpression keywords(
         QStringLiteral(
-            R"(\b(warning|warn|info|error|exception|fatal|failed|failure|crash|crashed|exited|stopped|done|started|online|java|jar|nogui|running)\b)"
+            R"(\b(warning|warn|info|error|exception|fatal|failed|failure|crash|crashed|exited|stopped|done|started|online|java|jar|nogui|running|download|downloaded|downloading|patch|patched|patching)\b)"
             R"(|(-Xms|-Xmx))"),
         QRegularExpression::CaseInsensitiveOption);
 
@@ -59,6 +59,10 @@ QString highlightLogKeywords(const QString &escapedText, const QVariantMap &pale
             color = paletteColor(palette, QStringLiteral("warning"), QString());
         else if (keyword == "running")
             color = paletteColor(palette, QStringLiteral("success"), QString());
+        else if (keyword == "download" || keyword == "downloaded" || keyword == "downloading")
+            color = paletteColor(palette, QStringLiteral("info"), QString());
+        else if (keyword == "patch" || keyword == "patched" || keyword == "patching")
+            color = paletteColor(palette, QStringLiteral("accent"), QString());
         else
             color = paletteColor(palette, QStringLiteral("text"), QString());
 
@@ -84,10 +88,9 @@ QString ansiToHtml(const QString &text, const QVariantMap &palette)
     while (match.hasNext())
     {
         const auto current = match.next();
-        html +=
-            highlightLogKeywords(text.mid(start, current.capturedStart() - start).toHtmlEscaped(),
-                                 palette)
-                .replace('\n', QStringLiteral("<br>"));
+        html += highlightLogKeywords(
+                    text.mid(start, current.capturedStart() - start).toHtmlEscaped(), palette)
+                    .replace('\n', QStringLiteral("<br>"));
 
         QStringList codes;
         if (current.captured(1).isEmpty())
@@ -311,17 +314,22 @@ void ServerRunner::start()
 #endif
     if (QFileInfo::exists(runScript))
     {
-        m_sessionHeader = QStringLiteral("Running %1\n").arg(QFileInfo(runScript).fileName());
+        QFile script(runScript);
+        QString scriptText;
+        if (script.open(QIODevice::ReadOnly | QIODevice::Text))
+            scriptText = QString::fromUtf8(script.readAll());
+
+        m_sessionHeader = QStringLiteral("Running %1\n\n--- %1 contents ---\n%2"
+                                          "\n--- end %1 contents ---\n")
+                              .arg(QFileInfo(runScript).fileName(), scriptText);
         m_consoleText = m_sessionHeader;
         m_consoleHtml = ansiToHtml(m_sessionHeader, m_themePalette);
         emit consoleTextChanged();
         emit consoleHtmlChanged();
 
         qint64 memoryLimitKb = 4 * 1024 * 1024;
-        QFile script(runScript);
-        if (script.open(QIODevice::ReadOnly | QIODevice::Text))
+        if (!scriptText.isEmpty())
         {
-            const QString scriptText = QString::fromUtf8(script.readAll());
             memoryLimitKb = javaMemoryLimitKb(scriptText);
         }
 
