@@ -8,6 +8,10 @@ set_languages("c++20")
 
 if is_plat("linux") then
 	set_config("qt", "/usr/lib/qt6")
+
+elseif is_plat("windows") then
+	set_toolchains("mingw")
+	add_syslinks("psapi")
 end
 
 rule("qml.qrc.generator")
@@ -34,10 +38,6 @@ end
 target("grassy")
 grassy_common()
 
-if is_plat("windows") then
-	set_toolchains("mingw")
-	add_syslinks("psapi")
-end
 
 task("live-reload")
 set_menu({
