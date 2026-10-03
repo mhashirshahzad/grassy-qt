@@ -1,10 +1,10 @@
 #pragma once
 
-#include "qtypes.h"
 #include <QObject>
 #include <QProcess>
 #include <QTimer>
 #include <QVariantMap>
+#include <QtGlobal>
 
 class ServerRunner : public QObject
 {

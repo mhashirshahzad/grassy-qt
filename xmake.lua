@@ -6,6 +6,10 @@ set_defaultmode("debug")
 
 set_languages("c++20")
 
+if is_plat("linux") then
+	set_config("qt", "/usr/lib/qt6")
+end
+
 rule("qml.qrc.generator")
 set_extensions(".qml", ".svg", ".ini")
 on_buildcmd_file(function(_, batchcmds, sourcefile, opt)
@@ -13,34 +17,27 @@ on_buildcmd_file(function(_, batchcmds, sourcefile, opt)
 	batchcmds:vrunv("xmake", { "lua", "scripts/generate_qml_qrc.lua" })
 end)
 
--- Shared settings for both targets
-local function grassy_common(t)
-	t:add_rules("qt.quickapp")
-	t:add_frameworks("QtNetwork")
-	t:add_frameworks("QtQuickControls2")
-	t:add_frameworks("QtWidgets")
-	t:add_files("qml/**.qml", { rule = "qml.qrc.generator" })
-	t:add_files("qml/**.svg", { rule = "qml.qrc.generator" })
-	t:add_files("qml/**.ini", { rule = "qml.qrc.generator" })
-	t:add_files("src/**.hpp")
-	t:add_files("src/**.cpp")
-	t:add_files("src/qml.qrc")
-	t:add_defines("QT_QML_DEBUG", { mode = "debug" })
+local function grassy_common()
+	add_rules("qt.quickapp")
+	add_frameworks("QtNetwork")
+	add_frameworks("QtQuickControls2")
+	add_frameworks("QtWidgets")
+	add_files("qml/**.qml", { rule = "qml.qrc.generator" })
+	add_files("qml/**.svg", { rule = "qml.qrc.generator" })
+	add_files("qml/**.ini", { rule = "qml.qrc.generator" })
+	add_files("src/**.hpp")
+	add_files("src/**.cpp")
+	add_files("src/qml.qrc")
+	add_defines("QT_QML_DEBUG", { mode = "debug" })
 end
 
--- Native Linux target (default)
 target("grassy")
-grassy_common(target)
-if is_plat("linux") then
-	set_config("qt", "/usr/lib/qt6")
-end
+grassy_common()
 
--- Windows cross-compile target
-target("windows")
-grassy_common(target)
-set_toolchains("mingw", { sdk = "/usr/x86_64-w64-mingw32" })
-set_config("qt", "/usr/x86_64-w64-mingw32")
-set_config("qt_host", "/usr")
+if is_plat("windows") then
+	set_toolchains("mingw")
+	add_syslinks("psapi")
+end
 
 task("live-reload")
 set_menu({

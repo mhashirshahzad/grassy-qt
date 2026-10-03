@@ -1,0 +1,48 @@
+name: Windows build
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: "6.8.3"
+          arch: win64_mingw
+          modules: qtshadertools
+
+      - name: Install Xmake
+        uses: xmake-io/github-action@v1
+        with:
+          xmake-version: latest
+
+      - name: Build
+        shell: pwsh
+        run: |
+          xmake f -p windows -a x86_64 -m release
+          xmake -v
+
+      - name: Bundle Qt runtime
+        shell: pwsh
+        run: |
+          $exe = Get-ChildItem -Path build -Filter grassy.exe -Recurse |
+            Select-Object -First 1
+          & "$env:QT_ROOT_DIR\bin\windeployqt.exe" `
+            --release `
+            --qmldir qml `
+            $exe.FullName
+          New-Item -ItemType Directory -Force dist/grassy-windows | Out-Null
+          Copy-Item "$($exe.Directory.FullName)\*" dist/grassy-windows -Recurse -Force
+
+      - name: Upload Windows artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: grassy-windows-x86_64
+          path: dist/grassy-windows

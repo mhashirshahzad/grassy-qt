@@ -6,6 +6,7 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QHash>
+#include <QSet>
 #include <QRegularExpression>
 #include <QThread>
 
@@ -14,6 +15,10 @@
 #include <QFile>
 #include <sys/prctl.h>
 #include <unistd.h>
+#elif defined(Q_OS_WIN)
+#include <windows.h>
+#include <psapi.h>
+#include <tlhelp32.h>
 #endif
 
 namespace
@@ -656,6 +661,92 @@ void ServerRunner::updateUsage()
         const double deltaSystem = systemTicks - m_previousSystemTicks;
         m_cpuUsage = (deltaProcess / deltaSystem) * 100.0;
     }
+    m_previousProcessTicks = processTicks;
+    m_previousSystemTicks = systemTicks;
+    m_memoryUsageKb = memoryUsageKb;
+    emit usageChanged();
+#elif defined(Q_OS_WIN)
+    if (!running())
+        return;
+
+    const qint64 launcherPid = m_process->processId();
+    if (launcherPid <= 0)
+        return;
+
+    struct ProcessInfo
+    {
+        DWORD pid;
+        DWORD parentPid;
+    };
+
+    QList<ProcessInfo> processes;
+    HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+    if (snapshot == INVALID_HANDLE_VALUE)
+        return;
+
+    PROCESSENTRY32 entry{};
+    entry.dwSize = sizeof(entry);
+    if (Process32First(snapshot, &entry))
+    {
+        do
+        {
+            processes.append({entry.th32ProcessID, entry.th32ParentProcessID});
+        } while (Process32Next(snapshot, &entry));
+    }
+    CloseHandle(snapshot);
+
+    QSet<DWORD> serverPids{static_cast<DWORD>(launcherPid)};
+    bool changed = true;
+    while (changed)
+    {
+        changed = false;
+        for (const ProcessInfo &process : processes)
+        {
+            if (serverPids.contains(process.parentPid) && !serverPids.contains(process.pid))
+            {
+                serverPids.insert(process.pid);
+                changed = true;
+            }
+        }
+    }
+
+    quint64 processTicks = 0;
+    qint64 memoryUsageKb = 0;
+    for (const DWORD pid : serverPids)
+    {
+        HANDLE process = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION | PROCESS_VM_READ,
+                                     FALSE, pid);
+        if (!process)
+            continue;
+
+        FILETIME creation{}, exit{}, kernel{}, user{};
+        if (GetProcessTimes(process, &creation, &exit, &kernel, &user))
+        {
+            ULARGE_INTEGER kernelTicks{kernel.dwLowDateTime, kernel.dwHighDateTime};
+            ULARGE_INTEGER userTicks{user.dwLowDateTime, user.dwHighDateTime};
+            processTicks += kernelTicks.QuadPart + userTicks.QuadPart;
+        }
+
+        PROCESS_MEMORY_COUNTERS memory{};
+        if (GetProcessMemoryInfo(process, &memory, sizeof(memory)))
+            memoryUsageKb += static_cast<qint64>(memory.WorkingSetSize / 1024);
+        CloseHandle(process);
+    }
+
+    FILETIME ignoredCreation{}, ignoredExit{}, systemKernel{}, systemUser{};
+    if (!GetSystemTimes(&ignoredCreation, &ignoredExit, &systemKernel, &systemUser))
+        return;
+
+    ULARGE_INTEGER kernelTicks{systemKernel.dwLowDateTime, systemKernel.dwHighDateTime};
+    ULARGE_INTEGER userTicks{systemUser.dwLowDateTime, systemUser.dwHighDateTime};
+    const quint64 systemTicks = kernelTicks.QuadPart + userTicks.QuadPart;
+    if (m_previousSystemTicks > 0 && systemTicks > m_previousSystemTicks)
+    {
+        const double deltaProcess = processTicks - m_previousProcessTicks;
+        const double deltaSystem = systemTicks - m_previousSystemTicks;
+        m_cpuUsage = (deltaProcess / deltaSystem) * 100.0 * QThread::idealThreadCount();
+    }
+
     m_previousProcessTicks = processTicks;
     m_previousSystemTicks = systemTicks;
     m_memoryUsageKb = memoryUsageKb;

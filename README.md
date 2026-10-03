@@ -39,6 +39,17 @@ Switch back to the fast debug build with:
 xmake f -m debug
 ```
 
+## Windows build
+
+Windows builds use the prebuilt Qt MinGW package in GitHub Actions; neither
+MinGW nor Qt is compiled by this project. The workflow produces a native
+Windows release build with:
+
+```sh
+xmake f -p windows -a x86_64 -m release
+xmake
+```
+
 To rebuild and run the application whenever project files change:
 
 ```sh

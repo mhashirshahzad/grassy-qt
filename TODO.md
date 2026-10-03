@@ -22,9 +22,12 @@
 - example construction: https://maven.minecraftforge.net/net/minecraftforge/forge/1.20.1-47.4.26/forge-1.20.1-47.4.26-installer.jar
 
 ctrl+f support inside ServerRunner :O (since its just html)
-monochrome theme :o
+(a bottom-right thingi opens up which lets u search)
+filtering in Main.qml server delegates by types forge/fabric/official
 
-# WINDOWS (5th class citizen)
+(done) monochrome theme :o
+
+# WINDOWS (5th class citizen) [kind of done]
 - java support (and windows folders)
 - windows server download and running cuz it aint posix :(
 - port and ip
