@@ -316,38 +316,7 @@ QVariantMap ServerModel::readStartScript(const QString &folder) const
 
     if (!metadata.javaBinary.isEmpty())
         result[QStringLiteral("javaExecutable")] = metadata.javaBinary;
-
-    QStringList scriptNames;
-#ifdef Q_OS_WIN
-    scriptNames = {QStringLiteral("run.bat"), QStringLiteral("run.sh")};
-#else
-    scriptNames = {QStringLiteral("run.sh"), QStringLiteral("run.bat")};
-#endif
-    for (const QString &scriptName : scriptNames)
-    {
-        QFile script(QDir(folder).filePath(scriptName));
-        if (!script.open(QIODevice::ReadOnly | QIODevice::Text))
-            continue;
-
-        result[QStringLiteral("exists")] = true;
-        const QString text = QString::fromUtf8(script.readAll());
-        static const QRegularExpression javaRegex(
-            QStringLiteral(R"(^\s*(?:exec\s+)?\"?([^\"\r\n]+?)\"?\s+-Xms)"),
-            QRegularExpression::MultilineOption);
-        static const QRegularExpression xmsRegex(QStringLiteral(R"(-Xms(\d+[kKmMgGtT]?))"));
-        static const QRegularExpression xmxRegex(QStringLiteral(R"(-Xmx(\d+[kKmMgGtT]?))"));
-
-        const auto xmsMatch = xmsRegex.match(text);
-        if (xmsMatch.hasMatch())
-            result[QStringLiteral("minMemory")] = xmsMatch.captured(1);
-
-        const auto xmxMatch = xmxRegex.match(text);
-        if (xmxMatch.hasMatch())
-            result[QStringLiteral("maxMemory")] = xmxMatch.captured(1);
-        const auto javaMatch = javaRegex.match(text);
-        if (javaMatch.hasMatch())
-            result[QStringLiteral("javaExecutable")] = javaMatch.captured(1);
-        break;
-    }
+    result[QStringLiteral("exists")] =
+        QFileInfo::exists(QDir(folder).filePath(QStringLiteral("grassy-meta.ini")));
     return result;
 }
