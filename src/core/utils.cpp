@@ -1,5 +1,7 @@
 #include "utils.hpp"
 #include "logging.hpp"
+#include "qdir.h"
+#include "qobject.h"
 
 #include <csignal> // actually SIGKILL IS DEFINED HERE, CLANG JUST GONE BONKERS!
 
@@ -48,19 +50,18 @@ QVariantMap readTheme(const QString &path)
 {
     QSettings settings(path, QSettings::IniFormat);
     QVariantMap theme;
-        settings.beginGroup(QStringLiteral("Theme"));
-        for (const QString &key : settings.allKeys())
-            theme.insert(key, settings.value(key));
-        settings.endGroup();
+    settings.beginGroup(QStringLiteral("Theme"));
+    for (const QString &key : settings.allKeys())
+        theme.insert(key, settings.value(key));
+    settings.endGroup();
     return theme;
 }
 
 QVariantMap systemTheme()
 {
     const QPalette palette = QGuiApplication::palette();
-    auto color = [&palette](QPalette::ColorRole role) {
-        return palette.color(QPalette::Active, role).name(QColor::HexArgb);
-    };
+    auto color = [&palette](QPalette::ColorRole role)
+    { return palette.color(QPalette::Active, role).name(QColor::HexArgb); };
     QVariantMap theme;
     theme["background"] = color(QPalette::Window);
     theme["surface0"] = color(QPalette::Base);
@@ -98,7 +99,7 @@ QVariantMap systemTheme()
     theme["scrim"] = QStringLiteral("#73000000");
     return theme;
 }
-}
+} // namespace
 
 Utils::Utils(QObject *parent) : QObject(parent), m_javaInstalled(::isJavaInstalled())
 {
@@ -144,11 +145,12 @@ void Utils::loadThemes()
     QDir().mkpath(themeDirectory());
     QHash<QString, QVariantMap> themes;
     themes.insert(QStringLiteral("System"), systemTheme());
-    for (const QString &path : {QStringLiteral(":/theme/TokyoNight.ini"),
-                                QStringLiteral(":/theme/Nord.ini")})
+    QDir themeDir(QStringLiteral(":/theme"));
+
+    for (const QString &path : themeDir.entryList({QStringLiteral("*.ini")}, QDir::Files))
     {
         const QFileInfo info(path);
-        themes.insert(info.baseName(), readTheme(path));
+        themes.insert(info.baseName(), readTheme(themeDir.filePath(path)));
     }
     const QDir userDir(themeDirectory());
     for (const QString &path : userDir.entryList({QStringLiteral("*.ini")}, QDir::Files))
@@ -157,8 +159,8 @@ void Utils::loadThemes()
     m_themeNames = themes.keys();
     m_themeNames.sort();
     QSettings settings(settingsFilePath(), QSettings::IniFormat);
-    m_selectedTheme = settings.value(QStringLiteral("General/theme"),
-                                      QStringLiteral("TokyoNight")).toString();
+    m_selectedTheme =
+        settings.value(QStringLiteral("General/theme"), QStringLiteral("TokyoNight")).toString();
     if (!themes.contains(m_selectedTheme))
         m_selectedTheme = QStringLiteral("TokyoNight");
     m_themePalette = themes.value(m_selectedTheme);
@@ -173,9 +175,8 @@ void Utils::setTheme(const QString &name)
     if (name != QStringLiteral("System"))
     {
         const QString builtIn = QStringLiteral(":/theme/%1.ini").arg(name);
-        m_themePalette = readTheme(QFile::exists(builtIn)
-                                       ? builtIn
-                                       : QDir(themeDirectory()).filePath(name + ".ini"));
+        m_themePalette = readTheme(
+            QFile::exists(builtIn) ? builtIn : QDir(themeDirectory()).filePath(name + ".ini"));
     }
     QSettings settings(settingsFilePath(), QSettings::IniFormat);
     settings.setValue(QStringLiteral("General/theme"), name);
@@ -214,14 +215,16 @@ void Utils::refreshPublicIp()
 {
     QNetworkReply *reply =
         m_networkAccessManager.get(QNetworkRequest(QUrl(QStringLiteral("https://api.ipify.org"))));
-    connect(reply, &QNetworkReply::finished, this, [this, reply] {
-        const QString address = QString::fromUtf8(reply->readAll()).trimmed();
-        reply->deleteLater();
-        if (address.isEmpty())
-            return;
-        m_publicIp = address;
-        emit publicIpChanged();
-    });
+    connect(reply, &QNetworkReply::finished, this,
+            [this, reply]
+            {
+                const QString address = QString::fromUtf8(reply->readAll()).trimmed();
+                reply->deleteLater();
+                if (address.isEmpty())
+                    return;
+                m_publicIp = address;
+                emit publicIpChanged();
+            });
 }
 
 QStringList Utils::javaExecutables() const
@@ -232,8 +235,7 @@ QStringList Utils::javaExecutables() const
         paths.append(pathJava);
 
 #ifdef Q_OS_UNIX
-    QDirIterator iterator(QStringLiteral("/usr/lib/jvm"),
-                          {QStringLiteral("java")}, QDir::Files,
+    QDirIterator iterator(QStringLiteral("/usr/lib/jvm"), {QStringLiteral("java")}, QDir::Files,
                           QDirIterator::Subdirectories);
     while (iterator.hasNext())
     {
@@ -250,18 +252,15 @@ QStringList Utils::javaExecutables() const
 
 QString getServersDir()
 {
-    const QString dataDir =
-        QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation);
+    const QString dataDir = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation);
     const QString defaultDir = QDir(dataDir).filePath("grassy");
 
     QSettings settings(settingsFilePath(), QSettings::IniFormat);
     const QString saved = settings.value(QStringLiteral("General/serversDirectory")).toString();
     if (!saved.isEmpty())
     {
-        const QString legacyDataDir =
-            QDir(dataDir).filePath(QStringLiteral("grassy/grassy"));
-        const QString legacyDefault =
-            QDir(legacyDataDir).filePath(QStringLiteral("servers"));
+        const QString legacyDataDir = QDir(dataDir).filePath(QStringLiteral("grassy/grassy"));
+        const QString legacyDefault = QDir(legacyDataDir).filePath(QStringLiteral("servers"));
         if (QDir::cleanPath(saved) == QDir::cleanPath(legacyDataDir) ||
             QDir::cleanPath(saved) == QDir::cleanPath(legacyDefault))
         {

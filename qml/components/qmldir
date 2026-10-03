@@ -22,4 +22,5 @@ ServerTextSetting 1.0 ServerTextSetting.qml
 ServerToggleControl 1.0 ServerToggleControl.qml
 ServerToggleSetting 1.0 ServerToggleSetting.qml
 ThemedButton 1.0 ThemedButton.qml
+ThemeTransition 1.0 ThemeTransition.qml
 WorldServerSettings 1.0 WorldServerSettings.qml

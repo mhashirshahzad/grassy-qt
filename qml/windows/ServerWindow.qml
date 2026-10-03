@@ -27,6 +27,7 @@ Window {
 
     ServerRunner {
         id: localRunner
+        themePalette: Theme.palette
     }
 
     width: 900
@@ -161,6 +162,8 @@ Window {
                 : Theme.failure
         }
     }
+
+    ThemeTransition {}
 
     function openForServer(folder, name) {
         serverFolder = folder

@@ -18,7 +18,12 @@
 
 namespace
 {
-QString highlightLogKeywords(const QString &escapedText)
+QString paletteColor(const QVariantMap &palette, const QString &key, const QString &fallback)
+{
+    return palette.value(key, fallback).toString();
+}
+
+QString highlightLogKeywords(const QString &escapedText, const QVariantMap &palette)
 {
 
     // static const QRegularExpression keywords(
@@ -45,23 +50,22 @@ QString highlightLogKeywords(const QString &escapedText)
         const QString keyword = current.captured(1).toLower();
         QString color;
 
-        // very stupid hardcoded colors
         if (keyword == "warning" || keyword == "warn")
-            color = QStringLiteral("#ebcb8b");
+            color = paletteColor(palette, QStringLiteral("warning"), QStringLiteral("#ebcb8b"));
         else if (keyword == "info")
-            color = QStringLiteral("#81a1c1");
+            color = paletteColor(palette, QStringLiteral("info"), QStringLiteral("#81a1c1"));
         else if (keyword == "error" || keyword == "exception" || keyword == "fatal" ||
                  keyword == "failed" || keyword == "failure" || keyword == "crash" ||
                  keyword == "crashed" || keyword == "exited" || keyword == "stopped")
-            color = QStringLiteral("#bf616a");
+            color = paletteColor(palette, QStringLiteral("failure"), QStringLiteral("#bf616a"));
         else if (keyword == "java" || keyword == "jar" || keyword == "-xms" || keyword == "-xmx")
-            color = QStringLiteral("#8fbcbb");
+            color = paletteColor(palette, QStringLiteral("accent"), QStringLiteral("#8fbcbb"));
         else if (keyword == "nogui")
-            color = QStringLiteral("#d08770");
+            color = paletteColor(palette, QStringLiteral("warning"), QStringLiteral("#d08770"));
         else if (keyword == "running")
-            color = QStringLiteral("#b48ead");
+            color = paletteColor(palette, QStringLiteral("success"), QStringLiteral("#b48ead"));
         else
-            color = QStringLiteral("#a3be8c");
+            color = paletteColor(palette, QStringLiteral("text"), QStringLiteral("#a3be8c"));
 
         highlighted += QStringLiteral("<font color=\"%1\">%2</font>")
                            .arg(color, current.captured().toHtmlEscaped());
@@ -72,10 +76,10 @@ QString highlightLogKeywords(const QString &escapedText)
     return highlighted;
 }
 
-QString ansiToHtml(const QString &text)
+QString ansiToHtml(const QString &text, const QVariantMap &palette)
 {
     QString html;
-    QString color = QStringLiteral("#d8dee9");
+    QString color = paletteColor(palette, QStringLiteral("text"), QStringLiteral("#d8dee9"));
     qsizetype start = 0;
     static const QRegularExpression ansi(
         QStringLiteral("\x1b\\[([0-9;]*)m|\\x{00A7}([0-9A-FK-ORa-fk-or])"));
@@ -86,7 +90,8 @@ QString ansiToHtml(const QString &text)
     {
         const auto current = match.next();
         html +=
-            highlightLogKeywords(text.mid(start, current.capturedStart() - start).toHtmlEscaped())
+            highlightLogKeywords(text.mid(start, current.capturedStart() - start).toHtmlEscaped(),
+                                 palette)
                 .replace('\n', QStringLiteral("<br>"));
 
         QStringList codes;
@@ -98,25 +103,25 @@ QString ansiToHtml(const QString &text)
         for (const QString &code : codes)
         {
             if (code == "0" || code.compare("r", Qt::CaseInsensitive) == 0)
-                color = QStringLiteral("#d8dee9");
+                color = paletteColor(palette, QStringLiteral("text"), QStringLiteral("#d8dee9"));
             else if (code == "30")
-                color = QStringLiteral("#2e3440");
+                color = paletteColor(palette, QStringLiteral("background"), QStringLiteral("#2e3440"));
             else if (code == "31")
-                color = QStringLiteral("#bf616a");
+                color = paletteColor(palette, QStringLiteral("failure"), QStringLiteral("#bf616a"));
             else if (code == "32")
-                color = QStringLiteral("#a3be8c");
+                color = paletteColor(palette, QStringLiteral("success"), QStringLiteral("#a3be8c"));
             else if (code == "33")
-                color = QStringLiteral("#ebcb8b");
+                color = paletteColor(palette, QStringLiteral("warning"), QStringLiteral("#ebcb8b"));
             else if (code == "34")
-                color = QStringLiteral("#81a1c1");
+                color = paletteColor(palette, QStringLiteral("info"), QStringLiteral("#81a1c1"));
             else if (code == "35")
-                color = QStringLiteral("#b48ead");
+                color = paletteColor(palette, QStringLiteral("accent"), QStringLiteral("#b48ead"));
             else if (code == "36")
-                color = QStringLiteral("#88c0d0");
+                color = paletteColor(palette, QStringLiteral("info"), QStringLiteral("#88c0d0"));
             else if (code == "37")
-                color = QStringLiteral("#eceff4");
+                color = paletteColor(palette, QStringLiteral("textBright"), QStringLiteral("#eceff4"));
             else if (code == "39")
-                color = QStringLiteral("#d8dee9");
+                color = paletteColor(palette, QStringLiteral("text"), QStringLiteral("#d8dee9"));
             else if (code.compare("a", Qt::CaseInsensitive) == 0)
                 color = QStringLiteral("#55ffff");
             else if (code.compare("b", Qt::CaseInsensitive) == 0)
@@ -134,8 +139,8 @@ QString ansiToHtml(const QString &text)
         start = current.capturedEnd();
     }
 
-    html +=
-        highlightLogKeywords(text.mid(start).toHtmlEscaped()).replace('\n', QStringLiteral("<br>"));
+    html += highlightLogKeywords(text.mid(start).toHtmlEscaped(), palette)
+                .replace('\n', QStringLiteral("<br>"));
 
     // // Make the first line special.
 
@@ -202,6 +207,19 @@ QString ServerRunner::serverFolder() const { return m_serverFolder; }
 QString ServerRunner::consoleText() const { return m_consoleText; }
 
 QString ServerRunner::consoleHtml() const { return m_consoleHtml; }
+
+QVariantMap ServerRunner::themePalette() const { return m_themePalette; }
+
+void ServerRunner::setThemePalette(const QVariantMap &themePalette)
+{
+    if (m_themePalette == themePalette)
+        return;
+
+    m_themePalette = themePalette;
+    m_consoleHtml = ansiToHtml(m_consoleText, m_themePalette);
+    emit themePaletteChanged();
+    emit consoleHtmlChanged();
+}
 
 bool ServerRunner::running() const { return m_process->state() != QProcess::NotRunning; }
 
@@ -407,17 +425,17 @@ void ServerRunner::appendConsole(const QString &text)
         const auto match = matches.next();
         const QString before = text.mid(matchOffset, match.capturedStart() - matchOffset);
         m_consoleText += before;
-        m_consoleHtml += ansiToHtml(before);
+        m_consoleHtml += ansiToHtml(before, m_themePalette);
 
         m_consoleText = m_sessionHeader;
-        m_consoleHtml = ansiToHtml(m_sessionHeader);
+        m_consoleHtml = ansiToHtml(m_sessionHeader, m_themePalette);
         matchOffset = match.capturedEnd();
     }
 
     remaining = text.mid(matchOffset);
     m_consoleText += remaining;
     emit consoleTextChanged();
-    m_consoleHtml += ansiToHtml(remaining);
+    m_consoleHtml += ansiToHtml(remaining, m_themePalette);
     emit consoleHtmlChanged();
 }
 

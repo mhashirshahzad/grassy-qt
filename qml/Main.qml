@@ -50,10 +50,13 @@ ApplicationWindow {
             else
                 console.warn("error: serverModel is null")
         }
+
         onSettingsClicked: {
             appSettings.open()
         }
     }
+
+    ThemeTransition {}
 
     Component {
         id: serverWindowComponent

@@ -2,6 +2,8 @@ pragma Singleton
 import QtQuick 2.15
 
 QtObject {
+    signal themeTransitionRequested(color oldBackground)
+
     readonly property var palette: typeof utils !== "undefined" && utils !== null
         ? utils.themePalette : ({})
     readonly property string selectedTheme: typeof utils !== "undefined" && utils !== null
@@ -10,8 +12,11 @@ QtObject {
         ? utils.themeNames : []
 
     function setTheme(name) {
-        if (typeof utils !== "undefined" && utils !== null)
+        if (typeof utils !== "undefined" && utils !== null &&
+                name !== utils.selectedTheme) {
+            themeTransitionRequested(background)
             utils.setTheme(name)
+        }
     }
 
     readonly property color background: palette.background || "#1a1b26"

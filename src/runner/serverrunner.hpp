@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QProcess>
 #include <QTimer>
+#include <QVariantMap>
 
 class ServerRunner : public QObject
 {
@@ -14,6 +15,7 @@ class ServerRunner : public QObject
         QString serverFolder READ serverFolder WRITE setServerFolder NOTIFY serverFolderChanged)
     Q_PROPERTY(QString consoleText READ consoleText NOTIFY consoleTextChanged)
     Q_PROPERTY(QString consoleHtml READ consoleHtml NOTIFY consoleHtmlChanged)
+    Q_PROPERTY(QVariantMap themePalette READ themePalette WRITE setThemePalette NOTIFY themePaletteChanged)
     Q_PROPERTY(bool running READ running NOTIFY runningChanged)
     Q_PROPERTY(double cpuUsage READ cpuUsage NOTIFY usageChanged)
     Q_PROPERTY(qint64 memoryUsageKb READ memoryUsageKb NOTIFY usageChanged)
@@ -29,6 +31,7 @@ class ServerRunner : public QObject
     QString serverFolder() const;
     QString consoleText() const;
     QString consoleHtml() const;
+    QVariantMap themePalette() const;
     bool running() const;
     double cpuUsage() const;
     qint64 memoryUsageKb() const;
@@ -53,6 +56,7 @@ class ServerRunner : public QObject
     void limitsChanged();
     void portChanged();
     void outputReceived(const QString &text);
+    void themePaletteChanged();
 
   private slots:
     void readOutput();
@@ -62,6 +66,7 @@ class ServerRunner : public QObject
 
   private:
     void setServerFolder(const QString &serverFolder);
+    void setThemePalette(const QVariantMap &themePalette);
     void updatePort();
     void appendConsole(const QString &text);
     void appendConsoleHtml(const QString &text);
@@ -71,6 +76,7 @@ class ServerRunner : public QObject
     QString m_consoleText;
     QString m_consoleHtml;
     QString m_sessionHeader;
+    QVariantMap m_themePalette;
 
     QProcess *m_process = nullptr;
     QTimer m_usageTimer;
