@@ -137,7 +137,7 @@ CustomPopup {
             }
 
             Label {
-                text: "Configure how this server behaves. Changes are saved to server.properties and start.sh."
+                text: "Configure how this server behaves. Changes are saved to server.properties, run.sh, and run.bat."
                 color: Theme.subtext
                 wrapMode: Text.WordWrap
                 Layout.fillWidth: true

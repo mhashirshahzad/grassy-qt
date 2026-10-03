@@ -92,7 +92,7 @@ CustomPopup {
 
         Label {
             visible: !root.hasError
-            text: "Download a Fabric server before it appears in your server list."
+            text: "Download a Fabric server inside your servers folder"
             color: Theme.subtext
             wrapMode: Text.WordWrap
             Layout.fillWidth: true

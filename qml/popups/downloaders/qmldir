@@ -1,4 +1,5 @@
 module Grassy.Popups.Downloaders
 
 FabricServerPopup 1.0 FabricServerPopup.qml
+ForgeServerPopup 1.0 ForgeServerPopup.qml
 MinecraftServerPopup 1.0 MinecraftServerPopup.qml

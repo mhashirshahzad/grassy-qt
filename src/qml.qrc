@@ -59,6 +59,7 @@
         <file alias="popups/RenameServerPopup.qml">../qml/popups/RenameServerPopup.qml</file>
         <file alias="popups/ServerSettingsPopup.qml">../qml/popups/ServerSettingsPopup.qml</file>
         <file alias="popups/downloaders/FabricServerPopup.qml">../qml/popups/downloaders/FabricServerPopup.qml</file>
+        <file alias="popups/downloaders/ForgeServerPopup.qml">../qml/popups/downloaders/ForgeServerPopup.qml</file>
         <file alias="popups/downloaders/MinecraftServerPopup.qml">../qml/popups/downloaders/MinecraftServerPopup.qml</file>
         <file alias="popups/downloaders/qmldir">../qml/popups/downloaders/qmldir</file>
         <file alias="popups/qmldir">../qml/popups/qmldir</file>

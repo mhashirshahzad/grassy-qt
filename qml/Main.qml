@@ -158,6 +158,13 @@ ApplicationWindow {
         anchors.centerIn: parent
     }
 
+    ForgeServerPopup {
+        id: forgeServerPopup
+        parent: Overlay.overlay
+        modelObject: root.modelObject
+        anchors.centerIn: parent
+    }
+
     Connections {
         target: addServerPopup
         function onMinecraftSelected() {
@@ -165,6 +172,9 @@ ApplicationWindow {
         }
         function onFabricSelected() {
             fabricServerPopup.openFresh()
+        }
+        function onForgeSelected() {
+            forgeServerPopup.openFresh()
         }
     }
 

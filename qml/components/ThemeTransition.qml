@@ -6,7 +6,7 @@ Item {
     id: root
 
     property color transitionColor: Theme.background
-    property real revealRadius: 0
+    property real progress: 0
     property bool running: false
 
     anchors.fill: parent
@@ -24,15 +24,17 @@ Item {
     Rectangle {
         id: revealMask
 
-        x: root.width / 2 - width / 2
-        y: root.height / 2 - height / 2
+        x: root.progress * root.width - width / 2
+        y: root.progress * root.height - height / 2
 
-        width: root.revealRadius * 2
+        width: root.progress * root.diagonal * 2
         height: width
         radius: width / 2
 
         color: "white"
     }
+
+    readonly property real diagonal: Math.hypot(root.width, root.height)
 
     ShaderEffectSource {
         id: revealMaskSource
@@ -54,7 +56,7 @@ Item {
 
         function onThemeTransitionRequested(oldBackground) {
             root.transitionColor = oldBackground
-            root.revealRadius = 0
+            root.progress = 0
             root.running = true
 
             revealAnimation.restart()
@@ -65,11 +67,11 @@ Item {
         id: revealAnimation
 
         target: root
-        property: "revealRadius"
+        property: "progress"
 
-        to: Math.hypot(root.width, root.height) / 2 + 32
+        to: 1
 
-        duration: 550
+        duration: 500
         easing.type: Easing.OutCubic
 
         onFinished: {

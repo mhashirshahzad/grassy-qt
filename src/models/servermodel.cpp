@@ -247,7 +247,7 @@ bool ServerModel::createStartScript(const QString &folder, const QString &minimu
                                     const QString &javaExecutable)
 {
     static const QRegularExpression memoryPattern(QStringLiteral(R"(^\d+[kKmMgGtT]?$)"));
-    static const QRegularExpression javaPattern(QStringLiteral(R"(^[A-Za-z0-9_./+-]+$)"));
+    static const QRegularExpression javaPattern(QStringLiteral(R"(^[^"\r\n]+$)"));
     if (!memoryPattern.match(minimumMemory.trimmed()).hasMatch() ||
         !memoryPattern.match(maximumMemory.trimmed()).hasMatch() ||
         !javaPattern.match(javaExecutable.trimmed()).hasMatch())
@@ -260,22 +260,28 @@ bool ServerModel::createStartScript(const QString &folder, const QString &minimu
     if (minOk && maxOk && minimumBytes > maximumBytes)
         return false;
 
-    const QString scriptPath = QDir(folder).filePath(QStringLiteral("start.sh"));
-    QFile script(scriptPath);
-    if (!script.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate))
-        return false;
+    const QByteArray java = javaExecutable.trimmed().toUtf8();
+    const QByteArray minimum = minimumMemory.trimmed().toUtf8();
+    const QByteArray maximum = maximumMemory.trimmed().toUtf8();
+    const QByteArray unixContents = "#!/bin/sh\nexec \"" + java + "\" -Xms" + minimum +
+                                    " -Xmx" + maximum + " -jar server.jar nogui\n";
+    const QByteArray windowsContents = "@echo off\r\n\"" + java + "\" -Xms" + minimum +
+                                       " -Xmx" + maximum + " -jar server.jar nogui\r\n";
 
-    const QByteArray contents = "#!/bin/sh\n"
-                                "exec " +
-                                javaExecutable.trimmed().toUtf8() + " -Xms" +
-                                minimumMemory.trimmed().toUtf8() + " -Xmx" +
-                                maximumMemory.trimmed().toUtf8() + " -jar server.jar nogui\n";
-    if (script.write(contents) != contents.size())
-        return false;
-    script.close();
+    const auto writeScript = [&folder](const QString &name, const QByteArray &contents) {
+        QFile script(QDir(folder).filePath(name));
+        if (!script.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate))
+            return false;
+        if (script.write(contents) != contents.size())
+            return false;
+        script.close();
+        return name != QStringLiteral("run.sh") ||
+               script.setPermissions(script.permissions() | QFileDevice::ExeOwner |
+                                     QFileDevice::ExeGroup | QFileDevice::ExeOther);
+    };
 
-    return script.setPermissions(script.permissions() | QFileDevice::ExeOwner |
-                                 QFileDevice::ExeGroup | QFileDevice::ExeOther);
+    return writeScript(QStringLiteral("run.sh"), unixContents) &&
+           writeScript(QStringLiteral("run.bat"), windowsContents);
 }
 
 QVariantMap ServerModel::readStartScript(const QString &folder) const
@@ -286,14 +292,22 @@ QVariantMap ServerModel::readStartScript(const QString &folder) const
     result[QStringLiteral("javaExecutable")] = QStringLiteral("java");
     result[QStringLiteral("exists")] = false;
 
-    const QString scriptPath = QDir(folder).filePath(QStringLiteral("start.sh"));
-    QFile script(scriptPath);
-    if (script.open(QIODevice::ReadOnly | QIODevice::Text))
+    QStringList scriptNames;
+#ifdef Q_OS_WIN
+    scriptNames = {QStringLiteral("run.bat"), QStringLiteral("run.sh")};
+#else
+    scriptNames = {QStringLiteral("run.sh"), QStringLiteral("run.bat")};
+#endif
+    for (const QString &scriptName : scriptNames)
     {
+        QFile script(QDir(folder).filePath(scriptName));
+        if (!script.open(QIODevice::ReadOnly | QIODevice::Text))
+            continue;
+
         result[QStringLiteral("exists")] = true;
         const QString text = QString::fromUtf8(script.readAll());
         static const QRegularExpression javaRegex(
-            QStringLiteral(R"(^\s*(?:exec\s+)?([A-Za-z0-9_./+-]+)\s+-Xms)"),
+            QStringLiteral(R"(^\s*(?:exec\s+)?\"?([^\"\r\n]+?)\"?\s+-Xms)"),
             QRegularExpression::MultilineOption);
         static const QRegularExpression xmsRegex(QStringLiteral(R"(-Xms(\d+[kKmMgGtT]?))"));
         static const QRegularExpression xmxRegex(QStringLiteral(R"(-Xmx(\d+[kKmMgGtT]?))"));
@@ -308,6 +322,7 @@ QVariantMap ServerModel::readStartScript(const QString &folder) const
         const auto javaMatch = javaRegex.match(text);
         if (javaMatch.hasMatch())
             result[QStringLiteral("javaExecutable")] = javaMatch.captured(1);
+        break;
     }
     return result;
 }

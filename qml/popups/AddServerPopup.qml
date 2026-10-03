@@ -62,9 +62,6 @@ CustomPopup {
         ThemedButton {
             Layout.fillWidth: true
             text: "Forge"
-            enabled: false
-            ToolTip.visible: hovered
-            ToolTip.text: "Forge downloading is not available yet."
             onClicked: root.forgeSelected()
         }
 

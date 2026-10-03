@@ -14,7 +14,7 @@ ServerSettingsSection {
 
     ServerSettingCard {
         label: "Java executable"
-        description: "Java command or absolute path used to start this server."
+        description: "Java command or absolute path used to start this server. On Linux, common locations include /usr/bin/java and /usr/lib/jvm. On Windows, Grassy checks JAVA_HOME, PATH, and Program Files Java installations."
         settingKey: "java-executable"
         searchHost: root.hostPopup
 

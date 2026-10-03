@@ -243,6 +243,24 @@ QStringList Utils::javaExecutables() const
         if (QFileInfo(path).isExecutable())
             paths.append(path);
     }
+#else
+    const QString javaHome = qEnvironmentVariable("JAVA_HOME");
+    const QString programFiles = qEnvironmentVariable("ProgramFiles");
+    const QString programFilesX86 = qEnvironmentVariable("ProgramFiles(x86)");
+    const QStringList roots = {
+        javaHome,
+        QDir(programFiles).filePath(QStringLiteral("Java")),
+        QDir(programFilesX86).filePath(QStringLiteral("Java")),
+    };
+    for (const QString &root : roots)
+    {
+        if (root.isEmpty())
+            continue;
+        QDirIterator iterator(root, {QStringLiteral("java.exe")}, QDir::Files,
+                              QDirIterator::Subdirectories);
+        while (iterator.hasNext())
+            paths.append(iterator.next());
+    }
 #endif
 
     paths.removeDuplicates();

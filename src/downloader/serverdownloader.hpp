@@ -19,6 +19,7 @@ class ServerDownloader : public QObject
 
     Q_INVOKABLE void refresh();
     Q_INVOKABLE void refreshLoaders(const QString &minecraftVersion);
+    Q_INVOKABLE void refreshForgeVersions(const QString &minecraftVersion);
     Q_INVOKABLE void download(const QString &kind, const QString &minecraftVersion,
                               const QString &loaderVersion = {},
                               const QString &installerVersion = {});
@@ -26,6 +27,7 @@ class ServerDownloader : public QObject
   signals:
     void minecraftVersionsChanged(const QStringList &versions);
     void loaderVersionsChanged(const QStringList &versions);
+    void forgeVersionsChanged(const QStringList &versions);
     void installerVersionsChanged(const QStringList &versions);
     void progressChanged(double progress);
     void completed(const QString &folderName);
@@ -34,9 +36,11 @@ class ServerDownloader : public QObject
   private:
     void fetchJson(const QUrl &url, std::function<void(const QJsonDocument &)> callback);
     void fetchFabricLoaders(const QString &minecraftVersion);
+    void fetchForgeVersions(const QString &minecraftVersion);
     void fetchInstallerVersions();
     void fetchMinecraftServer(const QString &version);
     void downloadJar(const QUrl &url, const QString &folderName);
+    void downloadForgeInstaller(const QUrl &url, const QString &folderName);
     void reportError(QNetworkReply *reply);
 
     QNetworkAccessManager m_network;

@@ -75,7 +75,7 @@ Minecraft Processes   server.properties     ~/.config/grassy
     - `serverProperties(folder)`: Reads raw contents of `server.properties`.
     - `saveServerProperties(folder, contents)`: Writes modified properties back to disk.
     - `setServerProperty(folder, key, value)`: Atomically updates an individual property.
-    - `createStartScript(folder, minRam, maxRam)`: Generates an executable `start.sh` script with optimal JVM flags.
+    - `createStartScript(folder, minRam, maxRam)`: Generates `run.sh` and `run.bat` with the configured JVM flags.
 
 - **`ServerFilterModel` ([`src/models/serverfiltermodel.hpp`](file:///home/mr-pineapple/Projects/grassy-qt/src/models/serverfiltermodel.hpp))**:
   - Inherits from `QSortFilterProxyModel`.
@@ -92,7 +92,7 @@ Minecraft Processes   server.properties     ~/.config/grassy
   - Manages the lifecycle of the Minecraft Java server process via an internal `QProcess`.
   - **Process Execution Flow**:
     1. Validates working directory and runs `ensureEulaAccepted()`.
-    2. Prefers launching `./start.sh` if present; falls back to locating the primary `.jar` and executing `java -Xms2G -Xmx4G -jar <server>.jar nogui`.
+    2. Prefers launching `run.sh` on Unix or `run.bat` on Windows; falls back to locating `server.jar` and executing `java -Xms2G -Xmx4G -jar server.jar nogui`.
     3. Connects standard output/error signals (`readyReadStandardOutput`, `readyReadStandardError`).
   - **Console Stream & ANSI Parsing**:
     - Converts raw terminal escape sequences and Minecraft color codes into sanitized, Tokyo Night colored HTML spans (`consoleHtml`).
