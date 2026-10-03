@@ -18,7 +18,7 @@ local function add_files(pattern)
         local source = path.relative(file, path.join(root, "src")):gsub("\\", "/")
 
         table.insert(entries, string.format(
-            '        <file alias="%s">%s</file>',
+            '        <file alias="%s" compress="0">%s</file>',
             xml_escape(alias),
             xml_escape(source)
         ))
@@ -44,7 +44,7 @@ for _, module_file in ipairs(os.files(path.join(qml_root, "**/qmldir"))) do
     local source = path.relative(module_file, path.join(root, "src")):gsub("\\", "/")
 
     table.insert(entries, 1, string.format(
-        '        <file alias="%s">%s</file>',
+        '        <file alias="%s" compress="0">%s</file>',
         xml_escape(alias),
         xml_escape(source)
     ))

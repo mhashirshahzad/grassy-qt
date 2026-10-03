@@ -1,78 +1,78 @@
 <RCC>
     <qresource prefix="/">
-        <file alias="components/BasicServerSettings.qml">../qml/components/BasicServerSettings.qml</file>
-        <file alias="components/ChoiceControl.qml">../qml/components/ChoiceControl.qml</file>
-        <file alias="components/CustomLabeledProgressBar.qml">../qml/components/CustomLabeledProgressBar.qml</file>
-        <file alias="components/CustomTextField.qml">../qml/components/CustomTextField.qml</file>
-        <file alias="components/CustomTitleBar.qml">../qml/components/CustomTitleBar.qml</file>
-        <file alias="components/GameplayServerSettings.qml">../qml/components/GameplayServerSettings.qml</file>
-        <file alias="components/IconButton.qml">../qml/components/IconButton.qml</file>
-        <file alias="components/JavaServerSettings.qml">../qml/components/JavaServerSettings.qml</file>
-        <file alias="components/JavaStatusBar.qml">../qml/components/JavaStatusBar.qml</file>
-        <file alias="components/NetworkServerSettings.qml">../qml/components/NetworkServerSettings.qml</file>
-        <file alias="components/PerformanceServerSettings.qml">../qml/components/PerformanceServerSettings.qml</file>
-        <file alias="components/PlayerServerSettings.qml">../qml/components/PlayerServerSettings.qml</file>
-        <file alias="components/qmldir">../qml/components/qmldir</file>
-        <file alias="components/SecurityServerSettings.qml">../qml/components/SecurityServerSettings.qml</file>
-        <file alias="components/ServerCard.qml">../qml/components/ServerCard.qml</file>
-        <file alias="components/ServerChoiceSetting.qml">../qml/components/ServerChoiceSetting.qml</file>
-        <file alias="components/ServerNumberSetting.qml">../qml/components/ServerNumberSetting.qml</file>
-        <file alias="components/ServerSettingCard.qml">../qml/components/ServerSettingCard.qml</file>
-        <file alias="components/ServerSettingsSection.qml">../qml/components/ServerSettingsSection.qml</file>
-        <file alias="components/ServerTextSetting.qml">../qml/components/ServerTextSetting.qml</file>
-        <file alias="components/ServerToggleControl.qml">../qml/components/ServerToggleControl.qml</file>
-        <file alias="components/ServerToggleSetting.qml">../qml/components/ServerToggleSetting.qml</file>
-        <file alias="components/ThemedButton.qml">../qml/components/ThemedButton.qml</file>
-        <file alias="components/ThemeTransition.qml">../qml/components/ThemeTransition.qml</file>
-        <file alias="components/WorldServerSettings.qml">../qml/components/WorldServerSettings.qml</file>
-        <file alias="dialogs/qmldir">../qml/dialogs/qmldir</file>
-        <file alias="fonts/Ubuntu/Ubuntu-BoldItalic.ttf">../qml/fonts/Ubuntu/Ubuntu-BoldItalic.ttf</file>
-        <file alias="fonts/Ubuntu/Ubuntu-Bold.ttf">../qml/fonts/Ubuntu/Ubuntu-Bold.ttf</file>
-        <file alias="fonts/Ubuntu/Ubuntu-Italic.ttf">../qml/fonts/Ubuntu/Ubuntu-Italic.ttf</file>
-        <file alias="fonts/Ubuntu/Ubuntu-LightItalic.ttf">../qml/fonts/Ubuntu/Ubuntu-LightItalic.ttf</file>
-        <file alias="fonts/Ubuntu/Ubuntu-Light.ttf">../qml/fonts/Ubuntu/Ubuntu-Light.ttf</file>
-        <file alias="fonts/Ubuntu/Ubuntu-MediumItalic.ttf">../qml/fonts/Ubuntu/Ubuntu-MediumItalic.ttf</file>
-        <file alias="fonts/Ubuntu/Ubuntu-Medium.ttf">../qml/fonts/Ubuntu/Ubuntu-Medium.ttf</file>
-        <file alias="fonts/Ubuntu/UbuntuMono-BoldItalic.ttf">../qml/fonts/Ubuntu/UbuntuMono-BoldItalic.ttf</file>
-        <file alias="fonts/Ubuntu/UbuntuMono-Bold.ttf">../qml/fonts/Ubuntu/UbuntuMono-Bold.ttf</file>
-        <file alias="fonts/Ubuntu/UbuntuMono-Italic.ttf">../qml/fonts/Ubuntu/UbuntuMono-Italic.ttf</file>
-        <file alias="fonts/Ubuntu/UbuntuMono-Regular.ttf">../qml/fonts/Ubuntu/UbuntuMono-Regular.ttf</file>
-        <file alias="fonts/Ubuntu/Ubuntu-Regular.ttf">../qml/fonts/Ubuntu/Ubuntu-Regular.ttf</file>
-        <file alias="icons/check.svg">../qml/icons/check.svg</file>
-        <file alias="icons/close.svg">../qml/icons/close.svg</file>
-        <file alias="icons/cog.svg">../qml/icons/cog.svg</file>
-        <file alias="icons/copy.svg">../qml/icons/copy.svg</file>
-        <file alias="icons/delete.svg">../qml/icons/delete.svg</file>
-        <file alias="icons/edit.svg">../qml/icons/edit.svg</file>
-        <file alias="icons/folder.svg">../qml/icons/folder.svg</file>
-        <file alias="icons/magnify.svg">../qml/icons/magnify.svg</file>
-        <file alias="icons/plus.svg">../qml/icons/plus.svg</file>
-        <file alias="icons/refresh.svg">../qml/icons/refresh.svg</file>
-        <file alias="icons/search.svg">../qml/icons/search.svg</file>
-        <file alias="icons/settings.svg">../qml/icons/settings.svg</file>
-        <file alias="icons/warning.svg">../qml/icons/warning.svg</file>
-        <file alias="Main.qml">../qml/Main.qml</file>
-        <file alias="popups/AddServerPopup.qml">../qml/popups/AddServerPopup.qml</file>
-        <file alias="popups/CustomPopup.qml">../qml/popups/CustomPopup.qml</file>
-        <file alias="popups/DeleteServerPopup.qml">../qml/popups/DeleteServerPopup.qml</file>
-        <file alias="popups/downloaders/FabricServerPopup.qml">../qml/popups/downloaders/FabricServerPopup.qml</file>
-        <file alias="popups/downloaders/ForgeServerPopup.qml">../qml/popups/downloaders/ForgeServerPopup.qml</file>
-        <file alias="popups/downloaders/MinecraftServerPopup.qml">../qml/popups/downloaders/MinecraftServerPopup.qml</file>
-        <file alias="popups/downloaders/qmldir">../qml/popups/downloaders/qmldir</file>
-        <file alias="popups/GrassySettingsPopup.qml">../qml/popups/GrassySettingsPopup.qml</file>
-        <file alias="popups/qmldir">../qml/popups/qmldir</file>
-        <file alias="popups/RenameServerPopup.qml">../qml/popups/RenameServerPopup.qml</file>
-        <file alias="popups/ServerSettingsPopup.qml">../qml/popups/ServerSettingsPopup.qml</file>
-        <file alias="terminal/qmldir">../qml/terminal/qmldir</file>
-        <file alias="terminal/ServerTerminal.qml">../qml/terminal/ServerTerminal.qml</file>
-        <file alias="theme/Dracula.ini">../qml/theme/Dracula.ini</file>
-        <file alias="theme/Monochrome.ini">../qml/theme/Monochrome.ini</file>
-        <file alias="theme/Nord.ini">../qml/theme/Nord.ini</file>
-        <file alias="theme/qmldir">../qml/theme/qmldir</file>
-        <file alias="theme/RosePine.ini">../qml/theme/RosePine.ini</file>
-        <file alias="theme/Theme.qml">../qml/theme/Theme.qml</file>
-        <file alias="theme/TokyoNight.ini">../qml/theme/TokyoNight.ini</file>
-        <file alias="windows/qmldir">../qml/windows/qmldir</file>
-        <file alias="windows/ServerWindow.qml">../qml/windows/ServerWindow.qml</file>
+        <file alias="components/BasicServerSettings.qml" compress="0">../qml/components/BasicServerSettings.qml</file>
+        <file alias="components/ChoiceControl.qml" compress="0">../qml/components/ChoiceControl.qml</file>
+        <file alias="components/CustomLabeledProgressBar.qml" compress="0">../qml/components/CustomLabeledProgressBar.qml</file>
+        <file alias="components/CustomTextField.qml" compress="0">../qml/components/CustomTextField.qml</file>
+        <file alias="components/CustomTitleBar.qml" compress="0">../qml/components/CustomTitleBar.qml</file>
+        <file alias="components/GameplayServerSettings.qml" compress="0">../qml/components/GameplayServerSettings.qml</file>
+        <file alias="components/IconButton.qml" compress="0">../qml/components/IconButton.qml</file>
+        <file alias="components/JavaServerSettings.qml" compress="0">../qml/components/JavaServerSettings.qml</file>
+        <file alias="components/JavaStatusBar.qml" compress="0">../qml/components/JavaStatusBar.qml</file>
+        <file alias="components/NetworkServerSettings.qml" compress="0">../qml/components/NetworkServerSettings.qml</file>
+        <file alias="components/PerformanceServerSettings.qml" compress="0">../qml/components/PerformanceServerSettings.qml</file>
+        <file alias="components/PlayerServerSettings.qml" compress="0">../qml/components/PlayerServerSettings.qml</file>
+        <file alias="components/qmldir" compress="0">../qml/components/qmldir</file>
+        <file alias="components/SecurityServerSettings.qml" compress="0">../qml/components/SecurityServerSettings.qml</file>
+        <file alias="components/ServerCard.qml" compress="0">../qml/components/ServerCard.qml</file>
+        <file alias="components/ServerChoiceSetting.qml" compress="0">../qml/components/ServerChoiceSetting.qml</file>
+        <file alias="components/ServerNumberSetting.qml" compress="0">../qml/components/ServerNumberSetting.qml</file>
+        <file alias="components/ServerSettingCard.qml" compress="0">../qml/components/ServerSettingCard.qml</file>
+        <file alias="components/ServerSettingsSection.qml" compress="0">../qml/components/ServerSettingsSection.qml</file>
+        <file alias="components/ServerTextSetting.qml" compress="0">../qml/components/ServerTextSetting.qml</file>
+        <file alias="components/ServerToggleControl.qml" compress="0">../qml/components/ServerToggleControl.qml</file>
+        <file alias="components/ServerToggleSetting.qml" compress="0">../qml/components/ServerToggleSetting.qml</file>
+        <file alias="components/ThemedButton.qml" compress="0">../qml/components/ThemedButton.qml</file>
+        <file alias="components/ThemeTransition.qml" compress="0">../qml/components/ThemeTransition.qml</file>
+        <file alias="components/WorldServerSettings.qml" compress="0">../qml/components/WorldServerSettings.qml</file>
+        <file alias="dialogs/qmldir" compress="0">../qml/dialogs/qmldir</file>
+        <file alias="fonts/Ubuntu/Ubuntu-BoldItalic.ttf" compress="0">../qml/fonts/Ubuntu/Ubuntu-BoldItalic.ttf</file>
+        <file alias="fonts/Ubuntu/Ubuntu-Bold.ttf" compress="0">../qml/fonts/Ubuntu/Ubuntu-Bold.ttf</file>
+        <file alias="fonts/Ubuntu/Ubuntu-Italic.ttf" compress="0">../qml/fonts/Ubuntu/Ubuntu-Italic.ttf</file>
+        <file alias="fonts/Ubuntu/Ubuntu-LightItalic.ttf" compress="0">../qml/fonts/Ubuntu/Ubuntu-LightItalic.ttf</file>
+        <file alias="fonts/Ubuntu/Ubuntu-Light.ttf" compress="0">../qml/fonts/Ubuntu/Ubuntu-Light.ttf</file>
+        <file alias="fonts/Ubuntu/Ubuntu-MediumItalic.ttf" compress="0">../qml/fonts/Ubuntu/Ubuntu-MediumItalic.ttf</file>
+        <file alias="fonts/Ubuntu/Ubuntu-Medium.ttf" compress="0">../qml/fonts/Ubuntu/Ubuntu-Medium.ttf</file>
+        <file alias="fonts/Ubuntu/UbuntuMono-BoldItalic.ttf" compress="0">../qml/fonts/Ubuntu/UbuntuMono-BoldItalic.ttf</file>
+        <file alias="fonts/Ubuntu/UbuntuMono-Bold.ttf" compress="0">../qml/fonts/Ubuntu/UbuntuMono-Bold.ttf</file>
+        <file alias="fonts/Ubuntu/UbuntuMono-Italic.ttf" compress="0">../qml/fonts/Ubuntu/UbuntuMono-Italic.ttf</file>
+        <file alias="fonts/Ubuntu/UbuntuMono-Regular.ttf" compress="0">../qml/fonts/Ubuntu/UbuntuMono-Regular.ttf</file>
+        <file alias="fonts/Ubuntu/Ubuntu-Regular.ttf" compress="0">../qml/fonts/Ubuntu/Ubuntu-Regular.ttf</file>
+        <file alias="icons/check.svg" compress="0">../qml/icons/check.svg</file>
+        <file alias="icons/close.svg" compress="0">../qml/icons/close.svg</file>
+        <file alias="icons/cog.svg" compress="0">../qml/icons/cog.svg</file>
+        <file alias="icons/copy.svg" compress="0">../qml/icons/copy.svg</file>
+        <file alias="icons/delete.svg" compress="0">../qml/icons/delete.svg</file>
+        <file alias="icons/edit.svg" compress="0">../qml/icons/edit.svg</file>
+        <file alias="icons/folder.svg" compress="0">../qml/icons/folder.svg</file>
+        <file alias="icons/magnify.svg" compress="0">../qml/icons/magnify.svg</file>
+        <file alias="icons/plus.svg" compress="0">../qml/icons/plus.svg</file>
+        <file alias="icons/refresh.svg" compress="0">../qml/icons/refresh.svg</file>
+        <file alias="icons/search.svg" compress="0">../qml/icons/search.svg</file>
+        <file alias="icons/settings.svg" compress="0">../qml/icons/settings.svg</file>
+        <file alias="icons/warning.svg" compress="0">../qml/icons/warning.svg</file>
+        <file alias="Main.qml" compress="0">../qml/Main.qml</file>
+        <file alias="popups/AddServerPopup.qml" compress="0">../qml/popups/AddServerPopup.qml</file>
+        <file alias="popups/CustomPopup.qml" compress="0">../qml/popups/CustomPopup.qml</file>
+        <file alias="popups/DeleteServerPopup.qml" compress="0">../qml/popups/DeleteServerPopup.qml</file>
+        <file alias="popups/downloaders/FabricServerPopup.qml" compress="0">../qml/popups/downloaders/FabricServerPopup.qml</file>
+        <file alias="popups/downloaders/ForgeServerPopup.qml" compress="0">../qml/popups/downloaders/ForgeServerPopup.qml</file>
+        <file alias="popups/downloaders/MinecraftServerPopup.qml" compress="0">../qml/popups/downloaders/MinecraftServerPopup.qml</file>
+        <file alias="popups/downloaders/qmldir" compress="0">../qml/popups/downloaders/qmldir</file>
+        <file alias="popups/GrassySettingsPopup.qml" compress="0">../qml/popups/GrassySettingsPopup.qml</file>
+        <file alias="popups/qmldir" compress="0">../qml/popups/qmldir</file>
+        <file alias="popups/RenameServerPopup.qml" compress="0">../qml/popups/RenameServerPopup.qml</file>
+        <file alias="popups/ServerSettingsPopup.qml" compress="0">../qml/popups/ServerSettingsPopup.qml</file>
+        <file alias="terminal/qmldir" compress="0">../qml/terminal/qmldir</file>
+        <file alias="terminal/ServerTerminal.qml" compress="0">../qml/terminal/ServerTerminal.qml</file>
+        <file alias="theme/Dracula.ini" compress="0">../qml/theme/Dracula.ini</file>
+        <file alias="theme/Monochrome.ini" compress="0">../qml/theme/Monochrome.ini</file>
+        <file alias="theme/Nord.ini" compress="0">../qml/theme/Nord.ini</file>
+        <file alias="theme/qmldir" compress="0">../qml/theme/qmldir</file>
+        <file alias="theme/RosePine.ini" compress="0">../qml/theme/RosePine.ini</file>
+        <file alias="theme/Theme.qml" compress="0">../qml/theme/Theme.qml</file>
+        <file alias="theme/TokyoNight.ini" compress="0">../qml/theme/TokyoNight.ini</file>
+        <file alias="windows/qmldir" compress="0">../qml/windows/qmldir</file>
+        <file alias="windows/ServerWindow.qml" compress="0">../qml/windows/ServerWindow.qml</file>
     </qresource>
 </RCC>

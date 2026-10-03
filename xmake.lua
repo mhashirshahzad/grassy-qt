@@ -1,4 +1,5 @@
 add_rules("mode.debug", "mode.release")
+add_rules("plugin.compile_commands.autoupdate", {outputdir = ".", lsp = "clangd"})
 
 set_project("grassy")
 set_version("0.1.0")
@@ -7,44 +8,97 @@ set_defaultmode("debug")
 set_languages("c++20")
 
 if is_plat("linux") then
-	set_config("qt", "/usr/lib/qt6")
-
+    set_config("qt", "/usr/lib/qt6")
 elseif is_plat("windows") then
-	set_toolchains("mingw")
-	add_syslinks("psapi")
+    set_toolchains("mingw")
+    add_syslinks("psapi")
 end
 
-rule("qml.qrc.generator")
-set_extensions(".qml", ".svg", ".ini")
-on_buildcmd_file(function(_, batchcmds, sourcefile, opt)
-	batchcmds:show_progress(opt.progress, "${color.build.object}generating.qrc %s", sourcefile)
-	batchcmds:vrunv("xmake", { "lua", "scripts/generate_qml_qrc.lua" })
-end)
-
 local function grassy_common()
-	add_rules("qt.quickapp")
-	add_frameworks("QtNetwork")
-	add_frameworks("QtQuickControls2")
-	add_frameworks("QtWidgets")
-	add_files("qml/**.qml", { rule = "qml.qrc.generator" })
-	add_files("qml/**.svg", { rule = "qml.qrc.generator" })
-	add_files("qml/**.ini", { rule = "qml.qrc.generator" })
-	add_files("src/**.hpp")
-	add_files("src/**.cpp")
-	add_files("src/qml.qrc")
-	add_defines("QT_QML_DEBUG", { mode = "debug" })
+    add_rules("qt.quickapp")
+    if is_plat("mingw") then
+        add_packages(
+            "qt6core",
+            "qt6gui",
+            "qt6qml",
+            "qt6quick",
+            "qt6network",
+            "qt6widgets"
+        )
+        add_links("Qt6QuickControls2")
+    end
+    add_frameworks("QtNetwork")
+    add_frameworks("QtQuickControls2")
+    add_frameworks("QtWidgets")
+    add_files("src/**.hpp")
+    add_files("src/**.cpp")
+    add_files("src/qml.qrc")
+    add_defines("QT_QML_DEBUG", { mode = "debug" })
+
 end
 
 target("grassy")
-grassy_common()
+    grassy_common()
+    before_build(function()
+        os.execv("xmake", {"lua", "scripts/generate_qml_qrc.lua"})
+    end)
 
+task("mingw")
+    set_menu({
+        usage = "xmake mingw",
+        description = "Configure, build, and stage the Windows MinGW target",
+    })
+    on_run(function()
+        local qt_target = "/opt/mingw/qt-sdk/6.11.2/mingw_64"
+        local build_dir = path.join("build", "mingw", "x86_64", get_config("mode") or "debug")
+        local dist_dir = path.join(build_dir, "dist")
+
+        local configure = {
+            "f", "-v", "-c", "-p", "mingw",
+            "--mingw=/usr",
+            "--qt=" .. qt_target,
+            "--qt_host=/usr/lib/qt6",
+            "-a", "x86_64",
+        }
+        local status = os.execv("xmake", configure)
+        if status ~= 0 then
+            raise("MinGW configuration failed")
+        end
+
+        status = os.execv("xmake", {"build", "-v", "grassy"})
+        if status ~= 0 then
+            raise("MinGW build failed")
+        end
+
+        os.rm(dist_dir)
+        os.mkdir(dist_dir)
+        os.cp(path.join(build_dir, "grassy.exe"), dist_dir)
+
+        local function copy_files(source_dir, pattern, destination)
+            os.mkdir(destination)
+            for _, file in ipairs(os.files(path.join(source_dir, pattern))) do
+                os.cp(file, destination)
+            end
+        end
+
+        copy_files(path.join(qt_target, "bin"), "Qt6*.dll", dist_dir)
+        copy_files("/usr/x86_64-w64-mingw32/bin", "libgcc_s_seh-1.dll", dist_dir)
+        copy_files("/usr/x86_64-w64-mingw32/bin", "libstdc++-6.dll", dist_dir)
+        copy_files("/usr/x86_64-w64-mingw32/bin", "libwinpthread-1.dll", dist_dir)
+        os.cp(path.join(qt_target, "qml", "*"), path.join(dist_dir, "qml"))
+        copy_files(
+            path.join(qt_target, "plugins", "platforms"),
+            "*.dll",
+            path.join(dist_dir, "plugins", "platforms")
+        )
+        print("MinGW distribution staged at " .. path.absolute(dist_dir))
+    end)
 
 task("live-reload")
-set_menu({
-	usage = "xmake live-reload",
-	description = "Rebuild and restart when project files change",
-})
-
-on_run(function()
-	os.exec("xmake watch --run")
-end)
+    set_menu({
+        usage = "xmake live-reload",
+        description = "Rebuild and restart when project files change",
+    })
+    on_run(function()
+        os.exec("xmake watch --run")
+    end)

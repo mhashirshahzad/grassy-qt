@@ -733,8 +733,8 @@ void ServerRunner::updateUsage()
         CloseHandle(process);
     }
 
-    FILETIME ignoredCreation{}, ignoredExit{}, systemKernel{}, systemUser{};
-    if (!GetSystemTimes(&ignoredCreation, &ignoredExit, &systemKernel, &systemUser))
+    FILETIME ignoredIdle{}, systemKernel{}, systemUser{};
+    if (!GetSystemTimes(&ignoredIdle, &systemKernel, &systemUser))
         return;
 
     ULARGE_INTEGER kernelTicks{systemKernel.dwLowDateTime, systemKernel.dwHighDateTime};
