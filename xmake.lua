@@ -12,6 +12,15 @@ if is_plat("linux") then
 elseif is_plat("windows") then
     set_toolchains("mingw")
     add_syslinks("psapi")
+elseif is_plat("mingw") then
+    add_requires(
+        "qt6core 6.9.1",
+        "qt6gui 6.9.1",
+        "qt6qml 6.9.1",
+        "qt6quick 6.9.1",
+        "qt6network 6.9.1",
+        "qt6widgets 6.9.1"
+    )
 end
 
 rule("qml.qrc.generator")
@@ -30,6 +39,17 @@ rule("qml.qrc.generator")
 
 local function grassy_common()
     add_rules("qt.quickapp")
+    if is_plat("mingw") then
+        add_packages(
+            "qt6core",
+            "qt6gui",
+            "qt6qml",
+            "qt6quick",
+            "qt6network",
+            "qt6widgets"
+        )
+        add_links("Qt6QuickControls2")
+    end
     add_frameworks("QtNetwork")
     add_frameworks("QtQuickControls2")
     add_frameworks("QtWidgets")
