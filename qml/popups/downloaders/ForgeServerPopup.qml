@@ -20,6 +20,7 @@ CustomPopup {
     signal installationCompleted()
     property bool hasError: statusMessage.startsWith("Error")
     errorState: hasError
+    successState: completed && !hasError
 
     Timer {
         id: closeTimer
@@ -84,8 +85,9 @@ CustomPopup {
         spacing: 12
 
         Label {
-            text: root.hasError ? root.statusMessage : "Add Forge server"
-            color: root.hasError ? Theme.failure : Theme.textBright
+            text: root.completed ? "Server Downloaded!" :
+                                   root.hasError ? root.statusMessage : "Add Forge server"
+            color: root.hasError ? Theme.failure : root.completed ? Theme.accent : Theme.textBright
             font.pixelSize: 24
             font.bold: true
         }

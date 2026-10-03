@@ -27,6 +27,10 @@ FocusScope {
             clip: true
             onContentHeightChanged: Qt.callLater(root.scrollToBottom)
 
+            ScrollBar.vertical: ScrollBar {
+                policy: ScrollBar.AsNeeded
+            }
+
             TextEdit {
                 id: outputText
                 width: outputScroll.width

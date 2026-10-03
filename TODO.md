@@ -16,12 +16,13 @@
 
 (done) downloading mcServer and fabricServer
 
-forge??
+(done) forge??
 - https://maven.minecraftforge.net/net/minecraftforge/forge/{MC_VERSION}-{FORGE_VERSION}/forge-{MC_VERSION}-{FORGE_VERSION}-installer.jar
 - https://maven.minecraftforge.net/releases/net/minecraftforge/forge/maven-metadata.xml
 - example construction: https://maven.minecraftforge.net/net/minecraftforge/forge/1.20.1-47.4.26/forge-1.20.1-47.4.26-installer.jar
 
-
+ctrl+f support inside ServerRunner :O (since its just html)
+monochrome theme :o
 
 # WINDOWS (5th class citizen)
 - java support (and windows folders)

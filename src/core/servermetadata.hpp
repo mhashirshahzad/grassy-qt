@@ -12,6 +12,9 @@ struct ServerMetadata
     QString installedAt;
     QString argsFile;
     QString jar = QStringLiteral("server.jar");
+    QString javaBinary = QStringLiteral("java");
+    QString minimumMemory = QStringLiteral("2G");
+    QString maximumMemory = QStringLiteral("4G");
 };
 
 ServerMetadata readServerMetadata(const QString &serverFolder);

@@ -66,6 +66,7 @@
         <file alias="terminal/ServerTerminal.qml">../qml/terminal/ServerTerminal.qml</file>
         <file alias="terminal/qmldir">../qml/terminal/qmldir</file>
         <file alias="theme/Dracula.ini">../qml/theme/Dracula.ini</file>
+        <file alias="theme/Monochrome.ini">../qml/theme/Monochrome.ini</file>
         <file alias="theme/Nord.ini">../qml/theme/Nord.ini</file>
         <file alias="theme/RosePine.ini">../qml/theme/RosePine.ini</file>
         <file alias="theme/Theme.qml">../qml/theme/Theme.qml</file>

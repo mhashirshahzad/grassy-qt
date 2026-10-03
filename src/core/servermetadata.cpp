@@ -26,6 +26,12 @@ ServerMetadata readServerMetadata(const QString &serverFolder)
     metadata.installedAt = settings.value(QStringLiteral("state/installed_at")).toString();
     metadata.argsFile = settings.value(QStringLiteral("launch/args_file")).toString();
     metadata.jar = settings.value(QStringLiteral("launch/jar"), metadata.jar).toString();
+    metadata.javaBinary =
+        settings.value(QStringLiteral("launch/java_binary"), metadata.javaBinary).toString();
+    metadata.minimumMemory =
+        settings.value(QStringLiteral("launch/minimum_memory"), metadata.minimumMemory).toString();
+    metadata.maximumMemory =
+        settings.value(QStringLiteral("launch/maximum_memory"), metadata.maximumMemory).toString();
     return metadata;
 }
 
@@ -40,6 +46,9 @@ bool writeServerMetadata(const QString &serverFolder, const ServerMetadata &meta
     settings.setValue(QStringLiteral("state/installed_at"), metadata.installedAt);
     settings.setValue(QStringLiteral("launch/args_file"), metadata.argsFile);
     settings.setValue(QStringLiteral("launch/jar"), metadata.jar);
+    settings.setValue(QStringLiteral("launch/java_binary"), metadata.javaBinary);
+    settings.setValue(QStringLiteral("launch/minimum_memory"), metadata.minimumMemory);
+    settings.setValue(QStringLiteral("launch/maximum_memory"), metadata.maximumMemory);
     settings.sync();
     return settings.status() == QSettings::NoError;
 }

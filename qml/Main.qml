@@ -15,6 +15,12 @@ ApplicationWindow {
     property var modelObject: typeof serverModel !== "undefined" ? serverModel : null
     property var serverWindows: []
     property int runningRevision: 0
+    Timer {
+        id: metadataRefreshTimer
+        interval: 1500
+        repeat: false
+        onTriggered: if (root.modelObject) root.modelObject.refresh()
+    }
     title: "Grassy Qt"
 
     font.family: Theme.fontFamily
@@ -80,6 +86,7 @@ ApplicationWindow {
         })
         window.runner.runningChanged.connect(function() {
             runningRevision++
+            metadataRefreshTimer.restart()
         })
         window.openForServer(folder, name)
         runningRevision++

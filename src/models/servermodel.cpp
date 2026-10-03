@@ -4,6 +4,7 @@
 #include "qhashfunctions.h"
 #include "../core/serverconfig.hpp"
 #include "../core/servermetadata.hpp"
+#include "../core/servermetadata.hpp"
 #include "../core/serverscripts.hpp"
 #include "../core/utils.hpp"
 
@@ -293,17 +294,28 @@ bool ServerModel::createStartScript(const QString &folder, const QString &minimu
     if (minOk && maxOk && minimumBytes > maximumBytes)
         return false;
 
-    return writeServerScripts(folder, javaExecutable.trimmed(), minimumMemory.trimmed(),
+    ServerMetadata metadata = readServerMetadata(folder);
+    metadata.javaBinary = javaExecutable.trimmed();
+    metadata.minimumMemory = minimumMemory.trimmed();
+    metadata.maximumMemory = maximumMemory.trimmed();
+    if (!writeServerMetadata(folder, metadata))
+        return false;
+
+    return writeServerScripts(folder, metadata.javaBinary, minimumMemory.trimmed(),
                               maximumMemory.trimmed());
 }
 
 QVariantMap ServerModel::readStartScript(const QString &folder) const
 {
+    const ServerMetadata metadata = readServerMetadata(folder);
     QVariantMap result;
-    result[QStringLiteral("minMemory")] = QStringLiteral("2G");
-    result[QStringLiteral("maxMemory")] = QStringLiteral("4G");
+    result[QStringLiteral("minMemory")] = metadata.minimumMemory;
+    result[QStringLiteral("maxMemory")] = metadata.maximumMemory;
     result[QStringLiteral("javaExecutable")] = QStringLiteral("java");
     result[QStringLiteral("exists")] = false;
+
+    if (!metadata.javaBinary.isEmpty())
+        result[QStringLiteral("javaExecutable")] = metadata.javaBinary;
 
     QStringList scriptNames;
 #ifdef Q_OS_WIN

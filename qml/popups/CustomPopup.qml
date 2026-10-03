@@ -13,6 +13,7 @@ Popup {
     property int closeButtonRightMargin: 2
     property int closeButtonSize: 24
     property bool errorState: false
+    property bool successState: false
 
     modal: true
     dim: true
@@ -23,7 +24,9 @@ Popup {
 
     background: Rectangle {
         color: Theme.background
-        border.color: root.errorState ? Theme.failure : Theme.border
+        border.color: root.errorState ? Theme.failure
+                                      : root.successState ? Theme.accent
+                                                           : Theme.border
         border.width: 1
         radius: 12
     }

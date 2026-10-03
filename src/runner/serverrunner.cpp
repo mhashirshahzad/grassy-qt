@@ -319,8 +319,9 @@ void ServerRunner::start()
         if (script.open(QIODevice::ReadOnly | QIODevice::Text))
             scriptText = QString::fromUtf8(script.readAll());
 
-        m_sessionHeader = QStringLiteral("Running %1\n\n--- %1 contents ---\n%2"
-                                          "\n--- end %1 contents ---\n")
+        m_sessionHeader = QStringLiteral(
+                              "Running %1\n\n--- %1 source (values resolve from grassy-meta.ini) ---\n%2"
+                              "\n--- end %1 source ---\n")
                               .arg(QFileInfo(runScript).fileName(), scriptText);
         m_consoleText = m_sessionHeader;
         m_consoleHtml = ansiToHtml(m_sessionHeader, m_themePalette);

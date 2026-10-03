@@ -18,6 +18,14 @@ CustomPopup {
     signal installationCompleted()
     property bool hasError: statusMessage.startsWith("Error")
     errorState: hasError
+    successState: completed && !hasError
+
+    Timer {
+        id: closeTimer
+        interval: 1000
+        repeat: false
+        onTriggered: root.close()
+    }
 
     width: Math.min(parent ? parent.width - 32 : 620, 620)
     height: content.implicitHeight + topPadding + bottomPadding
@@ -54,6 +62,7 @@ CustomPopup {
             if (root.modelObject)
                 root.modelObject.refresh()
             root.installationCompleted()
+            closeTimer.start()
         }
         function onFailed(message) {
             root.downloading = false
@@ -68,8 +77,9 @@ CustomPopup {
         spacing: 12
 
         Label {
-            text: root.hasError ? root.statusMessage : "Add Minecraft server"
-            color: root.hasError ? Theme.failure : Theme.textBright
+            text: root.completed ? "Server Downloaded!" :
+                                   root.hasError ? root.statusMessage : "Add Minecraft server"
+            color: root.hasError ? Theme.failure : root.completed ? Theme.accent : Theme.textBright
             font.pixelSize: 24
             font.bold: true
         }
