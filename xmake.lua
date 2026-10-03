@@ -12,30 +12,7 @@ if is_plat("linux") then
 elseif is_plat("windows") then
     set_toolchains("mingw")
     add_syslinks("psapi")
-elseif is_plat("mingw") then
-    add_requires(
-        "qt6core 6.9.1",
-        "qt6gui 6.9.1",
-        "qt6qml 6.9.1",
-        "qt6quick 6.9.1",
-        "qt6network 6.9.1",
-        "qt6widgets 6.9.1"
-    )
 end
-
-rule("qml.qrc.generator")
-    set_extensions(".qml", ".svg", ".ini")
-    on_buildcmd_file(function(_, batchcmds, sourcefile, opt)
-        batchcmds:show_progress(
-            opt.progress,
-            "${color.build.object}generating.qrc %s",
-            sourcefile
-        )
-        batchcmds:vrunv("xmake", {
-            "lua",
-            "scripts/generate_qml_qrc.lua"
-        })
-    end)
 
 local function grassy_common()
     add_rules("qt.quickapp")
@@ -53,9 +30,6 @@ local function grassy_common()
     add_frameworks("QtNetwork")
     add_frameworks("QtQuickControls2")
     add_frameworks("QtWidgets")
-    add_files("qml/**.qml", { rule = "qml.qrc.generator" })
-    add_files("qml/**.svg", { rule = "qml.qrc.generator" })
-    add_files("qml/**.ini", { rule = "qml.qrc.generator" })
     add_files("src/**.hpp")
     add_files("src/**.cpp")
     add_files("src/qml.qrc")
@@ -65,6 +39,33 @@ end
 
 target("grassy")
     grassy_common()
+    before_build(function()
+        os.execv("xmake", {"lua", "scripts/generate_qml_qrc.lua"})
+    end)
+
+task("mingw")
+    set_menu({
+        usage = "xmake mingw",
+        description = "Configure and build the Windows MinGW target",
+    })
+    on_run(function()
+        local configure = {
+            "f", "-v", "-c", "-p", "mingw",
+            "--mingw=/usr",
+            "--qt=/opt/mingw/qt-sdk/6.11.2/mingw_64",
+            "--qt_host=/usr/lib/qt6",
+            "-a", "x86_64",
+        }
+        local status = os.execv("xmake", configure)
+        if status ~= 0 then
+            raise("MinGW configuration failed")
+        end
+
+        status = os.execv("xmake", {"build", "-v", "grassy"})
+        if status ~= 0 then
+            raise("MinGW build failed")
+        end
+    end)
 
 task("live-reload")
     set_menu({
