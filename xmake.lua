@@ -50,8 +50,11 @@ target("grassy")
     grassy_common()
     add_rules("grassy.mingw_run")
     add_ldflags("-mconsole", { mode = "debug" })
-    before_build(function()
+    before_build(function(target)
         os.execv("xmake", {"lua", "scripts/generate_qml_qrc.lua"})
+        if is_mingw then
+            target:data_set("qt.rcc", path.absolute("scripts/rcc-no-compress.sh"))
+        end
     end)
 
 task("linux")
@@ -127,11 +130,7 @@ task("mingw")
         copy_files(mingw_runtime, "libstdc++-6.dll", dist_dir)
         copy_files(mingw_runtime, "libwinpthread-1.dll", dist_dir)
         copy_files(path.join(mingw_qt, "qml"), "**", path.join(dist_dir, "qml"))
-        copy_files(
-            path.join(mingw_qt, "plugins", "platforms"),
-            "*.dll",
-            path.join(dist_dir, "plugins", "platforms")
-        )
+        copy_files(path.join(mingw_qt, "plugins"), "**", path.join(dist_dir, "plugins"))
     end)
 
 task("live-reload")
