@@ -21,8 +21,17 @@ end
 rule("grassy.mingw_run")
     if is_mingw then
         on_run(function (target)
-            os.execv("wine", {path.absolute(target:targetfile())}, {
-                curdir = target:rundir(),
+            local target_file = target:targetfile()
+            local dist_file = path.join(
+                path.directory(path.directory(path.directory(target_file))),
+                "dist",
+                path.filename(target_file)
+            )
+            if os.isfile(dist_file) then
+                target_file = dist_file
+            end
+            os.execv("wine", {path.absolute(target_file)}, {
+                curdir = path.directory(target_file),
                 detach = true
             })
         end)
@@ -73,11 +82,13 @@ task("mingw")
         description = "Configure, build, and stage the Windows MinGW target",
     })
     on_run(function()
-        local build_dir = path.join("build", "mingw", "x86_64", get_config("mode") or "debug")
+        local mode = get_config("mode") or "debug"
+        local build_dir = path.join("build", "mingw", "x86_64", mode)
         local dist_dir = path.join(build_dir, "dist")
 
         local configure = {
             "f", "-v", "-c", "-p", "mingw",
+            "-m", mode,
             "--mingw=/usr",
             "--qt=" .. mingw_qt,
             "--qt_host=/usr/lib/qt6",
@@ -95,26 +106,28 @@ task("mingw")
 
         os.rm(dist_dir)
         os.mkdir(dist_dir)
-        os.cp(path.join(build_dir, "grassy.exe"), dist_dir)
 
         local function copy_files(source_dir, pattern, destination)
-            os.mkdir(destination)
             for _, file in ipairs(os.files(path.join(source_dir, pattern))) do
-                os.cp(file, destination)
+                local relative_file = path.relative(file, source_dir)
+                local destination_file = path.join(destination, relative_file)
+                os.mkdir(path.directory(destination_file))
+                os.cp(file, destination_file)
             end
         end
 
+        copy_files(build_dir, "grassy.exe", dist_dir)
+        copy_files(".", "qt.conf", dist_dir)
         copy_files(path.join(mingw_qt, "bin"), "Qt6*.dll", dist_dir)
         copy_files(mingw_runtime, "libgcc_s_seh-1.dll", dist_dir)
         copy_files(mingw_runtime, "libstdc++-6.dll", dist_dir)
         copy_files(mingw_runtime, "libwinpthread-1.dll", dist_dir)
-        os.cp(path.join(mingw_qt, "qml", "*"), path.join(dist_dir, "qml"))
+        copy_files(path.join(mingw_qt, "qml"), "**", path.join(dist_dir, "qml"))
         copy_files(
             path.join(mingw_qt, "plugins", "platforms"),
             "*.dll",
             path.join(dist_dir, "plugins", "platforms")
         )
-        print("MinGW distribution staged at " .. path.absolute(dist_dir))
     end)
 
 task("live-reload")
