@@ -1,6 +1,6 @@
+import "../theme"
 import QtQuick 2.15
 import QtQuick.Controls 2.15
-import "../theme" 1.0
 
 Button {
     id: control
@@ -14,6 +14,7 @@ Button {
     padding: 10
     leftPadding: 14
     rightPadding: 14
+    scale: control.hovered ? 1.03 : 1
 
     contentItem: Text {
         text: control.text
@@ -25,27 +26,24 @@ Button {
 
     background: Rectangle {
         radius: 7
-        color: control.pressed
-            ? control.buttonPressedColor
-            : control.hovered
-                ? control.buttonHoverColor
-                : control.buttonColor
+        color: control.pressed ? control.buttonPressedColor : control.hovered ? control.buttonHoverColor : control.buttonColor
         opacity: control.enabled ? 1 : 0.5
 
         Behavior on color {
             ColorAnimation {
                 duration: 140
             }
-        }
-    }
 
-    scale: control.hovered ? 1.03 : 1
+        }
+
+    }
 
     Behavior on scale {
         NumberAnimation {
             duration: 140
             easing.type: Easing.OutBack
         }
+
     }
 
 }

@@ -1,20 +1,16 @@
+import "../theme" 1.0
 import QtQuick 2.15
 import QtQuick.Controls 2.15
-import Qt5Compat.GraphicalEffects
-import "../theme" 1.0
-
-
+import QtQuick.Effects
 
 Button {
     id: control
 
     property url iconSource
     property bool destructive: false
-
     property int iconSize: 24
     property real visualIconScale: 1
 
-    
     implicitWidth: iconSize
     implicitHeight: iconSize
     width: iconSize
@@ -28,6 +24,7 @@ Button {
 
     contentItem: Item {
         id: iconContent
+
         transformOrigin: Item.Center
         rotation: 0
 
@@ -38,30 +35,28 @@ Button {
             width: control.iconSize * control.visualIconScale
             height: control.iconSize * control.visualIconScale
             source: control.iconSource
-            sourceSize: Qt.size(Math.ceil(width * Screen.devicePixelRatio),
-                                Math.ceil(height * Screen.devicePixelRatio))
+            sourceSize: Qt.size(Math.ceil(width * Screen.devicePixelRatio), Math.ceil(height * Screen.devicePixelRatio))
             fillMode: Image.PreserveAspectFit
             visible: false
-            smooth : true
-            mipmap : true
+            smooth: true
+            mipmap: true
         }
 
-        ColorOverlay {
+        MultiEffect {
             anchors.fill: iconImage
             source: iconImage
+            colorization: 1
+            colorizationColor: !control.enabled ? Theme.disabledText : control.destructive && control.hovered ? Theme.failure : control.hovered ? Theme.accent : Theme.text
             visible: iconImage.status === Image.Ready
-            color: !control.enabled
-                ? Theme.disabledText
-                : control.destructive && control.hovered
-                    ? Theme.failure
-                    : control.hovered
-                        ? Theme.accent
-                        : Theme.text
             opacity: control.enabled ? 1 : 0.4
 
-            Behavior on color {
-                ColorAnimation { duration: 120 }
+            Behavior on colorizationColor {
+                ColorAnimation {
+                    duration: 120
+                }
+
             }
+
         }
 
         SequentialAnimation {
@@ -110,8 +105,11 @@ Button {
                         to: 0
                         duration: 70
                     }
+
                 }
+
             }
+
         }
 
         ParallelAnimation {
@@ -132,20 +130,23 @@ Button {
                 duration: 100
                 easing.type: Easing.OutCubic
             }
+
         }
 
         Connections {
-            target: control
-
             function onHoveredChanged() {
                 if (control.hovered) {
-                    restoreAnimation.stop()
-                    hoverAnimation.restart()
+                    restoreAnimation.stop();
+                    hoverAnimation.restart();
                 } else {
-                    hoverAnimation.stop()
-                    restoreAnimation.restart()
+                    hoverAnimation.stop();
+                    restoreAnimation.restart();
                 }
             }
+
+            target: control
         }
+
     }
+
 }

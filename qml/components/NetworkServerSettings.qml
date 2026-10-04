@@ -2,6 +2,7 @@ import QtQuick 2.15
 
 ServerSettingsSection {
     property var hostPopup
+
     title: "Network"
     searchHost: hostPopup
     searchBlob: "network online secure proxy rate compression status transfers"
@@ -13,6 +14,7 @@ ServerSettingsSection {
         settingKey: "online-mode"
         fallback: true
     }
+
     ServerToggleSetting {
         settingsPopup: hostPopup
         label: "Enforce secure profile"
@@ -20,11 +22,13 @@ ServerSettingsSection {
         settingKey: "enforce-secure-profile"
         fallback: true
     }
+
     ServerToggleSetting {
         settingsPopup: hostPopup
         label: "Prevent proxy connections"
         settingKey: "prevent-proxy-connections"
     }
+
     ServerNumberSetting {
         settingsPopup: hostPopup
         label: "Rate limit"
@@ -32,6 +36,7 @@ ServerSettingsSection {
         settingKey: "rate-limit"
         maximumValue: 100
     }
+
     ServerNumberSetting {
         settingsPopup: hostPopup
         label: "Network compression threshold (bytes)"
@@ -39,10 +44,12 @@ ServerSettingsSection {
         maximumValue: 1024
         fallback: 256
     }
+
     ServerToggleSetting {
         settingsPopup: hostPopup
         label: "Enable server status"
         settingKey: "enable-status"
         fallback: true
     }
+
 }

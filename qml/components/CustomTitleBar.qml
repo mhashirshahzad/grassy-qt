@@ -1,23 +1,24 @@
+import "../theme"
 import QtQuick 2.15
 import QtQuick.Controls 2.15
-import "../theme" 1.0
 
 Rectangle {
     id: root
 
     required property Window window
 
-    height: 40
-    color: Theme.surface
-
     signal settingsClicked()
     signal searchClicked()
     signal reloadClicked()
     signal addServerClicked()
 
+    height: 40
+    color: Theme.surface
+
     // Left side
     Row {
         id: left
+
         anchors.left: parent.left
         anchors.leftMargin: 8
         anchors.verticalCenter: parent.verticalCenter
@@ -29,11 +30,12 @@ Rectangle {
             ToolTip.visible: hovered
             onClicked: root.settingsClicked()
         }
-    }
 
+    }
 
     Item {
         id: center
+
         anchors.left: left.right
         anchors.right: right.left
         anchors.verticalCenter: parent.verticalCenter
@@ -45,22 +47,24 @@ Rectangle {
 
         CustomTextField {
             id: searchField
-            
+
             anchors.fill: parent
             placeholderText: "Search for servers..."
             font.pixelSize: 12
             onTextChanged: {
                 if (typeof serverModel !== "undefined" && serverModel)
-                    serverModel.setSearchText(text)
+                    serverModel.setSearchText(text);
                 else
-                    console.warn("error: serverModel is null")
+                    console.warn("error: serverModel is null");
             }
         }
+
     }
 
     // Right side
     Row {
         id: right
+
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
         spacing: 4
@@ -80,7 +84,7 @@ Rectangle {
         }
 
     }
-    
+
     // seperator
     Rectangle {
         anchors.bottom: parent.bottom
@@ -90,5 +94,5 @@ Rectangle {
         color: Theme.overlay
         z: 1
     }
-    
+
 }

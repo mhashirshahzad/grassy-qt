@@ -1,50 +1,51 @@
+import "."
+import "../components" 1.0
+import "../theme" 1.0
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
-import "../theme" 1.0
-import "../components" 1.0
-import "." 1.0
 
 CustomPopup {
     id: root
 
     property var utilsObject: null
-    signal directorySaved()
     property bool localIpCopied: false
     property bool publicIpCopied: false
     property bool hasError: errorLabel.text.length > 0
-    errorState: hasError
 
-    width: Math.min(parent ? parent.width - 40 : 620, 620)
-    height: Math.min(parent ? parent.height - 40 : 400, 400)
+    signal directorySaved()
 
     function saveDirectory() {
-        const path = directoryField.text.trim()
+        const path = directoryField.text.trim();
         if (!utilsObject || path.length === 0 || !utilsObject.saveServersDirectory(path)) {
-            errorLabel.text = "Could not save that folder."
-            return
+            errorLabel.text = "Could not save that folder.";
+            return ;
         }
-        errorLabel.text = ""
-        directorySaved()
-        root.close()
+        errorLabel.text = "";
+        directorySaved();
+        root.close();
     }
 
+    errorState: hasError
+    width: Math.min(parent ? parent.width - 40 : 620, 620)
+    height: Math.min(parent ? parent.height - 40 : 400, 400)
     onOpened: {
-        errorLabel.text = ""
-        localIpCopied = false
-        publicIpCopied = false
+        errorLabel.text = "";
+        localIpCopied = false;
+        publicIpCopied = false;
     }
-
     Component.onCompleted: {
         if (utilsObject)
-            directoryField.text = utilsObject.serversDirectory
+            directoryField.text = utilsObject.serversDirectory;
+
     }
 
     Connections {
-        target: root.utilsObject
         function onServersDirectoryChanged() {
-            directoryField.text = root.utilsObject.serversDirectory
+            directoryField.text = root.utilsObject.serversDirectory;
         }
+
+        target: root.utilsObject
     }
 
     ColumnLayout {
@@ -66,14 +67,14 @@ CustomPopup {
             wrapMode: Text.WordWrap
         }
 
-
         RowLayout {
             Layout.fillWidth: true
             spacing: 8
 
             CustomTextField {
-                showSearchIcon: false
                 id: directoryField
+
+                showSearchIcon: false
                 Layout.fillWidth: true
                 selectByMouse: true
                 placeholderText: "Server folder path"
@@ -83,12 +84,14 @@ CustomPopup {
                 text: "Browse"
                 onClicked: {
                     if (utilsObject) {
-                        const selected = utilsObject.chooseDirectory(directoryField.text)
+                        const selected = utilsObject.chooseDirectory(directoryField.text);
                         if (selected.length > 0)
-                            directoryField.text = selected
+                            directoryField.text = selected;
+
                     }
                 }
             }
+
         }
 
         Rectangle {
@@ -110,9 +113,10 @@ CustomPopup {
                 options: Theme.themeNames
                 currentIndex: Theme.themeNames.indexOf(Theme.selectedTheme)
                 onActivated: function(selectedTheme) {
-                    Theme.setTheme(selectedTheme)
+                    Theme.setTheme(selectedTheme);
                 }
             }
+
         }
 
         GridLayout {
@@ -120,50 +124,60 @@ CustomPopup {
             columnSpacing: 20
             rowSpacing: 8
 
+            Label {
+                text: "Local IP"
+                color: Theme.subtext
+                Layout.fillWidth: true
+            }
 
-            Label { text: "Local IP"; color: Theme.subtext; Layout.fillWidth: true }
             RowLayout {
                 spacing: 8
 
                 Rectangle {
                     id: localIpCell
+
                     implicitWidth: 180
                     implicitHeight: 28
                     radius: 5
-
                     color: Theme.surface3
+
                     Label {
                         anchors.fill: parent
                         anchors.margins: 6
-
                         text: utilsObject ? utilsObject.localIp : "Unavailible"
                         color: Theme.text
                         elide: Text.ElideRight
-                        verticalAlignment : Text.AlignVCenter
+                        verticalAlignment: Text.AlignVCenter
                     }
+
                 }
 
                 IconButton {
-                    iconSource: localIpCopied
-                        ? "qrc:/icons/check.svg"
-                        : "qrc:/icons/copy.svg"
+                    iconSource: localIpCopied ? "qrc:/icons/check.svg" : "qrc:/icons/copy.svg"
                     ToolTip.text: localIpCopied ? "Copied" : "Copy local IP"
                     ToolTip.visible: hovered
                     onClicked: {
                         if (utilsObject && utilsObject.copyToClipboard(utilsObject.localIp)) {
-                            localIpCopied = true
-                            localCopyTimer.restart()
+                            localIpCopied = true;
+                            localCopyTimer.restart();
                         }
                     }
                 }
+
             }
 
-            Label { text: "Public IP"; color: Theme.subtext ; Layout.fillWidth : true}
+            Label {
+                text: "Public IP"
+                color: Theme.subtext
+                Layout.fillWidth: true
+            }
+
             RowLayout {
                 spacing: 8
 
                 Rectangle {
                     id: publicIpCell
+
                     implicitWidth: 180
                     implicitHeight: 28
                     color: publicIpMouse.containsMouse ? Theme.surface3 : Theme.surface2
@@ -172,9 +186,7 @@ CustomPopup {
                     Label {
                         anchors.fill: parent
                         anchors.margins: 6
-                        text: publicIpMouse.containsMouse
-                            ? (utilsObject ? utilsObject.publicIp : "Unavailable")
-                            : "Hover to reveal"
+                        text: publicIpMouse.containsMouse ? (utilsObject ? utilsObject.publicIp : "Unavailable") : "Hover to reveal"
                         color: Theme.text
                         elide: Text.ElideRight
                         verticalAlignment: Text.AlignVCenter
@@ -182,65 +194,75 @@ CustomPopup {
 
                     MouseArea {
                         id: publicIpMouse
+
                         anchors.fill: parent
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
                     }
+
                 }
 
                 IconButton {
-                    iconSource: publicIpCopied
-                        ? "qrc:/icons/check.svg"
-                        : "qrc:/icons/copy.svg"
+                    iconSource: publicIpCopied ? "qrc:/icons/check.svg" : "qrc:/icons/copy.svg"
                     ToolTip.text: publicIpCopied ? "Copied" : "Copy public IP"
                     ToolTip.visible: hovered
                     onClicked: {
                         if (utilsObject && utilsObject.copyToClipboard(utilsObject.publicIp)) {
-                            publicIpCopied = true
-                            publicCopyTimer.restart()
+                            publicIpCopied = true;
+                            publicCopyTimer.restart();
                         }
                     }
                 }
+
             }
+
         }
 
         Label {
             id: errorLabel
+
             color: Theme.failure
             visible: false
         }
 
-        Item { Layout.fillHeight: true }
+        Item {
+            Layout.fillHeight: true
+        }
 
         Shortcut {
             sequences: ["Enter", "Return"]
             enabled: root.opened
             context: Qt.WindowShortcut
-            onActivated : root.saveDirectory()
+            onActivated: root.saveDirectory()
         }
+
         RowLayout {
             Layout.alignment: Qt.AlignRight
             spacing: 8
+            Layout.fillWidth: true
 
-
-            Layout.fillWidth : true
             ThemedButton {
                 text: "Save (Enter)"
-                Layout.fillWidth : true
+                Layout.fillWidth: true
                 onClicked: root.saveDirectory()
             }
+
         }
 
         Timer {
             id: localCopyTimer
+
             interval: 1200
             onTriggered: root.localIpCopied = false
         }
 
         Timer {
             id: publicCopyTimer
+
             interval: 1200
             onTriggered: root.publicIpCopied = false
         }
+
     }
+
 }

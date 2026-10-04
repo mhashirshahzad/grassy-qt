@@ -1,10 +1,10 @@
+import ".."
+import "../../components" 1.0
+import "../../theme" 1.0
+import Grassy 1.0
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
-import "../../theme" 1.0
-import "../../components" 1.0
-import Grassy 1.0
-import ".."
 
 CustomPopup {
     id: root
@@ -19,84 +19,94 @@ CustomPopup {
     property var minecraftVersions: []
     property var loaderVersions: []
     property var installerVersions: []
-    signal installationCompleted()
     property bool hasError: statusMessage.startsWith("Error")
+
+    signal installationCompleted()
+
+    function openFresh() {
+        statusMessage = "Loading available versions...";
+        downloading = false;
+        completed = false;
+        minecraftVersions = [];
+        loaderVersions = [];
+        installerVersions = [];
+        minecraftVersion = "";
+        loaderVersion = "";
+        installerVersion = "";
+        downloader.refresh();
+        root.open();
+    }
+
     errorState: hasError
     successState: completed && !hasError
+    width: Math.min(parent ? parent.width - 32 : 620, 620)
+    height: content.implicitHeight + topPadding + bottomPadding
+    onClosed: downloading = false
 
     Timer {
         id: closeTimer
+
         interval: 1000
         repeat: false
         onTriggered: root.close()
     }
 
-    width: Math.min(parent ? parent.width - 32 : 620, 620)
-    height: content.implicitHeight + topPadding + bottomPadding
-
     ServerDownloader {
         id: downloader
     }
 
-    function openFresh() {
-        statusMessage = "Loading available versions..."
-        downloading = false
-        completed = false
-        minecraftVersions = []
-        loaderVersions = []
-        installerVersions = []
-        minecraftVersion = ""
-        loaderVersion = ""
-        installerVersion = ""
-        downloader.refresh()
-        root.open()
-    }
-
     Connections {
-        target: downloader
         function onMinecraftVersionsChanged(versions) {
-            root.minecraftVersions = versions
+            root.minecraftVersions = versions;
             if (versions.length > 0) {
-                root.minecraftVersion = versions[0]
-                downloader.refreshLoaders(root.minecraftVersion)
+                root.minecraftVersion = versions[0];
+                downloader.refreshLoaders(root.minecraftVersion);
             }
-            root.statusMessage = ""
+            root.statusMessage = "";
         }
+
         function onLoaderVersionsChanged(versions) {
-            root.loaderVersions = versions
-            root.loaderVersion = versions.length > 0 ? versions[0] : ""
+            root.loaderVersions = versions;
+            root.loaderVersion = versions.length > 0 ? versions[0] : "";
         }
+
         function onInstallerVersionsChanged(versions) {
-            root.installerVersions = versions
-            root.installerVersion = versions.length > 0 ? versions[0] : ""
+            root.installerVersions = versions;
+            root.installerVersion = versions.length > 0 ? versions[0] : "";
         }
+
         function onProgressChanged(progress) {
-            progressBar.progressValue = progress
+            progressBar.progressValue = progress;
         }
+
         function onCompleted(folderName) {
-            root.downloading = false
-            root.completed = true
-            root.statusMessage = "Installed " + folderName
+            root.downloading = false;
+            root.completed = true;
+            root.statusMessage = "Installed " + folderName;
             if (root.modelObject)
-                root.modelObject.refresh()
-            root.installationCompleted()
-            closeTimer.start()
+                root.modelObject.refresh();
+
+            root.installationCompleted();
+            closeTimer.start();
         }
+
         function onFailed(message) {
-            root.downloading = false
-            root.completed = false
-            root.statusMessage = "Error: " + message
+            root.downloading = false;
+            root.completed = false;
+            root.statusMessage = "Error: " + message;
         }
+
+        target: downloader
     }
 
     ColumnLayout {
         id: content
+
         anchors.fill: parent
         spacing: 12
 
         Label {
-            text: root.completed ? "Server Downloaded!" :
-                                   root.hasError ? root.statusMessage : "Add Fabric server"
+            text: root.completed ? "Server Downloaded!" : root.hasError ? root.statusMessage : "Add Fabric server"
             color: root.hasError ? Theme.failure : root.completed ? Theme.accent : Theme.textBright
             font.pixelSize: 24
             font.bold: true
@@ -109,6 +119,7 @@ CustomPopup {
             wrapMode: Text.WordWrap
             Layout.fillWidth: true
         }
+
         Label {
             visible: !root.hasError
             text: "<b>Run the server at least once after downloading to fetch the required libraries.</b>"
@@ -130,10 +141,12 @@ CustomPopup {
             options: root.minecraftVersions
             currentIndex: Math.max(0, root.minecraftVersions.indexOf(root.minecraftVersion))
             editText: root.minecraftVersion
-            onTextEdited: function(value) { root.minecraftVersion = value }
+            onTextEdited: function(value) {
+                root.minecraftVersion = value;
+            }
             onActivated: function(value) {
-                root.minecraftVersion = value
-                downloader.refreshLoaders(value)
+                root.minecraftVersion = value;
+                downloader.refreshLoaders(value);
             }
         }
 
@@ -149,8 +162,12 @@ CustomPopup {
             options: root.loaderVersions
             currentIndex: Math.max(0, root.loaderVersions.indexOf(root.loaderVersion))
             editText: root.loaderVersion
-            onTextEdited: function(value) { root.loaderVersion = value }
-            onActivated: function(value) { root.loaderVersion = value }
+            onTextEdited: function(value) {
+                root.loaderVersion = value;
+            }
+            onActivated: function(value) {
+                root.loaderVersion = value;
+            }
         }
 
         Label {
@@ -165,12 +182,19 @@ CustomPopup {
             options: root.installerVersions
             currentIndex: Math.max(0, root.installerVersions.indexOf(root.installerVersion))
             editText: root.installerVersion
-            onTextEdited: function(value) { root.installerVersion = value }
-            onActivated: function(value) { root.installerVersion = value }
+            onTextEdited: function(value) {
+                root.installerVersion = value;
+            }
+            onActivated: function(value) {
+                root.installerVersion = value;
+            }
         }
 
         CustomLabeledProgressBar {
             id: progressBar
+
+            property real progressValue: 0
+
             visible: root.downloading
             Layout.fillWidth: true
             label: "Download progress"
@@ -178,7 +202,6 @@ CustomPopup {
             currentValue: progressBar.progressValue
             maximumValue: 1
             valueText: Math.round(progressBar.progressValue * 100) + "%"
-            property real progressValue: 0
             progressStartColor: Theme.accent
             progressEndColor: Theme.accentHover
             labelColor: Theme.accent
@@ -194,22 +217,22 @@ CustomPopup {
             Layout.fillWidth: true
         }
 
-        Item { Layout.fillHeight: true }
+        Item {
+            Layout.fillHeight: true
+        }
 
         ThemedButton {
             Layout.fillWidth: true
             text: root.downloading ? "Downloading..." : "Download server"
-            enabled: !root.downloading && root.minecraftVersion.length > 0
-                && root.loaderVersion.length > 0 && root.installerVersion.length > 0
+            enabled: !root.downloading && root.minecraftVersion.length > 0 && root.loaderVersion.length > 0 && root.installerVersion.length > 0
             onClicked: {
-                root.statusMessage = "Downloading..."
-                root.downloading = true
-                root.completed = false
-                downloader.download("Fabric", root.minecraftVersion,
-                                    root.loaderVersion, root.installerVersion)
+                root.statusMessage = "Downloading...";
+                root.downloading = true;
+                root.completed = false;
+                downloader.download("Fabric", root.minecraftVersion, root.loaderVersion, root.installerVersion);
             }
         }
+
     }
 
-    onClosed: downloading = false
 }

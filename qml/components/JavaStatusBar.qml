@@ -1,16 +1,15 @@
+import "../theme"
 import QtQuick 2.15
-import "../theme" 1.0
 
 Rectangle {
     id: root
 
+    property bool javaInstalled: typeof utils !== "undefined" && utils ? utils.javaInstalled : false
+
     height: 32
     color: Theme.surface
-    property bool javaInstalled: typeof utils !== "undefined" && utils
-        ? utils.javaInstalled
-        : false
 
-     // Top separator
+    // Top separator
     Rectangle {
         anchors.top: parent.top
         anchors.left: parent.left
@@ -19,17 +18,28 @@ Rectangle {
         color: Theme.overlay
         z: 1
     }
+
     // Subtle shadow above the footer
     Rectangle {
         anchors.bottom: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
         height: 4
-        gradient: Gradient {
-            GradientStop { position: 0.0; color: Qt.rgba(0, 0, 0, 0.16) }
-            GradientStop { position: 1.0; color: Qt.rgba(0, 0, 0, 0.0) }
-        }
         z: -1
+
+        gradient: Gradient {
+            GradientStop {
+                position: 0
+                color: Qt.rgba(0, 0, 0, 0.16)
+            }
+
+            GradientStop {
+                position: 1
+                color: Qt.rgba(0, 0, 0, 0)
+            }
+
+        }
+
     }
 
     Row {
@@ -37,7 +47,6 @@ Rectangle {
         spacing: 8
 
         Rectangle {
-            
             anchors.verticalCenter: parent.verticalCenter
             width: 8
             height: 8
@@ -45,13 +54,13 @@ Rectangle {
             color: root.javaInstalled ? Theme.success : Theme.failure
         }
 
-
         Text {
             text: root.javaInstalled ? "Java detected" : "Java not found"
-
             color: Theme.text
             font.pixelSize: 12
             font.bold: true
         }
+
     }
+
 }

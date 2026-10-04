@@ -1,9 +1,9 @@
+import "."
+import "../components" 1.0
+import "../theme" 1.0
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
-import "../theme" 1.0
-import "../components" 1.0
-import "."
 
 CustomPopup {
     id: root
@@ -15,26 +15,28 @@ CustomPopup {
     signal forgeSelected()
     signal ftbSelected()
 
-    Timer {
-        id: closeTimer
-        interval: 1000
-        repeat: false
-        onTriggered: root.close()
+    function openFresh() {
+        root.open();
+    }
+
+    function closeAfterInstall() {
+        closeTimer.restart();
     }
 
     width: Math.min(parent ? parent.width - 32 : 520, 520)
     height: content.implicitHeight + topPadding + bottomPadding
 
-    function openFresh() {
-        root.open()
-    }
+    Timer {
+        id: closeTimer
 
-    function closeAfterInstall() {
-        closeTimer.restart()
+        interval: 1000
+        repeat: false
+        onTriggered: root.close()
     }
 
     ColumnLayout {
         id: content
+
         anchors.fill: parent
         spacing: 12
 
@@ -56,8 +58,8 @@ CustomPopup {
             Layout.fillWidth: true
             text: "Minecraft"
             onClicked: {
-                root.close()
-                root.minecraftSelected()
+                root.close();
+                root.minecraftSelected();
             }
         }
 
@@ -65,8 +67,8 @@ CustomPopup {
             Layout.fillWidth: true
             text: "Fabric"
             onClicked: {
-                root.close()
-                root.fabricSelected()
+                root.close();
+                root.fabricSelected();
             }
         }
 
@@ -74,8 +76,8 @@ CustomPopup {
             Layout.fillWidth: true
             text: "Forge"
             onClicked: {
-                root.close()
-                root.forgeSelected()
+                root.close();
+                root.forgeSelected();
             }
         }
 
@@ -88,6 +90,10 @@ CustomPopup {
             onClicked: root.ftbSelected()
         }
 
-        Item { Layout.fillHeight: true }
+        Item {
+            Layout.fillHeight: true
+        }
+
     }
+
 }

@@ -1,8 +1,8 @@
+import "../theme" 1.0
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Window 2.15
-import "../theme" 1.0
 
 Item {
     id: root
@@ -11,10 +11,18 @@ Item {
     property int currentIndex: 0
     property bool editable: false
     readonly property bool editing: editable && editField.activeFocus
-    property string editText: currentIndex >= 0 && currentIndex < options.length
-        ? options[currentIndex] : ""
+    property string editText: currentIndex >= 0 && currentIndex < options.length ? options[currentIndex] : ""
+
     signal activated(string value)
     signal textEdited(string value)
+
+    function closePopup() {
+        controlPopup.close();
+    }
+
+    function openPopup() {
+        controlPopup.open();
+    }
 
     implicitWidth: 220
     implicitHeight: 34
@@ -34,9 +42,7 @@ Item {
 
             Label {
                 visible: !root.editable
-                text: (root.options && root.options.length > root.currentIndex && root.currentIndex >= 0)
-                    ? root.options[root.currentIndex]
-                    : ""
+                text: (root.options && root.options.length > root.currentIndex && root.currentIndex >= 0) ? root.options[root.currentIndex] : ""
                 color: Theme.text
                 elide: Text.ElideRight
                 Layout.fillWidth: true
@@ -44,6 +50,7 @@ Item {
 
             CustomTextField {
                 id: editField
+
                 visible: root.editable
                 Layout.fillWidth: true
                 showSearchIcon: false
@@ -55,33 +62,37 @@ Item {
                 onTextEdited: root.textEdited(text)
                 onActiveFocusChanged: {
                     if (activeFocus)
-                        root.openPopup()
+                        root.openPopup();
+
                 }
                 onAccepted: {
-                    root.editText = text
-                    root.activated(text)
-                    root.closePopup()
+                    root.editText = text;
+                    root.activated(text);
+                    root.closePopup();
                 }
             }
 
             Label {
                 id: arrowLabel
+
                 text: controlPopup.visible ? "▲" : "▼"
                 color: Theme.subtext
             }
+
         }
 
         MouseArea {
-            visible: !root.editable
             id: controlMouse
+
+            visible: !root.editable
             anchors.fill: parent
             hoverEnabled: true
             cursorShape: Qt.PointingHandCursor
             onClicked: {
                 if (controlPopup.visible)
-                    root.closePopup()
+                    root.closePopup();
                 else
-                    root.openPopup()
+                    root.openPopup();
             }
         }
 
@@ -94,24 +105,28 @@ Item {
             cursorShape: Qt.PointingHandCursor
             onClicked: {
                 if (controlPopup.visible)
-                    root.closePopup()
+                    root.closePopup();
                 else
-                    root.openPopup()
+                    root.openPopup();
             }
         }
+
     }
 
     Popup {
         id: controlPopup
+
         y: {
-            const win = root.Window.window
+            const win = root.Window.window;
             if (!win)
-                return root.height + 4
-            const pt = root.mapToItem(null, 0, 0)
-            const popupH = height
+                return root.height + 4;
+
+            const pt = root.mapToItem(null, 0, 0);
+            const popupH = height;
             if (pt.y + root.height + popupH + 8 > win.height)
-                return -popupH - 4
-            return root.height + 4
+                return -popupH - 4;
+
+            return root.height + 4;
         }
         width: root.width
         height: Math.min((root.options ? root.options.length : 0) * 32 + 8, 220)
@@ -128,9 +143,11 @@ Item {
 
         contentItem: ListView {
             id: optionsView
+
+            property var owner: root
+
             clip: true
             model: root.options
-            property var owner: root
 
             delegate: Rectangle {
                 width: optionsView.width
@@ -148,27 +165,23 @@ Item {
 
                 MouseArea {
                     id: optionMouse
+
                     anchors.fill: parent
                     hoverEnabled: true
                     onClicked: {
-                        const selectedValue = modelData
-                        const control = optionsView.owner
-                        control.currentIndex = control.options.indexOf(selectedValue)
-                        control.editText = modelData
-                        control.activated(modelData)
-                        control.closePopup()
+                        const selectedValue = modelData;
+                        const control = optionsView.owner;
+                        control.currentIndex = control.options.indexOf(selectedValue);
+                        control.editText = modelData;
+                        control.activated(modelData);
+                        control.closePopup();
                     }
                 }
+
             }
 
         }
+
     }
 
-    function closePopup() {
-        controlPopup.close()
-    }
-
-    function openPopup() {
-        controlPopup.open()
-    }
 }

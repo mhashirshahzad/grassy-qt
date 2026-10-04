@@ -1,7 +1,7 @@
+import "../theme"
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
-import "../theme" 1.0
 
 Rectangle {
     id: root
@@ -20,6 +20,7 @@ Rectangle {
 
     ColumnLayout {
         id: sectionLayout
+
         anchors.fill: parent
         anchors.margins: 12
         spacing: 8
@@ -30,5 +31,7 @@ Rectangle {
             font.bold: true
             color: Theme.text
         }
+
     }
+
 }

@@ -1,9 +1,9 @@
+import "."
+import "../components" 1.0
+import "../theme" 1.0
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
-import "../theme" 1.0
-import "../components" 1.0
-import "." 1.0
 
 CustomPopup {
     id: root
@@ -12,30 +12,28 @@ CustomPopup {
     property string serverFolder
     property string serverName
     property string errorMessage
-    errorState: errorMessage.length > 0
-
-    width: 420
-    height: 160
 
     function accept() {
-        if (!root.modelObject
-                || !root.modelObject.renameServer(
-                    root.serverFolder, root.serverName)) {
-            root.errorMessage = "Could not rename the server folder."
-            return
+        if (!root.modelObject || !root.modelObject.renameServer(root.serverFolder, root.serverName)) {
+            root.errorMessage = "Could not rename the server folder.";
+            return ;
         }
-        root.close()
+        root.close();
     }
 
+    errorState: errorMessage.length > 0
+    width: 420
+    height: 160
     onOpened: {
-        renameField.forceActiveFocus()
-        renameField.selectAll()
+        renameField.forceActiveFocus();
+        renameField.selectAll();
     }
+
     Shortcut {
         sequences: ["Enter", "Return"]
         enabled: root.opened
         context: Qt.WindowShortcut
-        onActivated : root.accept()
+        onActivated: root.accept()
     }
 
     ColumnLayout {
@@ -51,6 +49,7 @@ CustomPopup {
 
         CustomTextField {
             id: renameField
+
             Layout.fillWidth: true
             showSearchIcon: false
             text: root.serverName
@@ -63,20 +62,23 @@ CustomPopup {
             visible: false
         }
 
-        Item { Layout.fillHeight: true }
+        Item {
+            Layout.fillHeight: true
+        }
 
         RowLayout {
             Layout.alignment: Qt.AlignRight
             spacing: 8
-
-
-            Layout.fillWidth : true
+            Layout.fillWidth: true
 
             ThemedButton {
-                Layout.fillWidth : true
+                Layout.fillWidth: true
                 text: "Rename (Enter)"
                 onClicked: root.accept()
             }
+
         }
+
     }
+
 }

@@ -1,7 +1,7 @@
+import "../theme"
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
-import "../theme" 1.0
 
 Item {
     id: root
@@ -18,19 +18,21 @@ Item {
     property color inactiveColor: Theme.disabled
     property color labelColor: progressStartColor
     property color valueTextColor: Theme.subtext
-
     readonly property bool active: standaloneActive || (runner !== null && runner.running)
+    readonly property real ratio: maximumValue > 0 ? Math.max(0, currentValue / maximumValue) : 0
+    readonly property string shownText: valueText.length > 0 ? valueText : currentValue + " / " + maximumValue
 
-    readonly property real ratio: maximumValue > 0
-        ? Math.max(0, currentValue / maximumValue)
-        : 0
+    function usageColor(value) {
+        if (value >= 0.9)
+            return Theme.failure;
 
-    readonly property string shownText: valueText.length > 0
-        ? valueText
-        : currentValue + " / " + maximumValue
+        if (value >= 0.75)
+            return Theme.warning;
+
+        return Theme.success;
+    }
 
     Layout.fillWidth: true
-
     implicitHeight: content.implicitHeight + 12
     implicitWidth: content.implicitWidth + 12
 
@@ -47,15 +49,11 @@ Item {
 
         anchors.fill: parent
         anchors.margins: 6
-
         spacing: 3
 
         Label {
             text: root.label
-            color: root.active
-                ? root.labelColor
-                : Theme.subtext
-
+            color: root.active ? root.labelColor : Theme.subtext
             font.pixelSize: 12
         }
 
@@ -69,13 +67,9 @@ Item {
             id: bar
 
             Layout.fillWidth: true
-
             from: 0
             to: 1
-            value: root.active
-                ? Math.min(1, root.ratio)
-                : 0
-
+            value: root.active ? Math.min(1, root.ratio) : 0
             enabled: root.active
 
             background: Rectangle {
@@ -86,41 +80,33 @@ Item {
 
             contentItem: Item {
                 Rectangle {
-                    width: parent.width
-                        * Math.min(1, Math.max(0, bar.value))
-
+                    width: parent.width * Math.min(1, Math.max(0, bar.value))
                     height: parent.height
                     radius: 3
-
-                    color: root.active && !root.useGradient
-                        ? root.usageColor(bar.value)
-                        : root.inactiveColor
-
+                    color: root.active && !root.useGradient ? root.usageColor(bar.value) : root.inactiveColor
                     gradient: root.active && root.useGradient ? progressGradient : null
 
                     Gradient {
                         id: progressGradient
+
                         GradientStop {
                             position: 0
                             color: root.progressStartColor
                         }
+
                         GradientStop {
                             position: 1
                             color: root.progressEndColor
                         }
+
                     }
+
                 }
+
             }
+
         }
+
     }
 
-    function usageColor(value) {
-        if (value >= 0.9)
-            return Theme.failure
-
-        if (value >= 0.75)
-            return Theme.warning
-
-        return Theme.success
-    }
 }

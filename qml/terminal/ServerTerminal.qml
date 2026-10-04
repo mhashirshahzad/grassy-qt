@@ -1,8 +1,8 @@
+import "../components"
+import "../theme" 1.0
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
-import "../theme" 1.0
-import "../components" 1.0
 
 FocusScope {
     id: root
@@ -10,8 +10,15 @@ FocusScope {
     property var runner: null
     property color borderColor: Theme.border
 
+    function scrollToBottom() {
+        outputScroll.contentY = Math.max(0, outputScroll.contentHeight - outputScroll.height);
+    }
+
+    Component.onCompleted: commandInput.forceActiveFocus()
+
     Rectangle {
         id: terminalFrame
+
         anchors.fill: parent
         color: Theme.surface0
         border.color: root.borderColor
@@ -19,6 +26,7 @@ FocusScope {
 
         Flickable {
             id: outputScroll
+
             anchors.fill: parent
             anchors.margins: 12
             anchors.bottomMargin: commandBar.height + 24
@@ -27,17 +35,12 @@ FocusScope {
             clip: true
             onContentHeightChanged: Qt.callLater(root.scrollToBottom)
 
-            ScrollBar.vertical: ScrollBar {
-                policy: ScrollBar.AsNeeded
-            }
-
             TextEdit {
                 id: outputText
+
                 width: outputScroll.width
                 readOnly: true
-                text: root.runner
-                    ? root.runner.consoleHtml
-                    : "error: runner is null"
+                text: root.runner ? root.runner.consoleHtml : "error: runner is null"
                 textFormat: TextEdit.RichText
                 color: Theme.text
                 font.family: Theme.monoFamily
@@ -46,10 +49,16 @@ FocusScope {
                 wrapMode: TextEdit.Wrap
                 onTextChanged: Qt.callLater(root.scrollToBottom)
             }
+
+            ScrollBar.vertical: ScrollBar {
+                policy: ScrollBar.AsNeeded
+            }
+
         }
 
         RowLayout {
             id: commandBar
+
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.bottom: parent.bottom
@@ -58,10 +67,9 @@ FocusScope {
 
             TextField {
                 id: commandInput
+
                 Layout.fillWidth: true
-                placeholderText: root.runner
-                    ? "Enter a server command..."
-                    : "error: runner is null"
+                placeholderText: root.runner ? "Enter a server command..." : "error: runner is null"
                 enabled: root.runner !== null
                 color: Theme.text
                 placeholderTextColor: Theme.subtext
@@ -69,24 +77,26 @@ FocusScope {
                 selectedTextColor: Theme.textBright
                 leftPadding: 12
                 rightPadding: 12
+                onAccepted: {
+                    if (root.runner)
+                        root.runner.sendCommand(text);
+
+                    text = "";
+                }
+                Keys.onPressed: function(event) {
+                    if (event.key === Qt.Key_C && (event.modifiers & Qt.ControlModifier)) {
+                        if (root.runner)
+                            root.runner.interrupt();
+
+                        event.accepted = true;
+                    }
+                }
+
                 background: Rectangle {
                     radius: 6
                     color: Theme.surface
                     border.width: commandInput.activeFocus ? 1 : 0
                     border.color: Theme.borderFocus
-                }
-                onAccepted: {
-                    if (root.runner)
-                        root.runner.sendCommand(text)
-                    text = ""
-                }
-                Keys.onPressed: function(event) {
-                    if (event.key === Qt.Key_C &&
-                            (event.modifiers & Qt.ControlModifier)) {
-                        if (root.runner)
-                            root.runner.interrupt()
-                        event.accepted = true
-                    }
                 }
 
             }
@@ -98,16 +108,15 @@ FocusScope {
                 buttonHoverColor: Theme.failure
                 buttonPressedColor: Theme.failureMuted
                 buttonTextColor: Theme.textBright
-                onClicked: if (root.runner) root.runner.stop()
+                onClicked: {
+                    if (root.runner) {
+                        root.runner.stop();
+                    }
+                }
             }
+
         }
+
     }
 
-    Component.onCompleted: commandInput.forceActiveFocus()
-
-    function scrollToBottom() {
-        outputScroll.contentY = Math.max(
-            0, outputScroll.contentHeight - outputScroll.height
-        )
-    }
 }

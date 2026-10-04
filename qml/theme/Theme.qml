@@ -1,24 +1,11 @@
-pragma Singleton
 import QtQuick 2.15
+pragma Singleton
 
 QtObject {
-    signal themeTransitionRequested(color oldBackground)
-
-    readonly property var palette: typeof utils !== "undefined" && utils !== null
-        ? utils.themePalette : ({})
-    readonly property string selectedTheme: typeof utils !== "undefined" && utils !== null
-        ? utils.selectedTheme : ""
-    readonly property var themeNames: typeof utils !== "undefined" && utils !== null
-        ? utils.themeNames : []
-
-    function setTheme(name) {
-        if (typeof utils !== "undefined" && utils !== null &&
-                name !== utils.selectedTheme) {
-            themeTransitionRequested(background)
-            utils.setTheme(name)
-        }
-    }
-
+    readonly property var palette: typeof utils !== "undefined" && utils !== null ? utils.themePalette : ({
+    })
+    readonly property string selectedTheme: typeof utils !== "undefined" && utils !== null ? utils.selectedTheme : ""
+    readonly property var themeNames: typeof utils !== "undefined" && utils !== null ? utils.themeNames : []
     readonly property color background: palette.background || "#1a1b26"
     readonly property color surface0: palette.surface0 || background
     readonly property color surface1: palette.surface1 || background
@@ -62,13 +49,26 @@ QtObject {
     readonly property color shadow: palette.shadow || surface0
     readonly property color scrim: palette.scrim || "#73000000"
     readonly property color transparent: "#00000000"
-
-    readonly property FontLoader ubuntu: FontLoader {
+    readonly property FontLoader
+    ubuntu: FontLoader {
         source: "qrc:/fonts/Ubuntu/Ubuntu-Regular.ttf"
     }
-    readonly property FontLoader monoFont: FontLoader {
+
+    readonly property FontLoader
+    monoFont: FontLoader {
         source: "qrc:/fonts/Ubuntu/UbuntuMono-Regular.ttf"
     }
+
     readonly property string monoFamily: monoFont.name
     readonly property string fontFamily: ubuntu.name
+
+    signal themeTransitionRequested(color oldBackground)
+
+    function setTheme(name) {
+        if (typeof utils !== "undefined" && utils !== null && name !== utils.selectedTheme) {
+            themeTransitionRequested(background);
+            utils.setTheme(name);
+        }
+    }
+
 }

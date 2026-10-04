@@ -1,7 +1,7 @@
+import "../theme"
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
-import "../theme" 1.0
 
 ServerSettingsSection {
     id: root
@@ -22,26 +22,27 @@ ServerSettingsSection {
             anchors.fill: parent
             editable: true
             options: {
-                const detected = typeof utils !== "undefined" && utils
-                    ? utils.javaExecutables() : []
-                const selected = root.hostPopup ? root.hostPopup.javaExecutable : "java"
-                return detected.indexOf(selected) >= 0
-                    ? detected : detected.concat([selected])
+                const detected = typeof utils !== "undefined" && utils ? utils.javaExecutables() : [];
+                const selected = root.hostPopup ? root.hostPopup.javaExecutable : "java";
+                return detected.indexOf(selected) >= 0 ? detected : detected.concat([selected]);
             }
             currentIndex: {
-                const selected = root.hostPopup ? root.hostPopup.javaExecutable : "java"
-                const index = options.indexOf(selected)
-                return index >= 0 ? index : 0
+                const selected = root.hostPopup ? root.hostPopup.javaExecutable : "java";
+                const index = options.indexOf(selected);
+                return index >= 0 ? index : 0;
             }
             onActivated: function(selectedValue) {
                 if (root.hostPopup)
-                    root.hostPopup.javaExecutable = selectedValue
+                    root.hostPopup.javaExecutable = selectedValue;
+
             }
             onTextEdited: function(value) {
                 if (root.hostPopup)
-                    root.hostPopup.javaExecutable = value
+                    root.hostPopup.javaExecutable = value;
+
             }
         }
+
     }
 
     ServerSettingCard {
@@ -56,13 +57,16 @@ ServerSettingsSection {
             text: root.hostPopup ? root.hostPopup.minimumMemory : "2G"
             onTextEdited: {
                 if (root.hostPopup)
-                    root.hostPopup.minimumMemory = text
+                    root.hostPopup.minimumMemory = text;
+
             }
             onAccepted: {
                 if (root.hostPopup)
-                    root.hostPopup.save()
+                    root.hostPopup.save();
+
             }
         }
+
     }
 
     ServerSettingCard {
@@ -77,12 +81,16 @@ ServerSettingsSection {
             text: root.hostPopup ? root.hostPopup.maximumMemory : "4G"
             onTextEdited: {
                 if (root.hostPopup)
-                    root.hostPopup.maximumMemory = text
+                    root.hostPopup.maximumMemory = text;
+
             }
             onAccepted: {
                 if (root.hostPopup)
-                    root.hostPopup.save()
+                    root.hostPopup.save();
+
             }
         }
+
     }
+
 }

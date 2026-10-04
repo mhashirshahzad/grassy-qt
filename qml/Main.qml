@@ -1,29 +1,76 @@
+// import QtQuick.Controls 2.15
+
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Window 2.15
-// import QtQuick.Controls 2.15
-
-import "theme" 1.0
-import "components" 1.0
-import "popups" 1.0
+import "components"
+import "popups"
 import "popups/downloaders" 1.0
-import "windows" 1.0
+import "theme"
+import "windows"
 
 ApplicationWindow {
     id: root
+
     property var modelObject: typeof serverModel !== "undefined" ? serverModel : null
     property var serverWindows: []
     property int runningRevision: 0
+
+    function openServer(folder, name) {
+        const window = serverWindowComponent.createObject(null);
+        if (!window) {
+            console.warn("Could not create server window");
+            return ;
+        }
+        serverWindows.push(window);
+        window.closing.connect(function() {
+            const index = serverWindows.indexOf(window);
+            if (index >= 0)
+                serverWindows.splice(index, 1);
+
+            runningRevision++;
+        });
+        window.runner.runningChanged.connect(function() {
+            runningRevision++;
+            metadataRefreshTimer.restart();
+        });
+        window.openForServer(folder, name);
+        runningRevision++;
+    }
+
+    function isServerRunning(folder) {
+        for (const window of serverWindows) {
+            if (window.runner && window.runner.serverFolder === folder && window.runner.running)
+                return true;
+
+        }
+        return false;
+    }
+
+    title: "Grassy Qt"
+    font.family: Theme.fontFamily
+    visible: true
+    width: 800
+    height: 600
+    color: Theme.background
+    onActiveChanged: {
+        if (active)
+            raise();
+
+    }
+
     Timer {
         id: metadataRefreshTimer
+
         interval: 1500
         repeat: false
-        onTriggered: if (root.modelObject) root.modelObject.refresh()
+        onTriggered: {
+            if (root.modelObject) {
+                root.modelObject.refresh();
+            }
+        }
     }
-    title: "Grassy Qt"
-
-    font.family: Theme.fontFamily
 
     Shortcut {
         sequences: ["Ctrl+R"]
@@ -31,77 +78,43 @@ ApplicationWindow {
         onActivated: root.modelObject ? root.modelObject.refresh() : undefined
     }
 
-    visible: true
-    width: 800
-    height: 600
-    color: Theme.background
-
-    onActiveChanged: {
-        if (active)
-            raise()
-    }
-
-
     CustomTitleBar {
         id: customTitleBar
+
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
         window: root
-
         z: 10
         onReloadClicked: {
             if (root.modelObject)
-                root.modelObject.refresh()
+                root.modelObject.refresh();
             else
-                console.warn("error: serverModel is null")
+                console.warn("error: serverModel is null");
         }
-
         onSettingsClicked: {
-            appSettings.open()
+            appSettings.open();
         }
     }
 
-    ThemeTransition {}
+    ThemeTransition {
+    }
 
     Component {
         id: serverWindowComponent
 
-        ServerWindow {}
-    }
-
-    function openServer(folder, name) {
-        const window = serverWindowComponent.createObject(null)
-        if (!window) {
-            console.warn("Could not create server window")
-            return
+        ServerWindow {
         }
 
-        serverWindows.push(window)
-        window.closing.connect(function() {
-            const index = serverWindows.indexOf(window)
-            if (index >= 0)
-                serverWindows.splice(index, 1)
-            runningRevision++
-        })
-        window.runner.runningChanged.connect(function() {
-            runningRevision++
-            metadataRefreshTimer.restart()
-        })
-        window.openForServer(folder, name)
-        runningRevision++
-    }
-
-    function isServerRunning(folder) {
-        for (const window of serverWindows) {
-            if (window.runner && window.runner.serverFolder === folder && window.runner.running)
-                return true
-        }
-        return false
     }
 
     ListView {
+        // ScrollBar.vertical: ScrollBar {
+        //     policy: ScrollBar.AlwaysOn
+        // }
+
         id: serverList
+
         anchors.top: customTitleBar.bottom
         anchors.left: parent.left
         anchors.right: parent.right
@@ -117,6 +130,7 @@ ApplicationWindow {
             required property string serverTypeRole
             required property bool serverInstallRequired
             required property string serverMetadataText
+
             serverName: name
             serverMotd: motd
             serverFolder: folder
@@ -129,29 +143,30 @@ ApplicationWindow {
             onFolderClicked: Qt.openUrlExternally("file://" + folder)
         }
 
-        // ScrollBar.vertical: ScrollBar {
-        //     policy: ScrollBar.AlwaysOn
-        // }
     }
+
     JavaStatusBar {
         id: javaStatusBar
+
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.bottom : parent.bottom
-
+        anchors.bottom: parent.bottom
     }
 
     GrassySettingsPopup {
         id: appSettings
+
         utilsObject: typeof utils !== "undefined" ? utils : null
         onDirectorySaved: {
             if (root.modelObject)
-                root.modelObject.refresh()
+                root.modelObject.refresh();
+
         }
     }
 
     AddServerPopup {
         id: addServerPopup
+
         parent: Overlay.overlay
         modelObject: root.modelObject
         anchors.centerIn: parent
@@ -159,6 +174,7 @@ ApplicationWindow {
 
     MinecraftServerPopup {
         id: minecraftServerPopup
+
         parent: Overlay.overlay
         modelObject: root.modelObject
         anchors.centerIn: parent
@@ -166,6 +182,7 @@ ApplicationWindow {
 
     FabricServerPopup {
         id: fabricServerPopup
+
         parent: Overlay.overlay
         modelObject: root.modelObject
         anchors.centerIn: parent
@@ -173,50 +190,58 @@ ApplicationWindow {
 
     ForgeServerPopup {
         id: forgeServerPopup
+
         parent: Overlay.overlay
         modelObject: root.modelObject
         anchors.centerIn: parent
     }
 
     Connections {
-        target: addServerPopup
         function onMinecraftSelected() {
-            minecraftServerPopup.openFresh()
+            minecraftServerPopup.openFresh();
         }
+
         function onFabricSelected() {
-            fabricServerPopup.openFresh()
+            fabricServerPopup.openFresh();
         }
+
         function onForgeSelected() {
-            forgeServerPopup.openFresh()
+            forgeServerPopup.openFresh();
         }
+
+        target: addServerPopup
     }
 
     Connections {
+        function onInstallationCompleted() {
+            addServerPopup.closeAfterInstall();
+        }
+
         target: minecraftServerPopup
-        function onInstallationCompleted() {
-            addServerPopup.closeAfterInstall()
-        }
     }
 
     Connections {
+        function onInstallationCompleted() {
+            addServerPopup.closeAfterInstall();
+        }
+
         target: fabricServerPopup
-        function onInstallationCompleted() {
-            addServerPopup.closeAfterInstall()
-        }
     }
 
     Connections {
+        function onInstallationCompleted() {
+            addServerPopup.closeAfterInstall();
+        }
+
         target: forgeServerPopup
-        function onInstallationCompleted() {
-            addServerPopup.closeAfterInstall()
-        }
     }
 
     Connections {
-        target: customTitleBar
         function onAddServerClicked() {
-            addServerPopup.openFresh()
+            addServerPopup.openFresh();
         }
+
+        target: customTitleBar
     }
-    
+
 }

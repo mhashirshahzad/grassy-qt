@@ -2,6 +2,7 @@ import QtQuick 2.15
 
 ServerSettingsSection {
     property var hostPopup
+
     title: "Players"
     searchHost: hostPopup
     searchBlob: "player idle online log pause hide"
@@ -13,17 +14,20 @@ ServerSettingsSection {
         settingKey: "player-idle-timeout"
         maximumValue: 60
     }
+
     ServerToggleSetting {
         settingsPopup: hostPopup
         label: "Hide online players"
         settingKey: "hide-online-players"
     }
+
     ServerToggleSetting {
         settingsPopup: hostPopup
         label: "Log player IPs"
         settingKey: "log-ips"
         fallback: true
     }
+
     ServerNumberSetting {
         settingsPopup: hostPopup
         label: "Pause when empty (seconds)"
@@ -32,4 +36,5 @@ ServerSettingsSection {
         maximumValue: 3600
         fallback: 60
     }
+
 }

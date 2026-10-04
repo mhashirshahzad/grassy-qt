@@ -1,9 +1,9 @@
+import "."
+import "../components" 1.0
+import "../theme" 1.0
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
-import "../theme" 1.0
-import "../components" 1.0
-import "." 1.0
 
 CustomPopup {
     id: root
@@ -12,19 +12,18 @@ CustomPopup {
     property string serverFolder
     property string serverName
     property string errorMessage
-    errorState: errorMessage.length > 0
-
-    width: 460
-    height: 280
 
     function accept() {
-        if (!root.modelObject
-                || !root.modelObject.deleteServer(root.serverFolder)) {
-            root.errorMessage = "Could not delete the server folder."
-            return
+        if (!root.modelObject || !root.modelObject.deleteServer(root.serverFolder)) {
+            root.errorMessage = "Could not delete the server folder.";
+            return ;
         }
-        root.close()
+        root.close();
     }
+
+    errorState: errorMessage.length > 0
+    width: 460
+    height: 280
 
     ColumnLayout {
         anchors.fill: parent
@@ -46,8 +45,7 @@ CustomPopup {
         Label {
             Layout.fillWidth: true
             font.pixelSize: 16
-            text: "Delete \"%1\" and all of its files permanently?"
-                .arg(root.serverName)
+            text: "Delete \"%1\" and all of its files permanently?".arg(root.serverName)
             wrapMode: Text.WordWrap
             horizontalAlignment: Text.AlignHCenter
         }
@@ -58,13 +56,14 @@ CustomPopup {
             visible: false
         }
 
-        Item { Layout.fillHeight: true }
+        Item {
+            Layout.fillHeight: true
+        }
 
         RowLayout {
             Layout.alignment: Qt.AlignCenter
             spacing: 8
-            Layout.fillWidth : true
-
+            Layout.fillWidth: true
 
             ThemedButton {
                 text: "Delete?"
@@ -74,6 +73,9 @@ CustomPopup {
                 buttonPressedColor: Theme.failureMuted
                 onClicked: root.accept()
             }
+
         }
+
     }
+
 }

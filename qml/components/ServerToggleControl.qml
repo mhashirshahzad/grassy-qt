@@ -1,10 +1,11 @@
+import "../theme"
 import QtQuick 2.15
-import "../theme" 1.0
 
 Item {
     id: control
 
     property bool checked: false
+
     signal toggled(bool checked)
 
     implicitWidth: 52
@@ -17,8 +18,6 @@ Item {
         border.color: Theme.border
         border.width: 1
 
-        Behavior on color { ColorAnimation { duration: 120 } }
-
         Rectangle {
             width: 22
             height: 22
@@ -28,9 +27,22 @@ Item {
             color: control.checked ? Theme.background : Theme.text
 
             Behavior on x {
-                NumberAnimation { duration: 140; easing.type: Easing.OutCubic }
+                NumberAnimation {
+                    duration: 140
+                    easing.type: Easing.OutCubic
+                }
+
             }
+
         }
+
+        Behavior on color {
+            ColorAnimation {
+                duration: 120
+            }
+
+        }
+
     }
 
     MouseArea {
@@ -38,4 +50,5 @@ Item {
         cursorShape: Qt.PointingHandCursor
         onClicked: control.toggled(!control.checked)
     }
+
 }
