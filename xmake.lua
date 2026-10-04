@@ -9,6 +9,7 @@ set_languages("c++20")
 
 local mingw_qt = "/opt/mingw/qt-sdk/6.11.2/mingw_64"
 local mingw_runtime = "/usr/x86_64-w64-mingw32/bin"
+local is_mingw = is_plat("mingw")
 
 if is_plat("linux") then
     set_config("qt", "/usr/lib/qt6")
@@ -16,6 +17,16 @@ elseif is_plat("mingw") then
     set_toolchains("mingw")
     add_syslinks("psapi")
 end
+
+rule("grassy.mingw_run")
+    if is_mingw then
+        on_run(function (target)
+            os.execv("wine", {path.absolute(target:targetfile())}, {
+                curdir = target:rundir(),
+                detach = true
+            })
+        end)
+    end
 
 local function grassy_common()
     add_rules("qt.quickapp")
@@ -29,27 +40,31 @@ end
 
 target("grassy")
     grassy_common()
+    add_rules("grassy.mingw_run")
     before_build(function()
         os.execv("xmake", {"lua", "scripts/generate_qml_qrc.lua"})
     end)
-    after_build("mingw", function (target)
-        local target_dir = path.directory(target:targetfile())
-        local function copy_files(source_dir, pattern, destination)
-            os.mkdir(destination)
-            for _, file in ipairs(os.files(path.join(source_dir, pattern))) do
-                os.cp(file, destination)
-            end
+
+task("linux")
+    set_menu({
+        usage = "xmake linux",
+        description = "Configure and build the native Linux target",
+    })
+    on_run(function()
+        local configure = {
+            "f", "-v", "-c", "-p", "linux",
+            "--qt=/usr/lib/qt6",
+            "-a", "x86_64",
+        }
+        local status = os.execv("xmake", configure)
+        if status ~= 0 then
+            raise("Linux configuration failed")
         end
 
-        copy_files(path.join(mingw_qt, "bin"), "Qt6*.dll", target_dir)
-        copy_files(mingw_runtime, "libgcc_s_seh-1.dll", target_dir)
-        copy_files(mingw_runtime, "libstdc++-6.dll", target_dir)
-        copy_files(mingw_runtime, "libwinpthread-1.dll", target_dir)
-        copy_files(
-            path.join(mingw_qt, "plugins", "platforms"),
-            "*.dll",
-            path.join(target_dir, "plugins", "platforms")
-        )
+        status = os.execv("xmake", {"build", "-v", "grassy"})
+        if status ~= 0 then
+            raise("Linux build failed")
+        end
     end)
 
 task("mingw")
