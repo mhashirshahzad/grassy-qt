@@ -7,29 +7,19 @@ set_defaultmode("debug")
 
 set_languages("c++20")
 
+local mingw_qt = "/opt/mingw/qt-sdk/6.11.2/mingw_64"
+local mingw_runtime = "/usr/x86_64-w64-mingw32/bin"
+
 if is_plat("linux") then
     set_config("qt", "/usr/lib/qt6")
-elseif is_plat("windows") then
+elseif is_plat("mingw") then
     set_toolchains("mingw")
     add_syslinks("psapi")
 end
 
 local function grassy_common()
     add_rules("qt.quickapp")
-    if is_plat("mingw") then
-        add_packages(
-            "qt6core",
-            "qt6gui",
-            "qt6qml",
-            "qt6quick",
-            "qt6network",
-            "qt6widgets"
-        )
-        add_links("Qt6QuickControls2")
-    end
-    add_frameworks("QtNetwork")
-    add_frameworks("QtQuickControls2")
-    add_frameworks("QtWidgets")
+    add_frameworks("QtNetwork", "QtQuickControls2", "QtWidgets")
     add_files("src/**.hpp")
     add_files("src/**.cpp")
     add_files("src/qml.qrc")
@@ -42,6 +32,25 @@ target("grassy")
     before_build(function()
         os.execv("xmake", {"lua", "scripts/generate_qml_qrc.lua"})
     end)
+    after_build("mingw", function (target)
+        local target_dir = path.directory(target:targetfile())
+        local function copy_files(source_dir, pattern, destination)
+            os.mkdir(destination)
+            for _, file in ipairs(os.files(path.join(source_dir, pattern))) do
+                os.cp(file, destination)
+            end
+        end
+
+        copy_files(path.join(mingw_qt, "bin"), "Qt6*.dll", target_dir)
+        copy_files(mingw_runtime, "libgcc_s_seh-1.dll", target_dir)
+        copy_files(mingw_runtime, "libstdc++-6.dll", target_dir)
+        copy_files(mingw_runtime, "libwinpthread-1.dll", target_dir)
+        copy_files(
+            path.join(mingw_qt, "plugins", "platforms"),
+            "*.dll",
+            path.join(target_dir, "plugins", "platforms")
+        )
+    end)
 
 task("mingw")
     set_menu({
@@ -49,14 +58,13 @@ task("mingw")
         description = "Configure, build, and stage the Windows MinGW target",
     })
     on_run(function()
-        local qt_target = "/opt/mingw/qt-sdk/6.11.2/mingw_64"
         local build_dir = path.join("build", "mingw", "x86_64", get_config("mode") or "debug")
         local dist_dir = path.join(build_dir, "dist")
 
         local configure = {
             "f", "-v", "-c", "-p", "mingw",
             "--mingw=/usr",
-            "--qt=" .. qt_target,
+            "--qt=" .. mingw_qt,
             "--qt_host=/usr/lib/qt6",
             "-a", "x86_64",
         }
@@ -81,13 +89,13 @@ task("mingw")
             end
         end
 
-        copy_files(path.join(qt_target, "bin"), "Qt6*.dll", dist_dir)
-        copy_files("/usr/x86_64-w64-mingw32/bin", "libgcc_s_seh-1.dll", dist_dir)
-        copy_files("/usr/x86_64-w64-mingw32/bin", "libstdc++-6.dll", dist_dir)
-        copy_files("/usr/x86_64-w64-mingw32/bin", "libwinpthread-1.dll", dist_dir)
-        os.cp(path.join(qt_target, "qml", "*"), path.join(dist_dir, "qml"))
+        copy_files(path.join(mingw_qt, "bin"), "Qt6*.dll", dist_dir)
+        copy_files(mingw_runtime, "libgcc_s_seh-1.dll", dist_dir)
+        copy_files(mingw_runtime, "libstdc++-6.dll", dist_dir)
+        copy_files(mingw_runtime, "libwinpthread-1.dll", dist_dir)
+        os.cp(path.join(mingw_qt, "qml", "*"), path.join(dist_dir, "qml"))
         copy_files(
-            path.join(qt_target, "plugins", "platforms"),
+            path.join(mingw_qt, "plugins", "platforms"),
             "*.dll",
             path.join(dist_dir, "plugins", "platforms")
         )
