@@ -31,8 +31,7 @@ rule("grassy.mingw_run")
                 target_file = dist_file
             end
             os.execv("wine", {path.absolute(target_file)}, {
-                curdir = path.directory(target_file),
-                detach = true
+                curdir = path.directory(target_file)
             })
         end)
     end
@@ -50,6 +49,7 @@ end
 target("grassy")
     grassy_common()
     add_rules("grassy.mingw_run")
+    add_ldflags("-mconsole", { mode = "debug" })
     before_build(function()
         os.execv("xmake", {"lua", "scripts/generate_qml_qrc.lua"})
     end)
@@ -118,7 +118,11 @@ task("mingw")
 
         copy_files(build_dir, "grassy.exe", dist_dir)
         copy_files(".", "qt.conf", dist_dir)
-        copy_files(path.join(mingw_qt, "bin"), "Qt6*.dll", dist_dir)
+        -- Keep every Qt-side dependency beside the executable.  The Qt
+        -- libraries are the obvious ones, but the SDK also ships DLLs such
+        -- as d3dcompiler_47.dll and opengl32sw.dll that can be needed by
+        -- Qt Quick on a clean Windows installation.
+        copy_files(path.join(mingw_qt, "bin"), "*.dll", dist_dir)
         copy_files(mingw_runtime, "libgcc_s_seh-1.dll", dist_dir)
         copy_files(mingw_runtime, "libstdc++-6.dll", dist_dir)
         copy_files(mingw_runtime, "libwinpthread-1.dll", dist_dir)

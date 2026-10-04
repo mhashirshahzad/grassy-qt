@@ -9,6 +9,10 @@
 #include <QtQuickControls2/QQuickStyle>
 #include <QtQml/qqml.h>
 
+#ifdef Q_OS_WIN
+#include <cstdio>
+#endif
+
 #include "models/serverfiltermodel.hpp"
 #include "models/servermodel.hpp"
 #include "runner/serverrunner.hpp"
@@ -50,6 +54,16 @@ class QmlReloadFilter final : public QObject
 
 int main(int argc, char *argv[])
 {
+#ifdef Q_OS_WIN
+    qInstallMessageHandler(
+        [](QtMsgType, const QMessageLogContext &, const QString &message)
+        {
+            const QByteArray utf8Message = message.toUtf8();
+            std::fwrite(utf8Message.constData(), 1, utf8Message.size(), stderr);
+            std::fputc('\n', stderr);
+            std::fflush(stderr);
+        });
+#endif
     GRASSY_INFO() << "Running grassy...";
     QApplication app(argc, argv);
     QQuickStyle::setStyle(QStringLiteral("Basic"));
