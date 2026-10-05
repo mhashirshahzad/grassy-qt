@@ -1,3 +1,4 @@
+// DEPRECATED: Will be removed
 import "../theme"
 import QtQuick 2.15
 import QtQuick.Effects

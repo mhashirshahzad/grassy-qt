@@ -66,7 +66,7 @@ QtObject {
 
     function setTheme(name) {
         if (typeof utils !== "undefined" && utils !== null && name !== utils.selectedTheme) {
-            themeTransitionRequested(background);
+            // themeTransitionRequested(background);
             utils.setTheme(name);
         }
     }
