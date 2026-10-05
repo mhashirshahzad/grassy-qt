@@ -8,7 +8,7 @@ import "components"
 import "popups"
 import "popups/downloaders" 1.0
 import "theme"
-import "windows"
+import "runner"
 
 ApplicationWindow {
     id: root

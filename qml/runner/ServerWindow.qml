@@ -1,5 +1,5 @@
 import "../components" 1.0
-import "../terminal"
+import "../runner"
 import "../theme" 1.0
 import Grassy 1.0
 import QtQuick 2.15
@@ -158,13 +158,33 @@ Window {
 
         }
 
-        ServerTerminal {
-            id: terminal
+        ThemedTabBar {
+            id: serverTabs
 
-            runner: root.runner
+            Layout.fillWidth: true
+            tabs: ["Terminal", "Players", "Resources"]
+        }
+
+        StackLayout {
+            id: serverPages
+
             Layout.fillWidth: true
             Layout.fillHeight: true
-            borderColor: runner ? (runner.running ? Theme.success : Theme.subtext2) : Theme.failure
+            currentIndex: serverTabs.currentIndex
+
+            ServerTerminal {
+                id: terminal
+
+                runner: root.runner
+                borderColor: runner ? (runner.running ? Theme.success : Theme.subtext2) : Theme.failure
+            }
+
+            ServerPlayers { }
+
+            ServerResources {
+                runner: root.runner
+            }
+
         }
 
     }

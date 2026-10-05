@@ -63,9 +63,13 @@
         <file alias="popups/qmldir" compress="0">../qml/popups/qmldir</file>
         <file alias="popups/RenameServerPopup.qml" compress="0">../qml/popups/RenameServerPopup.qml</file>
         <file alias="popups/ServerSettingsPopup.qml" compress="0">../qml/popups/ServerSettingsPopup.qml</file>
-        <file alias="terminal/qmldir" compress="0">../qml/terminal/qmldir</file>
-        <file alias="terminal/SearchBar.qml" compress="0">../qml/terminal/SearchBar.qml</file>
-        <file alias="terminal/ServerTerminal.qml" compress="0">../qml/terminal/ServerTerminal.qml</file>
+        <file alias="runner/qmldir" compress="0">../qml/runner/qmldir</file>
+        <file alias="runner/SearchBar.qml" compress="0">../qml/runner/SearchBar.qml</file>
+        <file alias="runner/ServerPlayers.qml" compress="0">../qml/runner/ServerPlayers.qml</file>
+        <file alias="runner/ServerResources.qml" compress="0">../qml/runner/ServerResources.qml</file>
+        <file alias="runner/ServerTerminal.qml" compress="0">../qml/runner/ServerTerminal.qml</file>
+        <file alias="runner/ServerWindow.qml" compress="0">../qml/runner/ServerWindow.qml</file>
+        <file alias="runner/ThemedTabBar.qml" compress="0">../qml/runner/ThemedTabBar.qml</file>
         <file alias="theme/Dracula.ini" compress="0">../qml/theme/Dracula.ini</file>
         <file alias="theme/Monochrome.ini" compress="0">../qml/theme/Monochrome.ini</file>
         <file alias="theme/Nord.ini" compress="0">../qml/theme/Nord.ini</file>
@@ -73,7 +77,5 @@
         <file alias="theme/RosePine.ini" compress="0">../qml/theme/RosePine.ini</file>
         <file alias="theme/Theme.qml" compress="0">../qml/theme/Theme.qml</file>
         <file alias="theme/TokyoNight.ini" compress="0">../qml/theme/TokyoNight.ini</file>
-        <file alias="windows/qmldir" compress="0">../qml/windows/qmldir</file>
-        <file alias="windows/ServerWindow.qml" compress="0">../qml/windows/ServerWindow.qml</file>
     </qresource>
 </RCC>
