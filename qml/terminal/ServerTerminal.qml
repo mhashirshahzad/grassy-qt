@@ -9,12 +9,152 @@ FocusScope {
 
     property var runner: null
     property color borderColor: Theme.border
+    property int searchIndex: -1
+    property var searchMatches: []
+    property string renderedHtml: ""
+    property bool updatingSearch: false
+
+    function updateSearch() {
+        var html = root.runner ? root.runner.consoleHtml : "error: runner is null";
+        var source = root.runner ? root.runner.consoleText : "";
+        var query = searchBar.query;
+        var normalizedSource = source.toLocaleLowerCase();
+        var normalizedQuery = query.toLocaleLowerCase();
+        var matches = [];
+
+        if (normalizedQuery.length > 0) {
+            var offset = 0;
+            while ((offset = normalizedSource.indexOf(normalizedQuery, offset)) >= 0) {
+                matches.push(offset);
+                offset += normalizedQuery.length;
+            }
+        }
+
+        root.searchMatches = matches;
+        root.searchIndex = matches.length > 0 ? matches[0] : -1;
+        if (query.length > 0 && matches.length > 0)
+            html = root.highlightMatches(html, matches, query.length);
+
+        root.updatingSearch = true;
+        root.renderedHtml = html;
+        root.updatingSearch = false;
+    }
+
+    function highlightMatches(html, matches, matchLength) {
+        var result = "";
+        var plainIndex = 0;
+        var matchNumber = 0;
+        var index = 0;
+
+        while (index < html.length) {
+            if (html[index] === "<") {
+                var tagEnd = html.indexOf(">", index);
+                if (tagEnd < 0) {
+                    result += html.slice(index);
+                    break;
+                }
+                var tag = html.slice(index, tagEnd + 1);
+                result += tag;
+                if (tag.toLowerCase().indexOf("<br") === 0)
+                    plainIndex++;
+                index = tagEnd + 1;
+                continue;
+            }
+
+            var unitEnd = html[index] === "&" ? html.indexOf(";", index) + 1 : index + 1;
+            if (unitEnd <= index)
+                unitEnd = index + 1;
+
+            if (matchNumber < matches.length && plainIndex === matches[matchNumber])
+                result += "<span style=\"background-color: " + Theme.selection + ";\">";
+
+            result += html.slice(index, unitEnd);
+            plainIndex++;
+            index = unitEnd;
+
+            if (matchNumber < matches.length && plainIndex === matches[matchNumber] + matchLength) {
+                result += "</span>";
+                matchNumber++;
+            }
+        }
+
+        return result;
+    }
+
+    function openSearch() {
+        if (searchBar.shown) {
+            closeSearch();
+            return;
+        }
+
+        searchBar.showSearch();
+    }
+
+    function closeSearch() {
+        searchBar.hideSearch();
+        outputText.deselect();
+        root.updateSearch();
+        commandInput.forceActiveFocus();
+    }
+
+    function scrollToMatch(position) {
+        var matchRect = outputText.positionToRectangle(position);
+        var topInset = 12;
+        var bottomInset = outputScroll.height - 12;
+        var maximumContentY = Math.max(0, outputScroll.contentHeight - outputScroll.height);
+        var targetContentY = outputScroll.contentY;
+
+        if (matchRect.y < targetContentY + topInset)
+            targetContentY = matchRect.y - topInset;
+        else if (matchRect.y + matchRect.height > targetContentY + bottomInset)
+            targetContentY = matchRect.y + matchRect.height - bottomInset;
+
+        outputScroll.contentY = Math.max(0, Math.min(maximumContentY, targetContentY));
+    }
+
+    function findMatch(backward) {
+        if (root.searchMatches.length === 0) {
+            root.searchIndex = -1;
+            outputText.deselect();
+            return;
+        }
+
+        var current = root.searchMatches.indexOf(root.searchIndex);
+        var next = (current + (backward ? -1 : 1) + root.searchMatches.length) % root.searchMatches.length;
+        root.searchIndex = root.searchMatches[next];
+        outputText.select(root.searchIndex, root.searchIndex + searchBar.query.length);
+        var selectedPosition = root.searchIndex;
+        Qt.callLater(function() {
+            root.scrollToMatch(selectedPosition);
+        });
+    }
 
     function scrollToBottom() {
         outputScroll.contentY = Math.max(0, outputScroll.contentHeight - outputScroll.height);
     }
 
-    Component.onCompleted: commandInput.forceActiveFocus()
+    Shortcut {
+        sequence: "Ctrl+F"
+        context: Qt.WindowShortcut
+        onActivated: root.openSearch()
+    }
+
+    Component.onCompleted: {
+        root.updateSearch();
+        commandInput.forceActiveFocus();
+    }
+
+    onRunnerChanged: root.updateSearch()
+
+    Connections {
+        target: root.runner
+        function onConsoleHtmlChanged() {
+            root.updateSearch();
+        }
+        function onConsoleTextChanged() {
+            root.updateSearch();
+        }
+    }
 
     Rectangle {
         id: terminalFrame
@@ -40,18 +180,51 @@ FocusScope {
 
                 width: outputScroll.width
                 readOnly: true
-                text: root.runner ? root.runner.consoleHtml : "error: runner is null"
+                text: root.renderedHtml
                 textFormat: TextEdit.RichText
                 color: Theme.text
                 font.family: Theme.monoFamily
                 font.pixelSize: 13
                 selectByMouse: true
                 wrapMode: TextEdit.Wrap
-                onTextChanged: Qt.callLater(root.scrollToBottom)
+                onTextChanged: {
+                    if (!root.updatingSearch)
+                        Qt.callLater(root.scrollToBottom);
+                }
             }
 
             ScrollBar.vertical: ScrollBar {
                 policy: ScrollBar.AsNeeded
+            }
+
+        }
+
+        SearchBar {
+            id: searchBar
+
+            anchors.bottom: commandBar.top
+            anchors.right: parent.right
+            anchors.rightMargin: 24
+            anchors.bottomMargin: 8
+            width: 360
+            height: 40
+            z: 2
+
+            currentMatch: root.searchMatches.indexOf(root.searchIndex)
+            matchCount: root.searchMatches.length
+            onQueryChanged: {
+                root.updateSearch();
+                root.searchIndex = -1;
+                if (root.searchMatches.length > 0)
+                    Qt.callLater(function() {
+                        root.findMatch(false);
+                    });
+            }
+            onCloseClicked: root.closeSearch()
+            onPreviousClicked: root.findMatch(true)
+            onNextClicked: root.findMatch(false)
+            onSearchSubmitted: function(backward) {
+                root.findMatch(backward);
             }
 
         }

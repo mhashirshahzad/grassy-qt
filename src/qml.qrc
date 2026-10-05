@@ -64,6 +64,7 @@
         <file alias="popups/RenameServerPopup.qml" compress="0">../qml/popups/RenameServerPopup.qml</file>
         <file alias="popups/ServerSettingsPopup.qml" compress="0">../qml/popups/ServerSettingsPopup.qml</file>
         <file alias="terminal/qmldir" compress="0">../qml/terminal/qmldir</file>
+        <file alias="terminal/SearchBar.qml" compress="0">../qml/terminal/SearchBar.qml</file>
         <file alias="terminal/ServerTerminal.qml" compress="0">../qml/terminal/ServerTerminal.qml</file>
         <file alias="theme/Dracula.ini" compress="0">../qml/theme/Dracula.ini</file>
         <file alias="theme/Monochrome.ini" compress="0">../qml/theme/Monochrome.ini</file>
