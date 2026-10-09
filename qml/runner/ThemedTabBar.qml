@@ -1,5 +1,6 @@
 import "../theme" 1.0
 import QtQuick 2.15
+import QtQuick.Effects
 
 Item {
     id: root
@@ -13,89 +14,269 @@ Item {
     property color selectedTextColor: Theme.textBright
     property bool hovered: tabHover.hovered
 
+    // Extra easing constant we reuse everywhere
+    readonly property int springDur: 260
+    readonly property int easeDur: 140
+
     implicitHeight: 32
     implicitWidth: tabRow.implicitWidth
 
-    // Bar hover indicator
+    HoverHandler { id: tabHover }
+
+    // ---------------------------------------------------------------
+    // Resting underline — animates its width when popup opens
+    // so it visually "becomes" the popup bar
+    // ---------------------------------------------------------------
     Rectangle {
-        anchors.top : parent.top
-        anchors.horizontalCenter : parent.horizontalCenter
+        id: underline
+        anchors.top: parent.top
+        anchors.horizontalCenter: parent.horizontalCenter
         radius: 6
-        width: 200
         height: 3
-        opacity: root.hovered ? 0 : 1
+        width:  root.hovered ? root.width : 200
         color: Theme.border
-        
+        opacity: root.hovered ? 0 : 1
+
+        Behavior on width   { NumberAnimation { duration: root.springDur; easing.type: Easing.OutBack; easing.overshoot: 1.4 } }
+        Behavior on opacity { NumberAnimation { duration: root.easeDur } }
     }
-    
-    // Border
-    Rectangle {
-        opacity: root.hovered ? 1 : 0
+
+    // ---------------------------------------------------------------
+    // Popup container
+    // ---------------------------------------------------------------
+    Item {
+        id: popup
         anchors.fill: parent
-        color: root.barColor
-        radius: 6
-        border.color: Theme.border
-    }
-
-    HoverHandler {
-        id: tabHover
-    }
-
-    Row {
+        transformOrigin: Item.Top
         opacity: root.hovered ? 1 : 0
-        id: tabRow
+        scale:   root.hovered ? 1.0 : 0.85
+        y:       root.hovered ? 0   : -10
 
-        anchors.fill: parent
-        anchors.margins: 2
-        spacing: 2
+        Behavior on opacity { NumberAnimation { duration: root.easeDur } }
+        Behavior on scale   { NumberAnimation { duration: root.springDur; easing.type: Easing.OutBack; easing.overshoot: 1.7 } }
+        Behavior on y       { NumberAnimation { duration: root.springDur; easing.type: Easing.OutBack; easing.overshoot: 1.2 } }
 
-        Repeater {
-            model: root.tabs
+        // Background
+        Rectangle {
+            id: bg
+            anchors.fill: parent
+            color: root.barColor
+            radius: 6
+            border.color: Theme.border
+            border.width: 1
+            visible: false // rendered by MultiEffect
+        }
 
-            delegate: Item {
-                id: tab
+        // Shadow that "grows in" with the popup
+        MultiEffect {
+            source: bg
+            anchors.fill: bg
+            shadowEnabled: true
+            shadowColor: "#90000000"
+            shadowVerticalOffset: root.hovered ? 6 : 0
+            shadowHorizontalOffset: 0
+            shadowBlur: root.hovered ? 0.7 : 0.0
+            shadowScale: 1.0
+            shadowOpacity: 1.0
+            autoPaddingEnabled: true
 
-                required property int index
-                required property string modelData
+            Behavior on shadowBlur            { NumberAnimation { duration: root.springDur; easing.type: Easing.OutCubic } }
+            Behavior on shadowVerticalOffset  { NumberAnimation { duration: root.springDur; easing.type: Easing.OutCubic } }
+        }
 
-                width: Math.max(76, tabLabel.implicitWidth + 24)
-                height: tabRow.height
+        // Crisp border on top of the blurred shadow
+        Rectangle {
+            anchors.fill: bg
+            color: "transparent"
+            radius: 6
+            border.color: Theme.border
+            border.width: 1
+        }
 
-                Rectangle {
-                    anchors.fill: parent
-                    color: root.currentIndex === tab.index ? root.selectedColor : tabMouse.containsMouse ? root.hoverColor : "transparent"
-                    radius: 4
+        // -----------------------------------------------------------
+        // Sliding "pill" that highlights the selected tab.
+        // We keep one pill and animate its x / width — buttery glide.
+        // -----------------------------------------------------------
+        Rectangle {
+            id: selectionPill
+            visible: root.hovered
+            color: root.selectedColor
+            radius: 4
+            y: 2
+            height: tabRow.height
 
-                    Behavior on color {
-                        ColorAnimation {
-                            duration: 140
-                        }
-                    }
+            // Find the delegate at currentIndex to match its x/width
+            readonly property Item target: tabRow.itemAt(root.currentIndex)
+            x:      target ? target.x      : 0
+            width:  target ? target.width  : 0
+
+            Behavior on x     { NumberAnimation { duration: 240; easing.type: Easing.OutCubic } }
+            Behavior on width { NumberAnimation { duration: 240; easing.type: Easing.OutCubic } }
+        }
+
+        // -----------------------------------------------------------
+        // Hover pill — follows mouse smoothly, sits behind text
+        // -----------------------------------------------------------
+        Rectangle {
+            id: hoverPill
+            visible: root.hovered && hoverTracker.hoveredTab >= 0
+                     && hoverTracker.hoveredTab !== root.currentIndex
+            color: root.hoverColor
+            radius: 4
+            y: 2
+            height: tabRow.height
+            opacity: visible ? 1 : 0
+
+            readonly property Item target: tabRow.itemAt(hoverTracker.hoveredTab)
+            x:      target ? target.x     : 0
+            width:  target ? target.width : 0
+
+            Behavior on x     { NumberAnimation { duration: 160; easing.type: Easing.OutCubic } }
+            Behavior on width { NumberAnimation { duration: 160; easing.type: Easing.OutCubic } }
+            Behavior on opacity { NumberAnimation { duration: root.easeDur } }
+        }
+
+        // Tracks which tab the cursor is over (for the hover pill)
+        QtObject {
+            id: hoverTracker
+            property int hoveredTab: -1
+        }
+
+        // -----------------------------------------------------------
+        // Row of tabs
+        // -----------------------------------------------------------
+        Row {
+            id: tabRow
+            anchors.fill: parent
+            anchors.margins: 2
+            spacing: 2
+            clip: true
+
+            Repeater {
+                model: root.tabs
+                delegate: Item {
+                    id: tab
+                    required property int index
+                    required property string modelData
+
+                    width: Math.max(76, tabLabel.implicitWidth + 24)
+                    height: tabRow.height
+
+                    // -------- Staggered entrance --------
+                    // Each tab pops in with a delay proportional to index
+                    // when the popup opens.
+                    opacity: root.hovered ? 1 : 0
+                    scale:   root.hovered ? 1 : 0.6
+                    y:       root.hovered ? 0 : 8
+                    transformOrigin: Item.Center
 
                     Behavior on opacity {
                         NumberAnimation {
-                            duration: 160
+                            duration: root.easeDur
+                            easing.type: Easing.OutCubic
                         }
                     }
-                }
+                    Behavior on scale {
+                        NumberAnimation {
+                            duration: root.springDur
+                            easing.type: Easing.OutBack
+                            easing.overshoot: 2.0
+                        }
+                    }
+                    Behavior on y {
+                        NumberAnimation {
+                            duration: root.springDur
+                            easing.type: Easing.OutBack
+                            easing.overshoot: 1.5
+                        }
+                    }
 
-                Text {
-                    id: tabLabel
+                    // Stagger via a per-tab timer driven by hovered
+                    Timer {
+                        id: stagger
+                        interval: 25 + tab.index * 30
+                        repeat: false
+                        onTriggered: tab.showNow = true
+                    }
+                    // showNow gates whether we *actually* apply the shown state.
+                    // When popup is hidden, reset immediately (no stagger out).
+                    property bool showNow: false
 
-                    anchors.centerIn: parent
-                    text: tab.modelData
-                    color: root.currentIndex === tab.index ? root.selectedTextColor : root.textColor
-                    font.bold: root.currentIndex === tab.index
-                    font.pixelSize: 12
-                }
+                    Connections {
+                        target: root
+                        function onHoveredChanged() {
+                            if (root.hovered) {
+                                stagger.restart()
+                            } else {
+                                stagger.stop()
+                                tab.showNow = false
+                            }
+                        }
+                    }
 
-                MouseArea {
-                    id: tabMouse
+                    // Override the state values with showNow-gated versions:
+                    // if showNow is false but root.hovered is true → still hidden
+                    opacity: root.hovered && tab.showNow ? 1 : 0
+                    scale:   root.hovered && tab.showNow ? 1 : 0.6
+                    y:       root.hovered && tab.showNow ? 0 : 8
 
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: root.currentIndex = tab.index
+                    // ----------------------------------------
+                    // Press "squish" — scale the label + pill
+                    // ----------------------------------------
+                    Item {
+                        id: squish
+                        anchors.fill: parent
+                        scale: tabMouse.pressed ? 0.92 : 1.0
+                        Behavior on scale {
+                            NumberAnimation { duration: 90; easing.type: Easing.OutCubic }
+                        }
+
+                        Text {
+                            id: tabLabel
+                            anchors.centerIn: parent
+                            text: tab.modelData
+                            color: root.currentIndex === tab.index
+                                   ? root.selectedTextColor
+                                   : root.textColor
+                            font.bold: root.currentIndex === tab.index
+                            font.pixelSize: 12
+
+                            Behavior on color { ColorAnimation { duration: 140 } }
+
+                            // Subtle pop when the selected index changes
+                            scale: root.currentIndex === tab.index ? 1.08 : 1.0
+                            Behavior on scale {
+                                NumberAnimation { duration: 200; easing.type: Easing.OutBack; easing.overshoot: 2.5 }
+                            }
+                        }
+                    }
+
+                    MouseArea {
+                        id: tabMouse
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+
+                        onEntered: hoverTracker.hoveredTab = tab.index
+                        onExited:  if (hoverTracker.hoveredTab === tab.index)
+                                       hoverTracker.hoveredTab = -1
+
+                        onClicked: {
+                            if (root.currentIndex === tab.index) {
+                                // Re-click same tab: do a little wobble
+                                wobbleAnim.restart()
+                            }
+                            root.currentIndex = tab.index
+                        }
+                    }
+
+                    // Wobble on re-click
+                    SequentialAnimation {
+                        id: wobbleAnim
+                        NumberAnimation { target: tab; property: "scale"; to: 1.15; duration: 90;  easing.type: Easing.OutCubic }
+                        NumberAnimation { target: tab; property: "scale"; to: 0.95; duration: 90;  easing.type: Easing.InOutQuad }
+                        NumberAnimation { target: tab; property: "scale"; to: 1.00; duration: 120; easing.type: Easing.OutBack; easing.overshoot: 1.5 }
+                    }
                 }
             }
         }
