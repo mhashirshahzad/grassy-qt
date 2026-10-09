@@ -1,6 +1,7 @@
 import "../components" 1.0
-import "../runner"
+import "../runner" 1.0
 import "../theme" 1.0
+import "../popups" 1.0
 import Grassy 1.0
 import QtQuick 2.15
 import QtQuick.Controls 2.15
@@ -15,6 +16,8 @@ Window {
     property var runner: localRunner
     property var utilsObject: typeof utils !== "undefined" ? utils : null
     property bool portCopied: false
+    property bool closeApproved: false
+    property bool safeClosing: false
 
     function openForServer(folder, name) {
         serverFolder = folder;
@@ -41,9 +44,27 @@ Window {
     color: Theme.background
     title: runner ? (serverTitle.length > 0 ? serverTitle : "Server") : "error: runner is null"
     onClosing: function(close) {
-        if (runner)
-            runner.shutdown();
+        if (closeApproved)
+            return;
 
+        if (runner && runner.running) {
+            close.accepted = false;
+            closeServerPopup.open();
+        } else if (runner) {
+            runner.shutdown();
+        }
+    }
+
+    Connections {
+        target: root.runner
+
+        function onRunningChanged() {
+            if (root.safeClosing && root.runner && !root.runner.running) {
+                root.closeApproved = true;
+                closeServerPopup.close();
+                root.close();
+            }
+        }
     }
 
     Timer {
@@ -158,38 +179,70 @@ Window {
 
         }
 
-        ThemedTabBar {
-            id: serverTabs
-
-            Layout.fillWidth: true
-            tabs: ["Terminal", "Players", "Resources"]
-        }
-
-        StackLayout {
-            id: serverPages
-
+        Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            currentIndex: serverTabs.currentIndex
 
-            ServerTerminal {
-                id: terminal
+            StackLayout {
+                id: serverPages
 
-                runner: root.runner
-                borderColor: runner ? (runner.running ? Theme.success : Theme.subtext2) : Theme.failure
+                anchors.fill: parent
+                currentIndex: serverTabs.currentIndex
+
+                ServerTerminal {
+                    id: terminal
+
+                    runner: root.runner
+                    borderColor: runner ? (runner.running ? Theme.success : Theme.subtext2) : Theme.failure
+                }
+
+                ServerPlayers { }
+
+                ServerResources {
+                    runner: root.runner
+                }
+
             }
 
-            ServerPlayers { }
+            ThemedTabBar {
+                id: serverTabs
 
-            ServerResources {
-                runner: root.runner
+                anchors.top: parent.top
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.topMargin: 10
+                z: 2
+                tabs: ["Terminal", "Players", "Resources"]
             }
-
         }
 
     }
 
-    ThemeTransition {
-    }
+    ServerClosePopup {
+        id: closeServerPopup
+        parent: root.contentItem
+        anchors.centerIn: parent
 
+        safeClosing: root.safeClosing
+
+        onCloseSafelyRequested: {
+            root.safeClosing = true;
+            closeServerPopup.safeClosing = true
+            
+            Qt.callLater(function() {
+                if (root.runner)
+                    root.runner.shutdown();
+            });
+                    
+        }
+
+        onForceCloseRequested: {
+            root.closeApproved = true;
+            closeServerPopup.close();
+
+            if (root.runner)
+                root.runner.forceShutdown();
+
+            root.close();
+        }
+    }
 }

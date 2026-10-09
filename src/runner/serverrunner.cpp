@@ -426,6 +426,27 @@ void ServerRunner::shutdown()
     emit usageChanged();
 }
 
+void ServerRunner::forceShutdown()
+{
+    if (!running())
+        return;
+
+#ifdef Q_OS_LINUX
+    const qint64 processId = m_process->processId();
+    if (processId > 0)
+        ::kill(-static_cast<pid_t>(processId), SIGKILL);
+    else
+        m_process->kill();
+#else
+    m_process->kill();
+#endif
+
+    m_usageTimer.stop();
+    m_cpuUsage = 0.0;
+    m_memoryUsageKb = 0;
+    emit usageChanged();
+}
+
 void ServerRunner::interrupt()
 {
     if (!running())

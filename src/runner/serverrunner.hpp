@@ -42,6 +42,7 @@ class ServerRunner : public QObject
     Q_INVOKABLE void start();
     Q_INVOKABLE void stop();
     Q_INVOKABLE void shutdown();
+    Q_INVOKABLE void forceShutdown();
     Q_INVOKABLE void interrupt();
     Q_INVOKABLE void sendCommand(const QString &command);
     Q_INVOKABLE QString address() const;
