@@ -29,10 +29,12 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        radius: 7
+        radius: Theme.radius
         color: Theme.surface0
         border.width: 1
         border.color: root.editing ? Theme.borderFocus : Theme.border
+
+        Behavior on radius { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
 
         RowLayout {
             anchors.fill: parent
@@ -138,7 +140,9 @@ Item {
         background: Rectangle {
             color: Theme.surface0
             border.color: Theme.border
-            radius: 7
+            radius: Theme.radiusLarge
+
+            Behavior on radius { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
         }
 
         contentItem: ListView {
@@ -152,8 +156,10 @@ Item {
             delegate: Rectangle {
                 width: optionsView.width
                 height: 32
-                radius: 5
+                radius: Theme.radiusSmall
                 color: optionMouse.containsMouse ? Theme.surface3 : Theme.transparent
+
+                Behavior on radius { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
 
                 Label {
                     anchors.fill: parent

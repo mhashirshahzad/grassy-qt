@@ -145,6 +145,71 @@ ApplicationWindow {
 
     }
 
+    DropArea {
+        id: fileDropArea
+        anchors.top: customTitleBar.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: javaStatusBar.top
+
+        property bool activeDrag: false
+
+        onEntered: function(drag) {
+            if (drag.hasUrls) {
+                drag.acceptProposedAction();
+                activeDrag = true;
+            }
+        }
+        onExited: {
+            activeDrag = false;
+        }
+        onDropped: function(drop) {
+            activeDrag = false;
+            if (drop.hasUrls && drop.urls.length > 0) {
+                if (root.modelObject) {
+                    addServerPopup.openFresh();
+                    root.modelObject.refresh();
+                }
+            }
+        }
+    }
+
+    // Playful Drag & Drop Target Overlay
+    Rectangle {
+        anchors.fill: fileDropArea
+        anchors.margins: 16
+        radius: Theme.radiusLarge
+        color: Qt.rgba(Theme.background.r, Theme.background.g, Theme.background.b, 0.90)
+        border.color: Theme.accent
+        border.width: 2
+        visible: fileDropArea.activeDrag
+        opacity: fileDropArea.activeDrag ? 1 : 0
+        scale: fileDropArea.activeDrag ? 1.0 : 0.94
+        z: 20
+
+        Behavior on opacity { NumberAnimation { duration: 160 } }
+        Behavior on scale { NumberAnimation { duration: 200; easing.type: Easing.OutBack; easing.overshoot: 1.5 } }
+
+        ColumnLayout {
+            anchors.centerIn: parent
+            spacing: 12
+
+            Image {
+                Layout.alignment: Qt.AlignHCenter
+                source: "qrc:/icons/folder.svg"
+                sourceSize: Qt.size(48, 48)
+            }
+
+            Label {
+                Layout.alignment: Qt.AlignHCenter
+                text: "Drop Minecraft server folder or jar here"
+                font.pixelSize: 18
+                font.bold: true
+                color: Theme.accent
+            }
+        }
+    }
+
     JavaStatusBar {
         id: javaStatusBar
 

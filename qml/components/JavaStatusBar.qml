@@ -50,13 +50,15 @@ Rectangle {
             anchors.verticalCenter: parent.verticalCenter
             width: 8
             height: 8
-            radius: 4
+            radius: Theme.radiusPill > 0 ? 4 : 0
             color: root.javaInstalled ? Theme.success : Theme.failure
+
+            Behavior on radius { NumberAnimation { duration: 180 } }
         }
 
         Text {
             text: root.javaInstalled ? "Java detected" : "Java not found"
-            color: Theme.text
+            color: root.javaInstalled ? Theme.text : Theme.failureText
             font.pixelSize: 12
             font.bold: true
         }

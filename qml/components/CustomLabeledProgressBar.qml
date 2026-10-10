@@ -41,7 +41,11 @@ Item {
         color: Theme.surface0
         border.color: Theme.surface2
         border.width: 1
-        radius: 6
+        radius: Theme.radius
+
+        Behavior on radius {
+            NumberAnimation { duration: 180; easing.type: Easing.OutCubic }
+        }
     }
 
     ColumnLayout {
@@ -74,17 +78,29 @@ Item {
 
             background: Rectangle {
                 implicitHeight: 6
-                radius: 3
+                radius: Theme.radiusSmall
                 color: Theme.surface3
+
+                Behavior on radius {
+                    NumberAnimation { duration: 180; easing.type: Easing.OutCubic }
+                }
             }
 
             contentItem: Item {
                 Rectangle {
                     width: parent.width * Math.min(1, Math.max(0, bar.value))
                     height: parent.height
-                    radius: 3
+                    radius: Theme.radiusSmall
                     color: root.active && !root.useGradient ? root.usageColor(bar.value) : root.inactiveColor
                     gradient: root.active && root.useGradient ? progressGradient : null
+
+                    Behavior on radius {
+                        NumberAnimation { duration: 180; easing.type: Easing.OutCubic }
+                    }
+
+                    Behavior on width {
+                        NumberAnimation { duration: 250; easing.type: Easing.OutCubic }
+                    }
 
                     Gradient {
                         id: progressGradient
@@ -98,15 +114,9 @@ Item {
                             position: 1
                             color: root.progressEndColor
                         }
-
                     }
-
                 }
-
             }
-
         }
-
     }
-
 }

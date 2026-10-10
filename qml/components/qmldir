@@ -24,3 +24,6 @@ ServerToggleSetting 1.0 ServerToggleSetting.qml
 ThemedButton 1.0 ThemedButton.qml
 ThemeTransition 1.0 ThemeTransition.qml
 WorldServerSettings 1.0 WorldServerSettings.qml
+JoyAnimation 1.0 JoyAnimation.qml
+JoyPressArea 1.0 JoyPressArea.qml
+JoyWobble 1.0 JoyWobble.qml

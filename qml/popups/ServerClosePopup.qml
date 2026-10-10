@@ -15,7 +15,7 @@ CustomPopup {
     signal forceCloseRequested()
 
     width: 420
-    height: safeClosing ? 180 : 230
+    height: safeClosing ? 180 : 260
 
     modal: true
     dim: true
@@ -26,7 +26,7 @@ CustomPopup {
 
     ColumnLayout {
         anchors.fill: parent
-        spacing: 12
+        spacing: 14
 
         Label {
             Layout.fillWidth: true
@@ -44,7 +44,7 @@ CustomPopup {
             Layout.fillWidth: true
 
             text: root.safeClosing
-                ? "Waiting for the server to stop safely."
+                ? "Waiting for the server to save world data and stop cleanly..."
                 : "The server is still running. Wait for it to stop safely or force close it."
 
             color: Theme.subtext
@@ -52,12 +52,62 @@ CustomPopup {
             wrapMode: Text.WordWrap
         }
 
-        Image {
+        // Playful status indicator
+        Item {
             Layout.alignment: Qt.AlignHCenter
-            source: "qrc:/icons/warning.svg"
-            sourceSize: Qt.size(64, 64)
+            Layout.preferredWidth: 64
+            Layout.preferredHeight: 64
+
+            // Warning icon when asking
+            Image {
+                anchors.centerIn: parent
+                source: "qrc:/icons/warning.svg"
+                sourceSize: Qt.size(54, 54)
+                visible: !root.safeClosing
+            }
+
+            // Playful pulsing spinner when closing
+            Item {
+                anchors.fill: parent
+                visible: root.safeClosing
+
+                Rectangle {
+                    id: pulseRing
+                    anchors.centerIn: parent
+                    width: 48
+                    height: 48
+                    radius: width / 2
+                    color: "transparent"
+                    border.color: Theme.accent
+                    border.width: 3
+
+                    RotationAnimation on rotation {
+                        running: root.safeClosing
+                        from: 0
+                        to: 360
+                        duration: 1200
+                        loops: Animation.Infinite
+                    }
+                }
+
+                Rectangle {
+                    anchors.centerIn: parent
+                    width: 16
+                    height: 16
+                    radius: width / 2
+                    color: Theme.accent
+
+                    SequentialAnimation on scale {
+                        running: root.safeClosing
+                        loops: Animation.Infinite
+                        NumberAnimation { to: 1.3; duration: 600; easing.type: Easing.InOutQuad }
+                        NumberAnimation { to: 0.8; duration: 600; easing.type: Easing.InOutQuad }
+                    }
+                }
+            }
         }
 
+        // Action buttons
         RowLayout {
             Layout.fillWidth: true
             spacing: 8
@@ -65,22 +115,31 @@ CustomPopup {
 
             ThemedButton {
                 Layout.fillWidth: true
-
                 text: "Close safely"
-
                 onClicked: root.closeSafelyRequested()
             }
 
             ThemedButton {
                 Layout.fillWidth: true
-
                 text: "Force close"
-
                 buttonColor: Theme.failure
                 buttonHoverColor: Theme.failureHover
                 buttonPressedColor: Theme.failureMuted
-                buttonTextColor: Theme.textBright
+                onClicked: root.forceCloseRequested()
+            }
+        }
 
+        // Secondary force-close option while waiting for safe close
+        RowLayout {
+            Layout.fillWidth: true
+            visible: root.safeClosing
+
+            ThemedButton {
+                Layout.fillWidth: true
+                text: "Force close now"
+                buttonColor: Theme.failureMuted
+                buttonHoverColor: Theme.failure
+                buttonPressedColor: Theme.failureMuted
                 onClicked: root.forceCloseRequested()
             }
         }

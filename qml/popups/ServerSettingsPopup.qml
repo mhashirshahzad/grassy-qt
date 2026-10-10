@@ -137,7 +137,7 @@ CustomPopup {
                 text: serverSettingsPopup.errorMessage.length > 0 ? serverSettingsPopup.errorMessage : "Server settings"
                 font.pixelSize: 24
                 font.bold: true
-                color: serverSettingsPopup.errorMessage.length > 0 ? Theme.failure : Theme.textBright
+                color: serverSettingsPopup.errorMessage.length > 0 ? Theme.failureText : Theme.textBright
             }
 
             Label {
@@ -208,7 +208,7 @@ CustomPopup {
 
         Label {
             text: serverSettingsPopup.errorMessage
-            color: Theme.failure
+            color: Theme.failureText
             visible: false
             wrapMode: Text.WordWrap
             Layout.fillWidth: true

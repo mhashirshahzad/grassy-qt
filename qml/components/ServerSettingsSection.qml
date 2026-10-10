@@ -15,8 +15,9 @@ Rectangle {
     visible: !searchHost || searchHost.matches(searchBlob)
     implicitHeight: sectionLayout.implicitHeight + 20
     color: Theme.surface1
-    radius: 10
-    border.width: 0
+    radius: Theme.radiusLarge
+
+    Behavior on radius { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
 
     ColumnLayout {
         id: sectionLayout

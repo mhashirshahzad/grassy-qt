@@ -47,7 +47,7 @@ Popup {
         color: Theme.background
         border.color: root.errorState ? Theme.failure : root.successState ? Theme.accent : Theme.border
         border.width: 1
-        radius: 12
+        radius: Theme.radiusLarge
     }
 
     Overlay.modal: Rectangle {
@@ -58,21 +58,21 @@ Popup {
         ParallelAnimation {
             NumberAnimation {
                 property: "scale"
-                from: 0.92
+                from: 0.90
                 to: 1
-                duration: 180
-                easing.type: Easing.OutCubic
+                duration: 220
+                easing.type: Easing.OutBack
+                easing.overshoot: 1.4
             }
 
             NumberAnimation {
                 property: "opacity"
                 from: 0
                 to: 1
-                duration: 140
+                duration: 160
+                easing.type: Easing.OutCubic
             }
-
         }
-
     }
 
     exit: Transition {

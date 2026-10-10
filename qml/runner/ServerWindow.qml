@@ -23,6 +23,8 @@ Window {
         serverFolder = folder;
         serverTitle = name;
         portCopied = false;
+        closeApproved = false;
+        safeClosing = false;
         if (!runner) {
             console.warn("error: runner is null");
             return ;
@@ -114,7 +116,10 @@ Window {
                     color: addressMouse.containsMouse ? Theme.surface2 : Theme.surface0
                     border.color: Theme.surface2
                     border.width: 1
-                    radius: 6
+                    radius: Theme.radius
+
+                    Behavior on radius { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
+                    Behavior on color { ColorAnimation { duration: 140 } }
                 }
 
                 ColumnLayout {
@@ -187,7 +192,8 @@ Window {
                 id: serverPages
 
                 anchors.fill: parent
-                currentIndex: serverTabs.currentIndex
+                readonly property var pageIndices: ({ "Terminal": 0, "Players": 1, "Resources": 2 })
+                currentIndex: pageIndices[serverTabs.currentTab] !== undefined ? pageIndices[serverTabs.currentTab] : serverTabs.currentIndex
 
                 ServerTerminal {
                     id: terminal

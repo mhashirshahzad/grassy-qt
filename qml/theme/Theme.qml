@@ -49,6 +49,27 @@ QtObject {
     readonly property color shadow: palette.shadow || surface0
     readonly property color scrim: palette.scrim || "#73000000"
     readonly property color transparent: "#00000000"
+
+    // Colors for text ON colored surfaces
+    readonly property color onAccent: palette.onAccent || background
+    readonly property color onSuccess: palette.onSuccess || background
+    readonly property color onWarning: palette.onWarning || background
+    readonly property color onFailure: palette.onFailure || background
+    readonly property color onInfo: palette.onInfo || textBright
+
+    // Semantic text colors for labels / messages
+    readonly property color failureText: palette.failureText || failure
+    readonly property color successText: palette.successText || success
+    readonly property color warningText: palette.warningText || warning
+    readonly property color infoText: palette.infoText || info
+    readonly property color accentText: palette.accentText || accent
+
+    // Border radiuses defined by the theme
+    readonly property int radius: palette.radius !== undefined ? Number(palette.radius) : 8
+    readonly property int radiusSmall: palette.radiusSmall !== undefined ? Number(palette.radiusSmall) : 4
+    readonly property int radiusLarge: palette.radiusLarge !== undefined ? Number(palette.radiusLarge) : 12
+    readonly property int radiusPill: palette.radiusPill !== undefined ? Number(palette.radiusPill) : 20
+
     readonly property FontLoader
     ubuntu: FontLoader {
         source: "qrc:/fonts/Ubuntu/Ubuntu-Regular.ttf"
@@ -66,9 +87,8 @@ QtObject {
 
     function setTheme(name) {
         if (typeof utils !== "undefined" && utils !== null && name !== utils.selectedTheme) {
-            // themeTransitionRequested(background);
+            themeTransitionRequested(background);
             utils.setTheme(name);
         }
     }
-
 }

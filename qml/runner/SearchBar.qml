@@ -39,7 +39,9 @@ Rectangle {
 
     color: Theme.surface
     border.color: Theme.border
-    radius: 6
+    radius: Theme.radius
+
+    Behavior on radius { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
     visible: shown || opacity > 0
     enabled: shown
     opacity: shown ? 1 : 0
@@ -88,10 +90,12 @@ Rectangle {
             }
 
             background: Rectangle {
-                radius: 4
+                radius: Theme.radiusSmall
                 color: Theme.surface0
                 border.width: searchInput.activeFocus ? 1 : 0
                 border.color: Theme.borderFocus
+
+                Behavior on radius { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
             }
         }
 

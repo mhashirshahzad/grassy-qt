@@ -9,6 +9,7 @@ TextField {
     property color focusBorderColor: Theme.accent
     property color backgroundColor: Theme.surface0
     property bool showSearchIcon: true
+    property int radius: Theme.radius
 
     implicitWidth: 280
     implicitHeight: 30
@@ -21,7 +22,7 @@ TextField {
     color: Theme.text
     placeholderTextColor: Theme.subtext
     selectionColor: Theme.accent
-    selectedTextColor: Theme.background
+    selectedTextColor: Theme.onAccent
 
     Image {
         anchors.left: parent.left
@@ -44,10 +45,17 @@ TextField {
 
     background: Rectangle {
         anchors.fill: parent
-        radius: 8
+        radius: control.radius
         color: control.backgroundColor
         border.width: control.activeFocus ? 2 : 1
         border.color: control.activeFocus ? control.focusBorderColor : control.borderColor
+
+        Behavior on border.color {
+            ColorAnimation { duration: 140 }
+        }
+        Behavior on radius {
+            NumberAnimation { duration: 200; easing.type: Easing.OutCubic }
+        }
     }
 
 }

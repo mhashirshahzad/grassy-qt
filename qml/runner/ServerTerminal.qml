@@ -162,7 +162,9 @@ FocusScope {
         anchors.fill: parent
         color: Theme.surface0
         border.color: root.borderColor
-        radius: 6
+        radius: Theme.radius
+
+        Behavior on radius { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
 
         Flickable {
             id: outputScroll
@@ -266,10 +268,12 @@ FocusScope {
                 }
 
                 background: Rectangle {
-                    radius: 6
+                    radius: Theme.radius
                     color: Theme.surface
                     border.width: commandInput.activeFocus ? 1 : 0
                     border.color: Theme.borderFocus
+
+                    Behavior on radius { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
                 }
 
             }
@@ -280,7 +284,6 @@ FocusScope {
                 buttonColor: Theme.failureMuted
                 buttonHoverColor: Theme.failure
                 buttonPressedColor: Theme.failureMuted
-                buttonTextColor: Theme.textBright
                 onClicked: {
                     if (root.runner) {
                         root.runner.stop();

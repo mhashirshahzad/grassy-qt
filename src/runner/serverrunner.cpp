@@ -9,6 +9,7 @@
 #include <QSet>
 #include <QRegularExpression>
 #include <QThread>
+#include <QPointer>
 
 #ifdef Q_OS_LINUX
 #include <signal.h>
@@ -212,7 +213,17 @@ ServerRunner::ServerRunner(QObject *parent) : QObject(parent), m_process(new QPr
     connect(&m_usageTimer, &QTimer::timeout, this, &ServerRunner::updateUsage);
 }
 
-ServerRunner::~ServerRunner() { shutdown(); }
+ServerRunner::~ServerRunner()
+{
+    if (running())
+    {
+        sendCommand("stop");
+        if (!m_process->waitForFinished(500))
+        {
+            forceShutdown();
+        }
+    }
+}
 
 QString ServerRunner::serverName() const { return m_serverName; }
 
@@ -396,34 +407,37 @@ void ServerRunner::shutdown()
         return;
 
     sendCommand("stop");
-    if (m_process->waitForFinished(3000))
-        return;
 
-#ifdef Q_OS_LINUX
     const qint64 processId = m_process->processId();
-    if (processId > 0)
-        ::kill(-static_cast<pid_t>(processId), SIGTERM);
-    else
-        m_process->terminate();
-#else
-    m_process->terminate();
-#endif
-
-    if (!m_process->waitForFinished(1000))
-    {
+    QPointer<ServerRunner> self(this);
+    QTimer::singleShot(3500, this, [self, processId]() {
+        if (!self || !self->running())
+            return;
 #ifdef Q_OS_LINUX
         if (processId > 0)
-            ::kill(-static_cast<pid_t>(processId), SIGKILL);
+            ::kill(-static_cast<pid_t>(processId), SIGTERM);
         else
-            m_process->kill();
+            self->m_process->terminate();
 #else
-        m_process->kill();
+        self->m_process->terminate();
 #endif
-    }
-    m_usageTimer.stop();
-    m_cpuUsage = 0.0;
-    m_memoryUsageKb = 0;
-    emit usageChanged();
+        QTimer::singleShot(2000, self, [self, processId]() {
+            if (!self || !self->running())
+                return;
+#ifdef Q_OS_LINUX
+            if (processId > 0)
+                ::kill(-static_cast<pid_t>(processId), SIGKILL);
+            else
+                self->m_process->kill();
+#else
+            self->m_process->kill();
+#endif
+            self->m_usageTimer.stop();
+            self->m_cpuUsage = 0.0;
+            self->m_memoryUsageKb = 0;
+            emit self->usageChanged();
+        });
+    });
 }
 
 void ServerRunner::forceShutdown()

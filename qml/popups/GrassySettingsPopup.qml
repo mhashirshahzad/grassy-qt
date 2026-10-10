@@ -57,7 +57,7 @@ CustomPopup {
             text: root.hasError ? errorLabel.text : "Server storage"
             font.pixelSize: 20
             font.bold: true
-            color: root.hasError ? Theme.failure : Theme.textBright
+            color: root.hasError ? Theme.failureText : Theme.textBright
             Layout.rightMargin: closeButtonSize + closeButtonRightMargin + 12
         }
 
@@ -138,8 +138,10 @@ CustomPopup {
 
                     implicitWidth: 180
                     implicitHeight: 28
-                    radius: 5
+                    radius: Theme.radiusSmall
                     color: Theme.surface3
+
+                    Behavior on radius { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
 
                     Label {
                         anchors.fill: parent
@@ -181,7 +183,9 @@ CustomPopup {
                     implicitWidth: 180
                     implicitHeight: 28
                     color: publicIpMouse.containsMouse ? Theme.surface3 : Theme.surface2
-                    radius: 5
+                    radius: Theme.radiusSmall
+
+                    Behavior on radius { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
 
                     Label {
                         anchors.fill: parent

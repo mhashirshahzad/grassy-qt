@@ -33,7 +33,7 @@ CustomPopup {
             text: root.errorMessage.length > 0 ? root.errorMessage : "Delete server ?"
             font.pixelSize: 20
             font.bold: true
-            color: root.errorMessage.length > 0 ? Theme.failure : Theme.textBright
+            color: root.errorMessage.length > 0 ? Theme.failureText : Theme.textBright
         }
 
         Image {
@@ -52,7 +52,7 @@ CustomPopup {
 
         Label {
             text: root.errorMessage
-            color: Theme.failure
+            color: Theme.failureText
             visible: false
         }
 

@@ -30,17 +30,24 @@ filtering in Main.qml server delegates by types forge/fabric/official
 tabs in server window to display players.. ban them even... js what other server runners allow u to do.
 (done) tab bar should look better will need to look into implementations, 1 it takes too much space, 2nd i think it should be an overlay on top of the terminal or others   to save space and stuff ya know... it is so big and is useless currently
 
-# UI 
-- make the entire ui feel juicy and playful 
-(Server closepopup doenst tell its closing cuz it doesnt update :(
+# UI / Visual 
+(done) monochrome theme :o
+(done) monochrome themes failure color is unreadable -> added onFailure/failureText and proper contrasting button colors
+(done) Themes define failureText, on-surface colors, and border radius (monochrome has sharp radius=2/0, other themes radius=8)
+(done) Make entire UI juicy and playful:
+  - Reusable JoyAnimation, JoyWobble, JoyPressArea components
+  - Drag & Drop reorderable tabs in ThemedTabBar with dynamic slot displacement & spring bounce
+  - File/folder Drag & Drop target overlay on Main.qml
+  - Bouncy press squish & hover pop on ThemedButton and cards
+  - Breathing glowing live pulse on running server cards
+  - OutBack spring popup entrance animations
+(done) Server closepopup doesn't tell it's closing -> made ServerRunner::shutdown asynchronous/non-blocking so GUI updates smoothly with animated closing indicator and force-close fallback option
+
 
 # Performance
 it uses 1%  CPU and 300MB ram (js grassy app) not counting the server it runs 
 resizing the ui is really laggy :/
 
-
-(done) monochrome theme :o
-- monochrome themes failure color is unreadale
 
 # WINDOWS (5th class citizen) [kind of done]
 - java support (and windows folders)

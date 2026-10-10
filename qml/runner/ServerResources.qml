@@ -10,7 +10,9 @@ Rectangle {
 
     color: Theme.surface0
     border.color: Theme.border
-    radius: 6
+    radius: Theme.radius
+
+    Behavior on radius { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
 
     ColumnLayout {
         anchors.centerIn: parent

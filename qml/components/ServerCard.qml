@@ -43,11 +43,18 @@ Rectangle {
     }
 
     implicitHeight: content.implicitHeight + 24
-    radius: 8
-    color: Theme.surface
-    border.color: Theme.surface
+    radius: Theme.radius
+    color: cardHover.hovered ? Theme.surface2 : Theme.surface
+    border.color: cardHover.hovered ? Theme.borderHover : Theme.border
     border.width: 1
     width: ListView.view ? ListView.view.width : 0
+    scale: cardHover.hovered ? 1.008 : 1.0
+
+    Behavior on color { ColorAnimation { duration: 140 } }
+    Behavior on border.color { ColorAnimation { duration: 140 } }
+    Behavior on scale { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
+
+    HoverHandler { id: cardHover }
 
     ColumnLayout {
         id: content
@@ -123,11 +130,47 @@ Rectangle {
                 Layout.fillWidth: true
             }
 
-            Rectangle {
-                width: 8
-                height: 8
-                radius: 4
-                color: card.serverRunning ? Theme.success : Theme.subtext2
+            Item {
+                width: 14
+                height: 14
+
+                // Breathing outer glow ring when server is active
+                Rectangle {
+                    anchors.centerIn: parent
+                    width: 14
+                    height: 14
+                    radius: Theme.radiusPill > 0 ? width / 2 : 0
+                    color: "transparent"
+                    border.color: Theme.success
+                    border.width: 1.5
+                    visible: card.serverRunning
+
+                    Behavior on radius { NumberAnimation { duration: 180 } }
+
+                    SequentialAnimation on scale {
+                        running: card.serverRunning
+                        loops: Animation.Infinite
+                        NumberAnimation { to: 1.4; duration: 900; easing.type: Easing.InOutQuad }
+                        NumberAnimation { to: 0.9; duration: 900; easing.type: Easing.InOutQuad }
+                    }
+                    SequentialAnimation on opacity {
+                        running: card.serverRunning
+                        loops: Animation.Infinite
+                        NumberAnimation { to: 0.25; duration: 900; easing.type: Easing.InOutQuad }
+                        NumberAnimation { to: 0.9; duration: 900; easing.type: Easing.InOutQuad }
+                    }
+                }
+
+                Rectangle {
+                    anchors.centerIn: parent
+                    width: 8
+                    height: 8
+                    radius: Theme.radiusPill > 0 ? 4 : 0
+                    color: card.serverRunning ? Theme.success : Theme.subtext2
+
+                    Behavior on radius { NumberAnimation { duration: 180 } }
+                    Behavior on color { ColorAnimation { duration: 200 } }
+                }
             }
 
             ThemedButton {

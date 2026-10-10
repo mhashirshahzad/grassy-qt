@@ -97,6 +97,20 @@ QVariantMap systemTheme()
     theme["disabledText"] = color(QPalette::Mid);
     theme["shadow"] = color(QPalette::Dark);
     theme["scrim"] = QStringLiteral("#73000000");
+    theme["onAccent"] = color(QPalette::HighlightedText);
+    theme["onSuccess"] = color(QPalette::HighlightedText);
+    theme["onWarning"] = color(QPalette::HighlightedText);
+    theme["onFailure"] = color(QPalette::HighlightedText);
+    theme["onInfo"] = color(QPalette::HighlightedText);
+    theme["failureText"] = theme["failure"];
+    theme["successText"] = theme["success"];
+    theme["warningText"] = theme["warning"];
+    theme["infoText"] = theme["info"];
+    theme["accentText"] = theme["accent"];
+    theme["radius"] = 8;
+    theme["radiusSmall"] = 4;
+    theme["radiusLarge"] = 12;
+    theme["radiusPill"] = 20;
     return theme;
 }
 } // namespace
