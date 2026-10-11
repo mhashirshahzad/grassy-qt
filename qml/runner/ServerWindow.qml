@@ -223,7 +223,7 @@ Window {
 
     }
 
-    ServerClosePopup {
+    CloseServerPopup {
         id: closeServerPopup
         parent: root.contentItem
         anchors.centerIn: parent

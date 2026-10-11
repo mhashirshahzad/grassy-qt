@@ -512,8 +512,20 @@ void ServerRunner::appendConsole(const QString &text)
 
     remaining = text.mid(matchOffset);
     m_consoleText += remaining;
-    emit consoleTextChanged();
     m_consoleHtml += ansiToHtml(remaining, m_themePalette);
+
+    constexpr qsizetype maxConsoleChars = 400'000;
+    if (m_consoleText.size() > maxConsoleChars)
+    {
+        const qsizetype cutIndex = m_consoleText.indexOf(QLatin1Char('\n'), m_consoleText.size() - maxConsoleChars / 2);
+        if (cutIndex > 0)
+        {
+            m_consoleText = m_sessionHeader + m_consoleText.mid(cutIndex + 1);
+            m_consoleHtml = ansiToHtml(m_consoleText, m_themePalette);
+        }
+    }
+
+    emit consoleTextChanged();
     emit consoleHtmlChanged();
 }
 

@@ -23,12 +23,10 @@
         <file alias="components/ServerSettingCard.qml" compress="0">../qml/components/ServerSettingCard.qml</file>
         <file alias="components/ServerSettingsSection.qml" compress="0">../qml/components/ServerSettingsSection.qml</file>
         <file alias="components/ServerTextSetting.qml" compress="0">../qml/components/ServerTextSetting.qml</file>
-        <file alias="components/ServerToggleControl.qml" compress="0">../qml/components/ServerToggleControl.qml</file>
         <file alias="components/ServerToggleSetting.qml" compress="0">../qml/components/ServerToggleSetting.qml</file>
         <file alias="components/ThemedButton.qml" compress="0">../qml/components/ThemedButton.qml</file>
-        <file alias="components/ThemeTransition.qml" compress="0">../qml/components/ThemeTransition.qml</file>
+        <file alias="components/ToggleControl.qml" compress="0">../qml/components/ToggleControl.qml</file>
         <file alias="components/WorldServerSettings.qml" compress="0">../qml/components/WorldServerSettings.qml</file>
-        <file alias="dialogs/qmldir" compress="0">../qml/dialogs/qmldir</file>
         <file alias="fonts/Ubuntu/Ubuntu-BoldItalic.ttf" compress="0">../qml/fonts/Ubuntu/Ubuntu-BoldItalic.ttf</file>
         <file alias="fonts/Ubuntu/Ubuntu-Bold.ttf" compress="0">../qml/fonts/Ubuntu/Ubuntu-Bold.ttf</file>
         <file alias="fonts/Ubuntu/Ubuntu-Italic.ttf" compress="0">../qml/fonts/Ubuntu/Ubuntu-Italic.ttf</file>
@@ -56,6 +54,7 @@
         <file alias="icons/warning.svg" compress="0">../qml/icons/warning.svg</file>
         <file alias="Main.qml" compress="0">../qml/Main.qml</file>
         <file alias="popups/AddServerPopup.qml" compress="0">../qml/popups/AddServerPopup.qml</file>
+        <file alias="popups/CloseServerPopup.qml" compress="0">../qml/popups/CloseServerPopup.qml</file>
         <file alias="popups/CustomPopup.qml" compress="0">../qml/popups/CustomPopup.qml</file>
         <file alias="popups/DeleteServerPopup.qml" compress="0">../qml/popups/DeleteServerPopup.qml</file>
         <file alias="popups/downloaders/FabricServerPopup.qml" compress="0">../qml/popups/downloaders/FabricServerPopup.qml</file>
@@ -65,7 +64,6 @@
         <file alias="popups/GrassySettingsPopup.qml" compress="0">../qml/popups/GrassySettingsPopup.qml</file>
         <file alias="popups/qmldir" compress="0">../qml/popups/qmldir</file>
         <file alias="popups/RenameServerPopup.qml" compress="0">../qml/popups/RenameServerPopup.qml</file>
-        <file alias="popups/ServerClosePopup.qml" compress="0">../qml/popups/ServerClosePopup.qml</file>
         <file alias="popups/ServerSettingsPopup.qml" compress="0">../qml/popups/ServerSettingsPopup.qml</file>
         <file alias="runner/qmldir" compress="0">../qml/runner/qmldir</file>
         <file alias="runner/SearchBar.qml" compress="0">../qml/runner/SearchBar.qml</file>

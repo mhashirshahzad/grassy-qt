@@ -39,6 +39,26 @@ ApplicationWindow {
         runningRevision++;
     }
 
+    function openRenameDialog(folder, name) {
+        renameServerPopup.serverFolder = folder;
+        renameServerPopup.serverName = name;
+        renameServerPopup.errorMessage = "";
+        renameServerPopup.open();
+    }
+
+    function openSettingsDialog(folder) {
+        serverSettingsPopup.serverFolder = folder;
+        serverSettingsPopup.errorMessage = "";
+        serverSettingsPopup.open();
+    }
+
+    function openDeleteDialog(folder, name) {
+        deleteServerPopup.serverFolder = folder;
+        deleteServerPopup.serverName = name;
+        deleteServerPopup.errorMessage = "";
+        deleteServerPopup.open();
+    }
+
     function isServerRunning(folder) {
         for (const window of serverWindows) {
             if (window.runner && window.runner.serverFolder === folder && window.runner.running)
@@ -97,9 +117,6 @@ ApplicationWindow {
         }
     }
 
-    ThemeTransition {
-    }
-
     Component {
         id: serverWindowComponent
 
@@ -141,6 +158,9 @@ ApplicationWindow {
             serverRunning: root.runningRevision >= 0 && root.isServerRunning(folder)
             onStartClicked: root.openServer(folder, name)
             onFolderClicked: Qt.openUrlExternally("file://" + folder)
+            onEditClicked: root.openRenameDialog(folder, name)
+            onSettingsClicked: root.openSettingsDialog(folder)
+            onDeleteClicked: root.openDeleteDialog(folder, name)
         }
 
     }
@@ -259,6 +279,27 @@ ApplicationWindow {
         parent: Overlay.overlay
         modelObject: root.modelObject
         anchors.centerIn: parent
+    }
+
+    RenameServerPopup {
+        id: renameServerPopup
+
+        parent: Overlay.overlay
+        modelObject: root.modelObject
+    }
+
+    ServerSettingsPopup {
+        id: serverSettingsPopup
+
+        parent: Overlay.overlay
+        modelObject: root.modelObject
+    }
+
+    DeleteServerPopup {
+        id: deleteServerPopup
+
+        parent: Overlay.overlay
+        modelObject: root.modelObject
     }
 
     Connections {

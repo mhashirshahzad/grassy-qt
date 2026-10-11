@@ -16,23 +16,31 @@ FocusScope {
 
     function updateSearch() {
         var html = root.runner ? root.runner.consoleHtml : "error: runner is null";
+        var query = searchBar.query ? searchBar.query.trim() : "";
+
+        if (query.length === 0) {
+            root.searchMatches = [];
+            root.searchIndex = -1;
+            root.updatingSearch = true;
+            root.renderedHtml = html;
+            root.updatingSearch = false;
+            return;
+        }
+
         var source = root.runner ? root.runner.consoleText : "";
-        var query = searchBar.query;
         var normalizedSource = source.toLocaleLowerCase();
         var normalizedQuery = query.toLocaleLowerCase();
         var matches = [];
 
-        if (normalizedQuery.length > 0) {
-            var offset = 0;
-            while ((offset = normalizedSource.indexOf(normalizedQuery, offset)) >= 0) {
-                matches.push(offset);
-                offset += normalizedQuery.length;
-            }
+        var offset = 0;
+        while ((offset = normalizedSource.indexOf(normalizedQuery, offset)) >= 0) {
+            matches.push(offset);
+            offset += normalizedQuery.length;
         }
 
         root.searchMatches = matches;
         root.searchIndex = matches.length > 0 ? matches[0] : -1;
-        if (query.length > 0 && matches.length > 0)
+        if (matches.length > 0)
             html = root.highlightMatches(html, matches, query.length);
 
         root.updatingSearch = true;
@@ -149,9 +157,6 @@ FocusScope {
     Connections {
         target: root.runner
         function onConsoleHtmlChanged() {
-            root.updateSearch();
-        }
-        function onConsoleTextChanged() {
             root.updateSearch();
         }
     }

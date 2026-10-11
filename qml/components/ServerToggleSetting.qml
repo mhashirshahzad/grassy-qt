@@ -6,7 +6,7 @@ ServerSettingCard {
 
     searchHost: settingsPopup
 
-    ServerToggleControl {
+    ToggleControl {
         anchors.verticalCenter: parent.verticalCenter
         anchors.right: parent.right
         checked: settingsPopup.value(settingKey, fallback) === true || settingsPopup.value(settingKey, fallback) === "true"

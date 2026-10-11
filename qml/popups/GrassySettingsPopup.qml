@@ -52,6 +52,7 @@ CustomPopup {
         anchors.fill: parent
         anchors.margins: 20
         spacing: 14
+        visible: root.opened
 
         Label {
             text: root.hasError ? errorLabel.text : "Server storage"

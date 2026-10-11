@@ -127,6 +127,7 @@ CustomPopup {
     ColumnLayout {
         anchors.fill: parent
         spacing: 8
+        visible: serverSettingsPopup.opened
 
         ColumnLayout {
             Layout.fillWidth: true

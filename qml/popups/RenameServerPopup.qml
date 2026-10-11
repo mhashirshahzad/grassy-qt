@@ -39,6 +39,7 @@ CustomPopup {
     ColumnLayout {
         anchors.fill: parent
         spacing: 10
+        visible: root.opened
 
         Label {
             text: root.errorMessage.length > 0 ? root.errorMessage : "Rename server folder ?"

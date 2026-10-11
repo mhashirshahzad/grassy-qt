@@ -42,11 +42,43 @@ tabs in server window to display players.. ban them even... js what other server
   - Breathing glowing live pulse on running server cards
   - OutBack spring popup entrance animations
 (done) Server closepopup doesn't tell it's closing -> made ServerRunner::shutdown asynchronous/non-blocking so GUI updates smoothly with animated closing indicator and force-close fallback option
+icons are blurry again of Buttons
 
 
 # Performance
 it uses 1%  CPU and 300MB ram (js grassy app) not counting the server it runs 
 resizing the ui is really laggy :/
+
+- [ ] UI Resizing lag:
+  - (root cause) Every ServerCard delegate in ListView instantiates its own ServerSettingsPopup, RenameServerPopup, and DeleteServerPopup parented to Overlay.overlay. For N servers, ~2,000 QML objects recompute layouts on every single resize pixel even when hidden!
+  - (fix) Move popups out of ServerCard into single shared instances in Main.qml; ServerCard delegates trigger them via signals.
+  - (root cause) CustomPopup uses `anchors.centerIn: Overlay.overlay`, causing anchor loop recalculations during window resize. Use explicit x/y centering instead.
+  - (root cause) IconButton animates width/height and binds sourceSize to width, forcing the SVG software rasterizer to re-render SVGs on every frame of layout/animation.
+  - (fix) Use constant sourceSize and animate scale instead of width/height.
+  - (root cause) Deprecated ThemeTransition mounts full-window ShaderEffectSource and MultiEffect FBOs. Remove it completely.
+
+- [ ] Memory footprint (~300MB RAM):
+  - ~147MB is Shared_Clean (shared system libraries: Mesa Gallium, LLVM 23, Qt6 shared libs mapped into memory). Not exclusive to Grassy.
+  - ~87MB is Private_Dirty (actual process heap is ~50MB).
+  - (fix) Remove ~2,000 duplicate popup QObjects from delegates.
+  - (fix) Remove full-window FBO in ThemeTransition.
+  - (fix) Drop unused QtWidgets dependency (used only for QFileDialog::getExistingDirectory in utils.cpp).
+
+- [ ] Idle CPU usage (1% idle):
+  - On Linux Wayland, the threaded render loop wakes up on every 16.6ms compositor frame callback even when updates=0 and rendering=0.
+  - (fix) Test QSG_RENDER_LOOP=basic and Qt event compression settings.
+
+- [ ] Console / Terminal exponential scaling bottleneck:
+  - ServerRunner appends to consoleText and consoleHtml without bounds.
+  - ServerTerminal calls updateSearch() twice per output chunk and TextEdit { textFormat: RichText } re-parses the entire multi-MB HTML document from scratch on every incoming log line.
+  - (fix) Cap console history or batch updates and avoid running regex search across the entire buffer on every chunk.
+
+# QML Consistency & Cleanup
+- [ ] Remove leftover .AddServerPopup.qml.swp
+- [ ] Remove abandoned qml/dialogs/qmldir (leftover from old Dialogs -> Popups migration)
+- [ ] Rename ServerClosePopup.qml -> CloseServerPopup.qml (consistent with AddServerPopup, DeleteServerPopup, RenameServerPopup)
+- [ ] Rename ServerToggleControl.qml -> ToggleControl.qml (consistent with ChoiceControl.qml)
+- [ ] Update qmldir files to reflect all exports properly
 
 
 # WINDOWS (5th class citizen) [kind of done]

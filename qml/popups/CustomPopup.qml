@@ -16,8 +16,9 @@ Popup {
 
     modal: true
     dim: true
-    anchors.centerIn: Overlay.overlay
     closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
+    x: Math.round(((parent ? parent.width : (Overlay.overlay ? Overlay.overlay.width : 0)) - width) / 2)
+    y: Math.round(((parent ? parent.height : (Overlay.overlay ? Overlay.overlay.height : 0)) - height) / 2)
     padding: 20
     focus: true
 

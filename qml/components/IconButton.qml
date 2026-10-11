@@ -27,15 +27,16 @@ Button {
 
         transformOrigin: Item.Center
         rotation: 0
+        scale: control.visualIconScale
 
         Image {
             id: iconImage
 
             anchors.centerIn: parent
-            width: control.iconSize * control.visualIconScale
-            height: control.iconSize * control.visualIconScale
+            width: control.iconSize
+            height: control.iconSize
             source: control.iconSource
-            sourceSize: Qt.size(Math.ceil(width * Screen.devicePixelRatio), Math.ceil(height * Screen.devicePixelRatio))
+            sourceSize: Qt.size(Math.ceil(control.iconSize * 1.5 * Screen.devicePixelRatio), Math.ceil(control.iconSize * 1.5 * Screen.devicePixelRatio))
             fillMode: Image.PreserveAspectFit
             visible: false
             smooth: true

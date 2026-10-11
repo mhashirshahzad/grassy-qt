@@ -27,6 +27,7 @@ CustomPopup {
     ColumnLayout {
         anchors.fill: parent
         spacing: 14
+        visible: root.opened
 
         Label {
             Layout.fillWidth: true

@@ -28,6 +28,7 @@ CustomPopup {
     ColumnLayout {
         anchors.fill: parent
         spacing: 12
+        visible: root.opened
 
         Label {
             text: root.errorMessage.length > 0 ? root.errorMessage : "Delete server ?"

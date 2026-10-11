@@ -39,6 +39,7 @@ CustomPopup {
 
         anchors.fill: parent
         spacing: 12
+        visible: root.opened
 
         Label {
             text: "Add server"

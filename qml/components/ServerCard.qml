@@ -1,4 +1,3 @@
-import "../popups"
 import "../theme" 1.0
 import QtQuick 2.15
 import QtQuick.Controls 2.15
@@ -13,7 +12,7 @@ Rectangle {
     property string serverMetadata: ""
     property string serverType: "Minecraft"
     property bool installRequired: false
-    required property var modelObject
+    property var modelObject: null
     property bool serverRunning: false
 
     signal startClicked()
@@ -21,26 +20,6 @@ Rectangle {
     signal settingsClicked()
     signal folderClicked()
     signal deleteClicked()
-
-    function openRenameDialog() {
-        renameDialog.serverFolder = card.serverFolder;
-        renameDialog.serverName = card.serverName;
-        renameDialog.errorMessage = "";
-        renameDialog.open();
-    }
-
-    function openSettingsDialog() {
-        settingsDialog.serverFolder = card.serverFolder;
-        settingsDialog.errorMessage = "";
-        settingsDialog.open();
-    }
-
-    function openDeleteDialog() {
-        deleteDialog.serverFolder = card.serverFolder;
-        deleteDialog.serverName = card.serverName;
-        deleteDialog.errorMessage = "";
-        deleteDialog.open();
-    }
 
     implicitHeight: content.implicitHeight + 24
     radius: Theme.radius
@@ -81,7 +60,7 @@ Rectangle {
                 ToolTip.text: "Delete Server"
                 ToolTip.visible: hovered
                 enabled: !card.serverRunning
-                onClicked: card.openDeleteDialog()
+                onClicked: card.deleteClicked()
             }
 
             IconButton {
@@ -89,7 +68,7 @@ Rectangle {
                 ToolTip.text: "Edit Server"
                 ToolTip.visible: hovered
                 enabled: !card.serverRunning
-                onClicked: card.openRenameDialog()
+                onClicked: card.editClicked()
             }
 
             IconButton {
@@ -103,7 +82,7 @@ Rectangle {
                 iconSource: "qrc:/icons/settings.svg"
                 ToolTip.text: "Server Settings"
                 ToolTip.visible: hovered
-                onClicked: card.openSettingsDialog()
+                onClicked: card.settingsClicked()
             }
 
         }
@@ -183,35 +162,6 @@ Rectangle {
 
         }
 
-    }
-
-    RenameServerPopup {
-        id: renameDialog
-
-        parent: Overlay.overlay
-        modelObject: card.modelObject
-        serverFolder: card.serverFolder
-        serverName: card.serverName
-        anchors.centerIn: parent
-    }
-
-    ServerSettingsPopup {
-        id: settingsDialog
-
-        parent: Overlay.overlay
-        modelObject: card.modelObject
-        serverFolder: card.serverFolder
-        anchors.centerIn: parent
-    }
-
-    DeleteServerPopup {
-        id: deleteDialog
-
-        parent: Overlay.overlay
-        modelObject: card.modelObject
-        serverFolder: card.serverFolder
-        serverName: card.serverName
-        anchors.centerIn: parent
     }
 
 }
