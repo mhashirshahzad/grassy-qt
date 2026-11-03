@@ -25,8 +25,9 @@
 (done) closing the serverRunnerWindow before quiting the serve will give a popup Closing the server safely, press this button to force close it
 
 
-deleting session.lock if its corrupted
-filtering in Main.qml server delegates by types forge/fabric/official
+deleting 'world/session.lock' (take the name from serverproperties) if its corrupted
+(done) filtering in Main.qml server delegates by types forge/fabric/official
+
 tabs in server window to display players.. ban them even... js what other server runners allow u to do.
 (done) tab bar should look better will need to look into implementations, 1 it takes too much space, 2nd i think it should be an overlay on top of the terminal or others   to save space and stuff ya know... it is so big and is useless currently
 
@@ -42,7 +43,7 @@ tabs in server window to display players.. ban them even... js what other server
   - Breathing glowing live pulse on running server cards
   - OutBack spring popup entrance animations
 (done) Server closepopup doesn't tell it's closing -> made ServerRunner::shutdown asynchronous/non-blocking so GUI updates smoothly with animated closing indicator and force-close fallback option
-icons are blurry again of Buttons
+(svgs are)icons are blurry again of Buttons
 
 
 # Performance
@@ -85,4 +86,3 @@ resizing the ui is really laggy :/
 - java support (and windows folders)
 - windows server download and running cuz it aint posix :(
 - port and ip
-- run.bat
