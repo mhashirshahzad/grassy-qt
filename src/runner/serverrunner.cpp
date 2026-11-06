@@ -5,6 +5,9 @@
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QHash>
 #include <QSet>
 #include <QRegularExpression>
@@ -211,6 +214,8 @@ ServerRunner::ServerRunner(QObject *parent) : QObject(parent), m_process(new QPr
     connect(m_process, &QProcess::errorOccurred, this, &ServerRunner::processError);
     m_usageTimer.setInterval(1000);
     connect(&m_usageTimer, &QTimer::timeout, this, &ServerRunner::updateUsage);
+    m_playersTimer.setInterval(1000);
+    connect(&m_playersTimer, &QTimer::timeout, this, &ServerRunner::updatePlayersFromFiles);
 }
 
 ServerRunner::~ServerRunner()
@@ -256,6 +261,8 @@ qint64 ServerRunner::memoryLimitKb() const { return m_memoryLimitKb; }
 
 int ServerRunner::port() const { return m_port; }
 
+QVariantList ServerRunner::players() const { return m_players; }
+
 int ServerRunner::cpuCoreCount() const { return qMax(1, QThread::idealThreadCount()); }
 
 void ServerRunner::setServerFolder(const QString &serverFolder)
@@ -295,13 +302,16 @@ void ServerRunner::start()
     m_sessionHeader.clear();
     m_consoleText.clear();
     m_consoleHtml.clear();
+    m_players.clear();
     m_previousProcessTicks = 0;
     m_previousSystemTicks = 0;
     m_cpuUsage = 0.0;
     m_memoryUsageKb = 0;
     emit consoleTextChanged();
     emit consoleHtmlChanged();
+    emit playersChanged();
     emit usageChanged();
+    updatePlayersFromFiles();
 
     // the port may have been edited in server.properties while the window was open
     updatePort();
@@ -388,6 +398,7 @@ void ServerRunner::start()
     }
     emit runningChanged();
     m_usageTimer.start();
+    m_playersTimer.start();
 }
 
 void ServerRunner::stop()
@@ -433,6 +444,7 @@ void ServerRunner::shutdown()
             self->m_process->kill();
 #endif
             self->m_usageTimer.stop();
+            self->m_playersTimer.stop();
             self->m_cpuUsage = 0.0;
             self->m_memoryUsageKb = 0;
             emit self->usageChanged();
@@ -456,6 +468,7 @@ void ServerRunner::forceShutdown()
 #endif
 
     m_usageTimer.stop();
+    m_playersTimer.stop();
     m_cpuUsage = 0.0;
     m_memoryUsageKb = 0;
     emit usageChanged();
@@ -529,6 +542,91 @@ void ServerRunner::appendConsole(const QString &text)
     emit consoleHtmlChanged();
 }
 
+void ServerRunner::updatePlayersFromFiles()
+{
+    if (m_serverFolder.isEmpty())
+        return;
+
+    QHash<QString, QString> names;
+    QFile opsFile(QDir(m_serverFolder).filePath(QStringLiteral("ops.json")));
+    if (opsFile.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        const QJsonDocument document = QJsonDocument::fromJson(opsFile.readAll());
+        if (document.isArray())
+        {
+            for (const QJsonValue &value : document.array())
+            {
+                const QJsonObject player = value.toObject();
+                const QString uuid = player.value(QStringLiteral("uuid")).toString()
+                                         .remove(QLatin1Char('-'))
+                                         .toLower();
+                if (!uuid.isEmpty())
+                    names.insert(uuid, player.value(QStringLiteral("name")).toString());
+            }
+        }
+    }
+
+    QSet<QString> playerDataUuids;
+    const auto collectPlayerData = [&playerDataUuids](const QString &worldFolder) {
+        const QDir playerData(QDir(worldFolder).filePath(QStringLiteral("playerdata")));
+        const QStringList files =
+            playerData.entryList({QStringLiteral("*.dat")}, QDir::Files | QDir::Readable);
+        for (const QString &file : files)
+        {
+            const QString uuid =
+                QFileInfo(file).completeBaseName().remove(QLatin1Char('-')).toLower();
+            if (QRegularExpression(QStringLiteral("^[0-9a-f]{32}$")).match(uuid).hasMatch())
+                playerDataUuids.insert(uuid);
+        }
+    };
+
+    collectPlayerData(m_serverFolder);
+    const QDir server(m_serverFolder);
+    for (const QFileInfo &entry :
+         server.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot | QDir::Readable, QDir::Name))
+    {
+        collectPlayerData(entry.absoluteFilePath());
+    }
+
+    QVariantList updated;
+    QSet<QString> uuids = playerDataUuids;
+    for (auto it = names.cbegin(); it != names.cend(); ++it)
+        uuids.insert(it.key());
+
+    QStringList orderedUuids = uuids.values();
+    orderedUuids.sort();
+    for (const QString &uuid : orderedUuids)
+    {
+        updated.append(QVariantMap{{QStringLiteral("name"), names.value(uuid, uuid)},
+                                   {QStringLiteral("uuid"), uuid},
+                                   {QStringLiteral("online"), playerDataUuids.contains(uuid)}});
+    }
+
+    if (updated != m_players)
+    {
+        m_players = updated;
+        emit playersChanged();
+    }
+}
+
+void ServerRunner::setPlayersOffline()
+{
+    bool changed = false;
+    for (QVariant &player : m_players)
+    {
+        QVariantMap entry = player.toMap();
+        if (entry.value(QStringLiteral("online")).toBool())
+        {
+            entry.insert(QStringLiteral("online"), false);
+            player = entry;
+            changed = true;
+        }
+    }
+
+    if (changed)
+        emit playersChanged();
+}
+
 // DEPRECATED: use appendConsole instead
 // void ServerRunner::appendConsoleHtml(const QString &text)
 // {
@@ -541,8 +639,10 @@ void ServerRunner::processFinished(int exitCode, QProcess::ExitStatus status)
     const QString reason =
         status == QProcess::CrashExit ? QStringLiteral("crashed") : QStringLiteral("stopped");
     appendConsole(QString("\nServer %1 (exit code %2)\n").arg(reason).arg(exitCode));
+    setPlayersOffline();
     emit runningChanged();
     m_usageTimer.stop();
+    m_playersTimer.stop();
     m_cpuUsage = 0.0;
     m_memoryUsageKb = 0;
     emit usageChanged();

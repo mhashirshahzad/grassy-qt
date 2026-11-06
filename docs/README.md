@@ -15,6 +15,9 @@ Welcome to the Grassy documentation suite. Grassy is a fast, modern Minecraft se
 - [**Contributing Guide**](CONTRIBUTING.md)  
   *Development setup, QML and C++ coding standards, icon asset pipeline, and pull request guidelines.*
 
+- [**Player Features**](PLAYER_FEATURES.md)
+  *Current online/offline player tracking and planned player management features.*
+
 ---
 
 ## Quick Reference

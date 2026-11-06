@@ -1,6 +1,7 @@
 module Grassy.Runner
 
 SearchBar 1.0 SearchBar.qml
+PlayerCard 1.0 PlayerCard.qml
 ServerPlayers 1.0 ServerPlayers.qml
 ServerResources 1.0 ServerResources.qml
 ServerTerminal 1.0 ServerTerminal.qml

@@ -65,6 +65,7 @@
         <file alias="popups/qmldir" compress="0">../qml/popups/qmldir</file>
         <file alias="popups/RenameServerPopup.qml" compress="0">../qml/popups/RenameServerPopup.qml</file>
         <file alias="popups/ServerSettingsPopup.qml" compress="0">../qml/popups/ServerSettingsPopup.qml</file>
+        <file alias="runner/PlayerCard.qml" compress="0">../qml/runner/PlayerCard.qml</file>
         <file alias="runner/qmldir" compress="0">../qml/runner/qmldir</file>
         <file alias="runner/SearchBar.qml" compress="0">../qml/runner/SearchBar.qml</file>
         <file alias="runner/ServerPlayers.qml" compress="0">../qml/runner/ServerPlayers.qml</file>

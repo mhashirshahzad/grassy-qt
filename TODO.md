@@ -35,13 +35,16 @@ tabs in server window to display players.. ban them even... js what other server
 (done) monochrome theme :o
 (done) monochrome themes failure color is unreadable -> added onFailure/failureText and proper contrasting button colors
 (done) Themes define failureText, on-surface colors, and border radius (monochrome has sharp radius=2/0, other themes radius=8)
-(done) Make entire UI juicy and playful:
-  - Reusable JoyAnimation, JoyWobble, JoyPressArea components
-  - Drag & Drop reorderable tabs in ThemedTabBar with dynamic slot displacement & spring bounce
-  - File/folder Drag & Drop target overlay on Main.qml
-  - Bouncy press squish & hover pop on ThemedButton and cards
-  - Breathing glowing live pulse on running server cards
-  - OutBack spring popup entrance animations
+
+`DEPRECATED`
+>  (done) Make entire UI juicy and playful:
+>    - Reusable JoyAnimation, JoyWobble, JoyPressArea components
+>    - Drag & Drop reorderable tabs in ThemedTabBar with dynamic slot displacement & spring bounce
+>    - File/folder Drag & Drop target overlay on Main.qml
+>    - Bouncy press squish & hover pop on ThemedButton and cards
+>    - Breathing glowing live pulse on running server cards
+>    - OutBack spring popup entrance animations
+
 (done) Server closepopup doesn't tell it's closing -> made ServerRunner::shutdown asynchronous/non-blocking so GUI updates smoothly with animated closing indicator and force-close fallback option
 (svgs are)icons are blurry again of Buttons
 

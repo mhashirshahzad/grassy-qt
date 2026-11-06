@@ -4,6 +4,7 @@
 #include <QProcess>
 #include <QTimer>
 #include <QVariantMap>
+#include <QVariantList>
 #include <QtGlobal>
 
 class ServerRunner : public QObject
@@ -21,6 +22,7 @@ class ServerRunner : public QObject
     Q_PROPERTY(qint64 memoryUsageKb READ memoryUsageKb NOTIFY usageChanged)
     Q_PROPERTY(qint64 memoryLimitKb READ memoryLimitKb NOTIFY limitsChanged)
     Q_PROPERTY(int port READ port NOTIFY portChanged)
+    Q_PROPERTY(QVariantList players READ players NOTIFY playersChanged)
     Q_PROPERTY(int cpuCoreCount READ cpuCoreCount CONSTANT)
 
   public:
@@ -37,6 +39,7 @@ class ServerRunner : public QObject
     qint64 memoryUsageKb() const;
     qint64 memoryLimitKb() const;
     int port() const;
+    QVariantList players() const;
     int cpuCoreCount() const;
 
     Q_INVOKABLE void start();
@@ -56,6 +59,7 @@ class ServerRunner : public QObject
     void usageChanged();
     void limitsChanged();
     void portChanged();
+    void playersChanged();
     void outputReceived(const QString &text);
     void themePaletteChanged();
 
@@ -71,6 +75,8 @@ class ServerRunner : public QObject
     void updatePort();
     void appendConsole(const QString &text);
     void appendConsoleHtml(const QString &text);
+    void updatePlayersFromFiles();
+    void setPlayersOffline();
 
     QString m_serverFolder;
     QString m_serverName;
@@ -81,10 +87,12 @@ class ServerRunner : public QObject
 
     QProcess *m_process = nullptr;
     QTimer m_usageTimer;
+    QTimer m_playersTimer;
     double m_cpuUsage = 0.0;
     qint64 m_memoryUsageKb = 0;
     qint64 m_memoryLimitKb = 4 * 1024 * 1024;
     int m_port = 0;
+    QVariantList m_players;
     quint64 m_previousProcessTicks = 0;
     quint64 m_previousSystemTicks = 0;
 };
