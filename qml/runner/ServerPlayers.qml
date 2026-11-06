@@ -6,9 +6,7 @@ import QtQuick.Layouts 1.15
 Rectangle {
     color: Theme.surface0
     border.color: Theme.border
-    radius: Theme.radius
-
-    Behavior on radius { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
+    radius: 0
 
     ColumnLayout {
         anchors.centerIn: parent

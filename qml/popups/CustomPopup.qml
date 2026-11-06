@@ -48,53 +48,11 @@ Popup {
         color: Theme.background
         border.color: root.errorState ? Theme.failure : root.successState ? Theme.accent : Theme.border
         border.width: 1
-        radius: Theme.radiusLarge
+        radius: Theme.radiusSmall
     }
 
     Overlay.modal: Rectangle {
         color: Theme.scrim
-    }
-
-    enter: Transition {
-        ParallelAnimation {
-            NumberAnimation {
-                property: "scale"
-                from: 0.90
-                to: 1
-                duration: 220
-                easing.type: Easing.OutBack
-                easing.overshoot: 1.4
-            }
-
-            NumberAnimation {
-                property: "opacity"
-                from: 0
-                to: 1
-                duration: 160
-                easing.type: Easing.OutCubic
-            }
-        }
-    }
-
-    exit: Transition {
-        ParallelAnimation {
-            NumberAnimation {
-                property: "scale"
-                from: 1
-                to: 0.96
-                duration: 120
-                easing.type: Easing.InCubic
-            }
-
-            NumberAnimation {
-                property: "opacity"
-                from: 1
-                to: 0
-                duration: 100
-            }
-
-        }
-
     }
 
 }

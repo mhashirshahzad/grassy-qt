@@ -60,7 +60,7 @@ Item {
         id: underline
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
-        radius: Theme.radiusSmall
+        radius: 0
         height: 3
         width: root.hovered ? root.width : 200
         color: Theme.border
@@ -78,19 +78,17 @@ Item {
         anchors.fill: parent
         transformOrigin: Item.Top
         opacity: root.hovered ? 1 : 0
-        scale: root.hovered ? 1.0 : 0.85
-        y: root.hovered ? 0 : -10
+        scale: 1.0
+        y: 0
 
         Behavior on opacity { NumberAnimation { duration: root.easeDur } }
-        Behavior on scale   { NumberAnimation { duration: root.springDur; easing.type: Easing.OutBack; easing.overshoot: 1.7 } }
-        Behavior on y       { NumberAnimation { duration: root.springDur; easing.type: Easing.OutBack; easing.overshoot: 1.2 } }
 
         // Background
         Rectangle {
             id: bg
             anchors.fill: parent
             color: root.barColor
-            radius: Theme.radius
+            radius: 0
             border.color: Theme.border
             border.width: 1
             visible: false // rendered by MultiEffect
@@ -117,7 +115,7 @@ Item {
         Rectangle {
             anchors.fill: bg
             color: "transparent"
-            radius: Theme.radius
+            radius: 0
             border.color: Theme.border
             border.width: 1
         }
@@ -130,7 +128,7 @@ Item {
             id: selectionPill
             visible: root.hovered
             color: root.selectedColor
-            radius: Theme.radiusSmall
+            radius: 0
             y: 2
             height: tabRow.height
 
@@ -152,7 +150,7 @@ Item {
                      && hoverTracker.hoveredTab !== root.currentIndex
                      && root.draggingIndex < 0
             color: root.hoverColor
-            radius: Theme.radiusSmall
+            radius: 0
             y: 2
             height: tabRow.height
             opacity: visible ? 1 : 0
@@ -221,8 +219,7 @@ Item {
                             enabled: !tab.isDragging
                             NumberAnimation {
                                 duration: 220
-                                easing.type: Easing.OutBack
-                                easing.overshoot: 1.4
+                                easing.type: Easing.OutCubic
                             }
                         }
                     }
@@ -249,27 +246,13 @@ Item {
                     }
 
                     opacity: root.hovered && tab.showNow ? 1 : 0
-                    scale: root.hovered && tab.showNow ? 1 : 0.6
-                    y: root.hovered && tab.showNow ? 0 : 8
+                    scale: 1
+                    y: 0
 
                     Behavior on opacity {
                         NumberAnimation {
                             duration: root.easeDur
                             easing.type: Easing.OutCubic
-                        }
-                    }
-                    Behavior on scale {
-                        NumberAnimation {
-                            duration: root.springDur
-                            easing.type: Easing.OutBack
-                            easing.overshoot: 2.0
-                        }
-                    }
-                    Behavior on y {
-                        NumberAnimation {
-                            duration: root.springDur
-                            easing.type: Easing.OutBack
-                            easing.overshoot: 1.5
                         }
                     }
 
@@ -279,11 +262,11 @@ Item {
                     Item {
                         id: squish
                         anchors.fill: parent
-                        scale: tab.isDragging ? 1.10 : (tabMouse.pressed ? 0.92 : 1.0)
-                        rotation: tab.isDragging ? (tab.dragDeltaX > 0 ? 2 : -2) : 0
+                        scale: tab.isDragging ? 1.03 : (tabMouse.pressed ? 0.97 : 1.0)
+                        rotation: 0
 
                         Behavior on scale {
-                            NumberAnimation { duration: 110; easing.type: Easing.OutBack; easing.overshoot: 1.8 }
+                            NumberAnimation { duration: 110; easing.type: Easing.OutCubic }
                         }
                         Behavior on rotation {
                             NumberAnimation { duration: 120; easing.type: Easing.OutCubic }
@@ -296,16 +279,12 @@ Item {
                             color: root.currentIndex === tab.index
                                    ? root.selectedTextColor
                                    : root.textColor
-                            font.bold: root.currentIndex === tab.index
                             font.pixelSize: 12
 
                             Behavior on color { ColorAnimation { duration: 140 } }
 
                             // Subtle pop when the selected index changes
-                            scale: root.currentIndex === tab.index ? 1.08 : 1.0
-                            Behavior on scale {
-                                NumberAnimation { duration: 200; easing.type: Easing.OutBack; easing.overshoot: 2.5 }
-                            }
+                            scale: 1
                         }
                     }
 

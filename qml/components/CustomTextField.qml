@@ -9,7 +9,7 @@ TextField {
     property color focusBorderColor: Theme.accent
     property color backgroundColor: Theme.surface0
     property bool showSearchIcon: true
-    property int radius: Theme.radius
+    property int radius: Theme.radiusSmall
 
     implicitWidth: 280
     implicitHeight: 30

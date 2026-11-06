@@ -65,9 +65,9 @@ QtObject {
     readonly property color accentText: palette.accentText || accent
 
     // Border radiuses defined by the theme
-    readonly property int radius: palette.radius !== undefined ? Number(palette.radius) : 8
-    readonly property int radiusSmall: palette.radiusSmall !== undefined ? Number(palette.radiusSmall) : 4
-    readonly property int radiusLarge: palette.radiusLarge !== undefined ? Number(palette.radiusLarge) : 12
+    readonly property int radius: palette.radius !== undefined ? Number(palette.radius) : 4
+    readonly property int radiusSmall: palette.radiusSmall !== undefined ? Number(palette.radiusSmall) : 2
+    readonly property int radiusLarge: palette.radiusLarge !== undefined ? Number(palette.radiusLarge) : 6
     readonly property int radiusPill: palette.radiusPill !== undefined ? Number(palette.radiusPill) : 20
 
     readonly property FontLoader
@@ -83,11 +83,8 @@ QtObject {
     readonly property string monoFamily: monoFont.name
     readonly property string fontFamily: ubuntu.name
 
-    signal themeTransitionRequested(color oldBackground)
-
     function setTheme(name) {
         if (typeof utils !== "undefined" && utils !== null && name !== utils.selectedTheme) {
-            themeTransitionRequested(background);
             utils.setTheme(name);
         }
     }

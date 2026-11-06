@@ -22,16 +22,14 @@ Rectangle {
     signal deleteClicked()
 
     implicitHeight: content.implicitHeight + 24
-    radius: Theme.radius
+    radius: Theme.radiusSmall
     color: cardHover.hovered ? Theme.surface2 : Theme.surface
     border.color: cardHover.hovered ? Theme.borderHover : Theme.border
     border.width: 1
     width: ListView.view ? ListView.view.width : 0
-    scale: cardHover.hovered ? 1.008 : 1.0
 
     Behavior on color { ColorAnimation { duration: 140 } }
     Behavior on border.color { ColorAnimation { duration: 140 } }
-    Behavior on scale { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
 
     HoverHandler { id: cardHover }
 
@@ -50,7 +48,6 @@ Rectangle {
             Label {
                 text: card.serverName
                 font.pixelSize: 18
-                font.bold: true
                 Layout.fillWidth: true
             }
 

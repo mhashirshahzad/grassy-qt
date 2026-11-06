@@ -14,18 +14,16 @@ Button {
         if (buttonColor === Theme.warning) return Theme.onWarning;
         return Theme.onAccent;
     }
-    property int radius: Theme.radius
+    property int radius: Theme.radiusSmall
 
     hoverEnabled: true
-    padding: 10
-    leftPadding: 14
-    rightPadding: 14
-    scale: !control.enabled ? 1.0 : control.pressed ? 0.93 : control.hovered ? 1.04 : 1.0
+    padding: 8
+    leftPadding: 12
+    rightPadding: 12
 
     contentItem: Text {
         text: control.text
         color: control.enabled ? control.buttonTextColor : Theme.disabledText
-        font.bold: true
         font.family: Theme.fontFamily
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
@@ -47,14 +45,6 @@ Button {
                 duration: 200
                 easing.type: Easing.OutCubic
             }
-        }
-    }
-
-    Behavior on scale {
-        NumberAnimation {
-            duration: 140
-            easing.type: Easing.OutBack
-            easing.overshoot: 2.0
         }
     }
 

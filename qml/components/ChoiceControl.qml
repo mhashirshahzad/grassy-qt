@@ -29,7 +29,7 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        radius: Theme.radius
+        radius: Theme.radiusSmall
         color: Theme.surface0
         border.width: 1
         border.color: root.editing ? Theme.borderFocus : Theme.border
@@ -140,7 +140,7 @@ Item {
         background: Rectangle {
             color: Theme.surface0
             border.color: Theme.border
-            radius: Theme.radiusLarge
+            radius: Theme.radiusSmall
 
             Behavior on radius { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
         }

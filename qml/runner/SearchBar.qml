@@ -39,13 +39,11 @@ Rectangle {
 
     color: Theme.surface
     border.color: Theme.border
-    radius: Theme.radius
-
-    Behavior on radius { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
+    radius: 0
     visible: shown || opacity > 0
     enabled: shown
     opacity: shown ? 1 : 0
-    scale: shown ? 1 : 0.92
+    scale: shown ? 1 : 0.98
 
     Behavior on opacity {
         NumberAnimation {
@@ -55,11 +53,7 @@ Rectangle {
     }
 
     Behavior on scale {
-        SpringAnimation {
-            spring: 3
-            damping: 0.25
-            mass: 0.8
-        }
+        NumberAnimation { duration: 120; easing.type: Easing.OutCubic }
     }
 
     RowLayout {
@@ -90,7 +84,7 @@ Rectangle {
             }
 
             background: Rectangle {
-                radius: Theme.radiusSmall
+                radius: 0
                 color: Theme.surface0
                 border.width: searchInput.activeFocus ? 1 : 0
                 border.color: Theme.borderFocus
