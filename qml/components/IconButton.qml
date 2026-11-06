@@ -69,46 +69,12 @@ Button {
                 value: 1
             }
 
-            ParallelAnimation {
-                NumberAnimation {
-                    target: control
-                    property: "visualIconScale"
-                    to: 1.25
-                    duration: 100
-                    easing.type: Easing.OutBack
-                }
-
-                SequentialAnimation {
-                    NumberAnimation {
-                        target: iconContent
-                        property: "rotation"
-                        to: -8
-                        duration: 50
-                    }
-
-                    NumberAnimation {
-                        target: iconContent
-                        property: "rotation"
-                        to: 8
-                        duration: 100
-                    }
-
-                    NumberAnimation {
-                        target: iconContent
-                        property: "rotation"
-                        to: -5
-                        duration: 80
-                    }
-
-                    NumberAnimation {
-                        target: iconContent
-                        property: "rotation"
-                        to: 0
-                        duration: 70
-                    }
-
-                }
-
+            NumberAnimation {
+                target: control
+                property: "visualIconScale"
+                to: 1.08
+                duration: 100
+                easing.type: Easing.OutCubic
             }
 
         }

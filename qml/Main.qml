@@ -198,17 +198,17 @@ ApplicationWindow {
     Rectangle {
         anchors.fill: fileDropArea
         anchors.margins: 16
-        radius: Theme.radiusLarge
+        radius: Theme.radiusSmall
         color: Qt.rgba(Theme.background.r, Theme.background.g, Theme.background.b, 0.90)
         border.color: Theme.accent
         border.width: 2
         visible: fileDropArea.activeDrag
         opacity: fileDropArea.activeDrag ? 1 : 0
-        scale: fileDropArea.activeDrag ? 1.0 : 0.94
+        scale: fileDropArea.activeDrag ? 1.0 : 0.98
         z: 20
 
         Behavior on opacity { NumberAnimation { duration: 160 } }
-        Behavior on scale { NumberAnimation { duration: 200; easing.type: Easing.OutBack; easing.overshoot: 1.5 } }
+        Behavior on scale { NumberAnimation { duration: 160; easing.type: Easing.OutCubic } }
 
         ColumnLayout {
             anchors.centerIn: parent
@@ -224,7 +224,6 @@ ApplicationWindow {
                 Layout.alignment: Qt.AlignHCenter
                 text: "Drop Minecraft server folder or jar here"
                 font.pixelSize: 18
-                font.bold: true
                 color: Theme.accent
             }
         }

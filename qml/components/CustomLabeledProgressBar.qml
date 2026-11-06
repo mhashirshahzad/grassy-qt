@@ -41,11 +41,7 @@ Item {
         color: Theme.surface0
         border.color: Theme.surface2
         border.width: 1
-        radius: Theme.radius
-
-        Behavior on radius {
-            NumberAnimation { duration: 180; easing.type: Easing.OutCubic }
-        }
+        radius: 0
     }
 
     ColumnLayout {

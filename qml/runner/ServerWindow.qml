@@ -116,9 +116,7 @@ Window {
                     color: addressMouse.containsMouse ? Theme.surface2 : Theme.surface0
                     border.color: Theme.surface2
                     border.width: 1
-                    radius: Theme.radius
-
-                    Behavior on radius { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
+                    radius: 0
                     Behavior on color { ColorAnimation { duration: 140 } }
                 }
 
